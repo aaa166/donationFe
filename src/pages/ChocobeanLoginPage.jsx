@@ -25,7 +25,7 @@ const ChocobeanLoginPage = () => {
 
 
       if (response.ok) {
-        const data = await response.text();
+        const data = await response.json();
         console.log('Login successful:', data);
         // 로그인 성공 시 처리 (예: 홈페이지로 이동)
         navigate('/');
