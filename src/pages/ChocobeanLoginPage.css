@@ -1,0 +1,212 @@
+.chocobean-login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #ffffff;
+  padding: 20px;
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.chocobean-login-box {
+  background: #ffffff;
+  padding: 3rem 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  border: 1px solid #e0e0e0;
+}
+
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #666;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.back-button:hover {
+  color: #8B4513;
+}
+
+.chocobean-header {
+  margin-bottom: 2.5rem;
+}
+
+.chocobean-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.chocobean-icon {
+  width: 24px;
+  height: 24px;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.chocobean-logo h1 {
+  color: #333;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.chocobean-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.input-group {
+  text-align: left;
+}
+
+.chocobean-input {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #333;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.chocobean-input::placeholder {
+  color: #999;
+}
+
+.chocobean-input:focus {
+  outline: none;
+  border-color: #8B4513;
+  box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+}
+
+.auto-login-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 0.5rem 0;
+}
+
+.auto-login-checkbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #666;
+  position: relative;
+}
+
+.auto-login-checkbox input[type="checkbox"] {
+  display: none;
+}
+
+.checkmark {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.auto-login-checkbox input[type="checkbox"]:checked + .checkmark {
+  background: #8B4513;
+  border-color: #8B4513;
+}
+
+.auto-login-checkbox input[type="checkbox"]:checked + .checkmark::after {
+  content: '✓';
+  color: white;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.chocobean-login-button {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(45deg, #8B4513, #A0522D);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
+  letter-spacing: 0.02em;
+}
+
+.chocobean-login-button:hover {
+  background: linear-gradient(45deg, #7A3C0F, #8B4513);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(139, 69, 19, 0.3);
+}
+
+.chocobean-login-button:active {
+  transform: translateY(0);
+}
+
+.help-links {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.help-link {
+  color: #666;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.help-link:hover {
+  color: #8B4513;
+  text-decoration: underline;
+}
+
+.separator {
+  color: #ccc;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 480px) {
+  .chocobean-login-box {
+    padding: 2rem 1.5rem;
+    margin: 1rem;
+  }
+  
+  .chocobean-logo h1 {
+    font-size: 1.5rem;
+  }
+  
+  .help-links {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  
+  .separator {
+    display: none;
+  }
+}
