@@ -5,6 +5,7 @@ import DonationPage from './pages/DonationPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import ChocobeanLoginPage from './pages/ChocobeanLoginPage';
+import ChocobeanSignupPage from './pages/ChocobeanSignupPage';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/login/chocobean" element={<ChocobeanLoginPage />} />
+          <Route path="/signup/chocobean" element={<ChocobeanSignupPage />} />
         </Routes>
       </div>
     </Router>

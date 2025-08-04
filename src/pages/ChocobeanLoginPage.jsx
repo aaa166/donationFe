@@ -104,7 +104,7 @@ const ChocobeanLoginPage = () => {
           <span className="separator">|</span>
           <Link to="#" className="help-link">비밀번호 찾기</Link>
           <span className="separator">|</span>
-          <Link to="/signup" className="help-link">회원가입</Link>
+          <Link to="/signup/chocobean" className="help-link">회원가입</Link>
         </div>
       </div>
     </div>
