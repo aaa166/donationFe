@@ -3,5 +3,5 @@
   grid-template-columns: repeat(4, 250px);
   gap: 2rem;
   padding: 2rem;
-  justify-content: center;
+  justify-content: flex-start;
 }
