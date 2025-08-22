@@ -25,8 +25,7 @@ const DonationPage = () => {
   return (
     <div>
       <Header />
-      <h3>전달하는 기부</h3>
-      <DonationList donations={donations.slice(0, 4)} />
+      <DonationList title="전달하는 기부>" donations={donations.slice(0, 4)} />
     </div>
   );
 };

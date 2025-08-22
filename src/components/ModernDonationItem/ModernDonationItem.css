@@ -1,0 +1,66 @@
+.modern-donation-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+  background-color: #fff;
+}
+
+.modern-donation-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.modern-donation-item .item-image img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.modern-donation-item .item-content {
+  padding: 1.5rem;
+}
+
+.modern-donation-item h3 {
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.modern-donation-item p {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0 0 1.5rem 0;
+}
+
+.progress-bar {
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  height: 8px;
+  margin-bottom: 1rem;
+}
+
+.progress-bar .progress {
+  background-color: #2ecc71;
+  border-radius: 4px;
+  height: 100%;
+}
+
+.item-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.item-stats .stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.item-stats .stat strong {
+  font-size: 1.1rem;
+}
+
+.item-stats .stat span {
+  font-size: 0.8rem;
+  color: #888;
+}

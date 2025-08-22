@@ -8,6 +8,7 @@ const DonationItem = ({ donation }) => {
       <div className="donation-info">
         <h3 className="donation-title">{donation.title}</h3>
         <p className="donation-organization">{donation.organization}</p>
+        <p className="donation-deadline">마감일: {new Date(donation.donationDeadlineDate).toLocaleDateString()}</p>
         <div className="progress-bar">
           <div className="progress" style={{ width: `${donation.progress}%` }}></div>
         </div>

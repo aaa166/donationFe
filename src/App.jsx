@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import ChocobeanLoginPage from './pages/ChocobeanLoginPage';
 import ChocobeanSignupPage from './pages/ChocobeanSignupPage';
+import DonationListPage from './pages/DonationListPage';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <div className="App">
         <Routes>
           <Route path="/" element={<DonationPage />} />
+          <Route path="/donations" element={<DonationListPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/login/chocobean" element={<ChocobeanLoginPage />} />

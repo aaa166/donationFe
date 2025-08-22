@@ -1,7 +1,19 @@
+.donation-list-container {
+  padding: 0 2rem;
+}
+
+.donation-list-title-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.donation-list-container h3 {
+  margin-bottom: 1rem;
+}
+
 .donation-list {
   display: grid;
   grid-template-columns: repeat(4, 250px);
   gap: 2rem;
-  padding: 2rem;
   justify-content: flex-start;
 }
