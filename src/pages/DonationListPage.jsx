@@ -35,7 +35,7 @@ const DonationListPage = () => {
       setLoading(true);
       try {
         const categoryCode = categories.find(c => c.id === selectedCategory)?.code ?? 0;
-        const response = await axios.get('http://localhost:8081/api/donations', {
+        const response = await axios.get('http://localhost:8081/api/public/donations', {
           params: { code: categoryCode },
         });
         setDonations(response.data);

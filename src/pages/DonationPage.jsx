@@ -12,7 +12,7 @@ const DonationPage = () => {
   useEffect(() => {
     const fetchDonations = async () => {
       try {
-        const response = await axios.get('http://localhost:8081/api/donations');
+        const response = await axios.get('http://localhost:8081/api/public/donations');
         setDonations(response.data);
       } catch (error) {
         console.error('데이터를 불러오는 중 오류 발생:', error);
@@ -21,8 +21,8 @@ const DonationPage = () => {
       }
     };
 
-    fetchDonations();
-  }, []);
+  fetchDonations();
+}, []);
 
   return (
     <div>
