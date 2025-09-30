@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import App from './App'; 
 import DonationPage from './pages/DonationPage';
 import DonationViewPage from './pages/DonationViewPage';
 import DonationListPage from './pages/DonationListPage';
@@ -9,35 +10,46 @@ import LoginPage from './pages/LoginPage';
 import ChocobeanLoginPage from './pages/ChocobeanLoginPage';
 import ChocobeanSignupPage from './pages/ChocobeanSignupPage';
 import SignupPage from './pages/SignupPage';
+import MyPage from './pages/MyPage';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <DonationPage />,
-  },
-  {
-    path: '/donation-view',
-    element: <DonationViewPage />,
-  },
-  {
-    path: '/donations',
-    element: <DonationListPage />,
-  },
-    {
-    path: '/login',
-    element: <LoginPage />,
-  },
-  {
-    path: '/signup',
-    element: <SignupPage />,
-  },
+    element: <App />,
+    children: [ 
       {
-    path: '/login/chocobean',
-    element: <ChocobeanLoginPage />,
-  },
+        index: true, 
+        element: <DonationPage />,
+      },
       {
-    path: '/signup/chocobean',
-    element: <ChocobeanSignupPage />,
+        path: '/donation-view',
+        element: <DonationViewPage />,
+      },
+      {
+        path: '/donations',
+        element: <DonationListPage />,
+      },
+      {
+        path: '/login',
+        element: <LoginPage />,
+      },
+      {
+        path: '/signup',
+        element: <SignupPage />,
+      },
+      {
+        path: '/login/chocobean',
+        element: <ChocobeanLoginPage />,
+      },
+      {
+        path: '/signup/chocobean',
+        element: <ChocobeanSignupPage />,
+      },
+      {
+        path: '/mypage',
+        element: <MyPage />,
+      },
+    ],
   },
 ]);
 

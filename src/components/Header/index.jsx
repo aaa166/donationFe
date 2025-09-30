@@ -1,10 +1,17 @@
-
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import './Header.css';
 
-const Header = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+const Header = ({ isLoggedIn, setIsLoggedIn }) => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('jwt');
+
+    setIsLoggedIn(false);
+
+    navigate('/');
+  };
 
   return (
     <header className="header">
@@ -15,14 +22,20 @@ const Header = () => {
           <li className="nav-item"><Link to="/store">스토어</Link></li>
         </ul>
         <ul className="user-actions">
-          
-          <li className="user-action-item">
-            {isLoggedIn ? (
-              <Link to="/myinfo">내 정보</Link>
-            ) : (
+          {isLoggedIn ? (
+            <>
+              <li className="user-action-item">
+                <Link to="/mypage">마이페이지</Link>
+              </li>
+              <li className="user-action-item">
+                <button onClick={handleLogout} className="logout-button">로그아웃</button>
+              </li>
+            </>
+          ) : (
+            <li className="user-action-item">
               <Link to="/login">로그인</Link>
-            )}
-          </li>
+            </li>
+          )}
         </ul>
       </nav>
     </header>

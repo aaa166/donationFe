@@ -38,7 +38,6 @@ function App() {
 
   return (
     <div>
-      <Header />
       <div className="container">
         <main className="main-content">
           <ProgressBar

@@ -34,10 +34,19 @@
   margin-left: 1rem;
 }
 
-.user-action-item a {
+.user-action-item a,
+.logout-button {
   text-decoration: none;
   color: #666;
   font-size: 0.9rem;
+}
+
+.logout-button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
 }
 
 

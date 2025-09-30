@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import './ChocobeanLoginPage.css';
 
 const ChocobeanLoginPage = () => {
+  const { isLoggedIn, setIsLoggedIn } = useOutletContext();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [autoLogin, setAutoLogin] = useState(false);
@@ -26,8 +28,12 @@ const ChocobeanLoginPage = () => {
 
       if (response.ok) {
         const data = await response.json();
+        const token = data.token;
+        localStorage.setItem('jwt', token);
+        
+        setIsLoggedIn(true);
         console.log('Login successful:', data);
-        // 로그인 성공 시 처리 (예: 홈페이지로 이동)
+
         navigate('/');
       } else {
         console.error('Login failed:', response.statusText);

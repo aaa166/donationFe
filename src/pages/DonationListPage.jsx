@@ -63,7 +63,6 @@ const DonationListPage = () => {
 
   return (
     <div className="donation-list-page">
-      <Header />
       <DonationFilter selectedCategory={selectedCategory} onCategoryChange={handleCategoryChange} />
       <DonationList title="전체" donations={filteredDonations} titleLinkable={false} />
       <DonationSearch />

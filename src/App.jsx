@@ -1,27 +1,27 @@
-import React from 'react';
-import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import DonationPage from './pages/DonationPage';
-import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage';
-import ChocobeanLoginPage from './pages/ChocobeanLoginPage';
-import ChocobeanSignupPage from './pages/ChocobeanSignupPage';
-import DonationListPage from './pages/DonationListPage';
+import React, { useState, useEffect } from 'react';
+import { Outlet } from 'react-router-dom';
+import Header from './components/Header'; 
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('jwt');
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
   return (
-    <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<DonationPage />} />
-          <Route path="/donations" element={<DonationListPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/login/chocobean" element={<ChocobeanLoginPage />} />
-          <Route path="/signup/chocobean" element={<ChocobeanSignupPage />} />
-        </Routes>
-      </div>
-    </Router>
+    <div>
+      {/* 3. Header에게는 현재 로그인 '상태 값'을 prop으로 전달합니다. */}
+      <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+      
+      <main>
+        {/* 4. 페이지 컴포넌트들에게는 상태를 '변경하는 함수'를 context로 전달합니다. */}
+        <Outlet context={{ isLoggedIn, setIsLoggedIn }} />
+      </main>
+    </div>
   );
 }
 
