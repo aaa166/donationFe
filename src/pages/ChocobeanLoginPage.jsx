@@ -29,7 +29,7 @@ const ChocobeanLoginPage = () => {
       if (response.ok) {
         const data = await response.json();
         const token = data.token;
-        localStorage.setItem('jwt', token);
+        localStorage.setItem('jwtToken', token);
         
         setIsLoggedIn(true);
         console.log('Login successful:', data);
