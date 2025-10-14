@@ -4,55 +4,103 @@ import './MyPage.css';
 const MyPage = () => {
     const [activeTab, setActiveTab] = useState('home');
     
-    // 사용자 정보를 담을 state (초기값 null)
+    // 사용자 정보를 담을 state
     const [userInfo, setUserInfo] = useState(null);
+    // 기부 내역을 담을 state
+    const [myDonation, setMyDonation] = useState([]);
     // 로딩 및 에러 상태 관리
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // 컴포넌트가 처음 렌더링될 때 사용자 정보를 가져오는 API 호출
     useEffect(() => {
-        const fetchUserInfo = async () => {
+        const fetchData = async () => {
             try {
-                // 1. 로컬 스토리지에서 JWT 토큰 가져오기
-                const token = localStorage.getItem('jwtToken'); // 'jwtToken'은 로그인 시 저장한 토큰의 key 입니다.
-
+                const token = localStorage.getItem('jwtToken');
                 if (!token) {
                     throw new Error('인증 토큰이 없습니다. 로그인이 필요합니다.');
                 }
 
-                // 2. 백엔드 API에 GET 요청 (헤더에 토큰 포함)
-                const response = await fetch('http://localhost:8081/api/auth/mypage', { // 백엔드와 협의된 API 엔드포인트
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`, // Bearer 스킴 사용
-                        'Content-Type': 'application/json',
-                    },
-                });
+                const headers = {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                };
 
-                if (!response.ok) {
+                // 사용자 정보와 기부 내역을 동시에 요청
+                const [userResponse, donationsResponse] = await Promise.all([
+                    fetch('http://localhost:8081/api/auth/mypage', { headers }),
+                    fetch('http://localhost:8081/api/auth/mydonation', { headers }) // 기부 내역 API 엔드포인트 (가정)
+                ]);
+
+                if (!userResponse.ok) {
                     throw new Error('사용자 정보를 가져오는데 실패했습니다.');
                 }
+                if (!donationsResponse.ok) {
+                    throw new Error('기부 내역을 가져오는데 실패했습니다.');
+                }
 
-                const data = await response.json();
-                setUserInfo(data); // 3. 성공 시 받아온 데이터로 state 업데이트
+                const userData = await userResponse.json();
+                const donationsData = await donationsResponse.json();
+
+                setUserInfo(userData);
+                setMyDonation(donationsData);
 
             } catch (err) {
                 setError(err.message);
             } finally {
-                setLoading(false); // 4. 로딩 상태 종료
+                setLoading(false);
             }
         };
 
-        fetchUserInfo();
-    }, []); // 빈 배열을 전달하여 컴포넌트가 마운트될 때 한 번만 실행
+        fetchData();
+    }, []);
 
     const renderContent = () => {
         switch (activeTab) {
             case 'home':
-                return <div className="tab-pane">환영합니다! 여기는 마이홈입니다. 활동 내역을 확인해보세요.</div>;
+                return (
+                    <div>
+                        <div className="tab-pane">
+                            <p>환영합니다! 여기는 마이홈입니다. 활동 내역을 확인해보세요.</p>
+                            <ul>
+                                {userInfo && Object.entries(userInfo).map(([key, value]) => (
+                                    <li key={key}>{`${key}: ${value}`}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                );
             case 'donations':
-                return <div className="tab-pane">나의 기부 내역이 여기에 표시됩니다.</div>;
+                return (
+                    <div className="tab-pane">
+                        <h3>나의 기부 내역</h3>
+                        <table className="donation-table">
+                            <thead>
+                                <tr>
+                                    <th style={{width: '10%'}}>번호</th>
+                                    <th style={{width: '50%'}}>기부 캠페인</th>
+                                    <th style={{width: '20%'}}>기부금액</th>
+                                    <th style={{width: '20%'}}>기부일자</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {myDonation.length > 0 ? (
+                                    myDonation.map((donation, index) => (
+                                        <tr key={index}>
+                                            <td>{index + 1}</td>
+                                            <td>{donation.donationTitle}</td>
+                                            <td>{`${donation.payAmount.toLocaleString()}원`}</td>
+                                            <td>{new Date(donation.payDate).toLocaleDateString()}</td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="4" style={{textAlign: 'center'}}>기부 내역이 없습니다.</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                );
             default:
                 return null;
         }
