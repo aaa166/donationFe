@@ -27,7 +27,7 @@ const DonationPage = () => {
   return (
     <div>
       <DonationList title="전달하는 기부>" donations={donations.slice(0, 4)} />
-      <Link to="/donation-view" className="donation-button">donation-view</Link>
+      <Link to="/donationView" className="donation-button">donationView</Link>
     </div>
   );
 };
