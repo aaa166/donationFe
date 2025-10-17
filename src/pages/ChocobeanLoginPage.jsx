@@ -5,7 +5,7 @@ import './ChocobeanLoginPage.css';
 const ChocobeanLoginPage = () => {
   const { isLoggedIn, setIsLoggedIn } = useOutletContext();
 
-  const [email, setEmail] = useState('');
+  const [id, setId] = useState('');
   const [password, setPassword] = useState('');
   const [autoLogin, setAutoLogin] = useState(false);
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const ChocobeanLoginPage = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          id: email,
+          id: id,
           password: password
         }),
       });
@@ -68,8 +68,8 @@ const ChocobeanLoginPage = () => {
             <input
               type="text"
               id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={id}
+              onChange={(e) => setId(e.target.value)}
               placeholder="아이디"
               required
               className="chocobean-input"

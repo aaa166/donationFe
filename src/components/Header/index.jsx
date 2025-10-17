@@ -6,7 +6,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('jwt');
+    localStorage.removeItem('jwtToken');
 
     setIsLoggedIn(false);
 
