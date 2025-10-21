@@ -54,6 +54,8 @@ function DonationViewPage() {
     if (loading) return <div>로딩 중...</div>;
     if (error) return <div style={{ color: 'red' }}>에러: {error}</div>;
     if (!donationData) return <div>데이터가 없습니다.</div>;
+    const CDate = new Date(donationData.donationCreateDate);
+    const DDate = new Date(donationData.donationCreateDate);
 
     const renderContent = () => {
         switch (activeTab) {
@@ -80,12 +82,18 @@ function DonationViewPage() {
                     </div>
                 );
             case 'info':
-                return <BasicInfo organization={donationData?.donationOrganization} />;
+                return <div>
+                            <h3>모금단체 정보</h3>
+                            <p><strong>단체명:</strong> {donationData.donationOrganization}</p>
+                            <p><strong>모금기간:</strong> {CDate.toLocaleString()} ~ {DDate.toLocaleString()}</p>
+                            <h3>모금액 사용 계획</h3>
+                            <p>{donationData.donationAmountPlan}</p>
+                        </div>
             default:
                 return <div>스토리를 확인해주세요.</div>;
         }
     };
-
+    
     return (
         <div>
             {/* 옵셔널 체이닝을 적용하여 안정성 향상 */}

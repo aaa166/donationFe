@@ -14,7 +14,7 @@ const ContentTabs = ({ activeTab, setActiveTab }) => {
         className={activeTab === 'reviews' ? 'active' : ''}
         onClick={() => setActiveTab('reviews')}
       >
-        후기
+        응원 한마디
       </button>
       <button
         className={activeTab === 'info' ? 'active' : ''}
