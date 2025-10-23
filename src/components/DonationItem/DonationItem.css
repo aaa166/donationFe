@@ -49,3 +49,8 @@
   font-weight: bold;
   text-align: right;
 }
+
+.donation-item-link {
+  text-decoration: none; 
+  color: inherit; 
+}

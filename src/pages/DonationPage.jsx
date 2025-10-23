@@ -3,7 +3,6 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import DonationList from '../components/DonationList';
-import './DonationPage.css';
 
 const DonationPage = () => {
   const [donations, setDonations] = useState([]);
@@ -27,7 +26,6 @@ const DonationPage = () => {
   return (
     <div>
       <DonationList title="전달하는 기부>" donations={donations.slice(0, 4)} />
-      <Link to="/donationView" className="donation-button">donationView</Link>
     </div>
   );
 };

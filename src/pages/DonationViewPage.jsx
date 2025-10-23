@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import './DonationViewPage.css';
 import ProgressBar from '../components/ProgressBar';
 import ContentTabs from '../components/ContentTabs';
-import BasicInfo from '../components/BasicInfo';
+import { useParams } from 'react-router-dom';
 import DonationSidebar from '../components/DonationSidebar';
 
 // API 호출을 위한 기본 URL
@@ -15,8 +15,11 @@ function DonationViewPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const donationNo = 1; // 예시 기부 번호
-
+    
+    // const donationNo = (donationData.donationNo); 
+    // const donationNo = 1; 
+    const { donationNo } = useParams();
+    
     // useCallback으로 함수 재생성을 방지합니다.
     const fetchData = useCallback(async () => {
         setLoading(true);
@@ -44,6 +47,7 @@ function DonationViewPage() {
         } finally {
             setLoading(false);
         }
+
     }, [donationNo]); // donationNo가 변경될 때만 함수가 재생성됩니다.
 
     useEffect(() => {
