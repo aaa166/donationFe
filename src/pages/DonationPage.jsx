@@ -26,6 +26,9 @@ const DonationPage = () => {
   return (
     <div>
       <DonationList title="전달하는 기부>" donations={donations.slice(0, 4)} />
+      <Link to="/insert-donation">
+        <button>기부 생성</button>
+      </Link>
     </div>
   );
 };
