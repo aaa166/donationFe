@@ -35,10 +35,13 @@ const DonationListPage = () => {
       setLoading(true);
       try {
         const categoryCode = categories.find(c => c.id === selectedCategory)?.code ?? 0;
+        console.log(categoryCode);
         const response = await axios.get('http://localhost:8081/api/public/donations', {
-          params: { code: categoryCode },
+          params: { categoryId: categoryCode },
         });
         setDonations(response.data);
+
+        
       } catch (error) {
         console.error('데이터를 불러오는 중 오류 발생:', error);
       } finally {
@@ -49,9 +52,8 @@ const DonationListPage = () => {
     fetchDonations();
   }, [selectedCategory]);
 
-  const handleCategoryChange = (category) => {
-    console.log(category);
-    const categoryId = categories.find(c => c.code === category)?.id ?? 'all';
+  const handleCategoryChange = (categoryId) => {
+    // console.log("선택된 카테고리 ID:", categoryId);
     setSelectedCategory(categoryId);
   };
 

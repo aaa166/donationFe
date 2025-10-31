@@ -23,7 +23,7 @@ const DonationFilter = ({ selectedCategory, onCategoryChange }) => {
             name="category"
             value={category.id}
             checked={selectedCategory === category.id}
-            onChange={() => onCategoryChange(category.code)}
+            onChange={() => onCategoryChange(category.id)}
           />
           <label htmlFor={category.id}>{category.name}</label>
         </div>
