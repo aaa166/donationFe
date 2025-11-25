@@ -58,14 +58,29 @@ const MyPage = () => {
         switch (activeTab) {
             case 'home':
                 return (
-                    <div>
-                        <div className="tab-pane">
-                            <p>환영합니다! 여기는 마이홈입니다. 활동 내역을 확인해보세요.</p>
-                            <ul>
-                                {userInfo && Object.entries(userInfo).map(([key, value]) => (
-                                    <li key={key}>{`${key}: ${value}`}</li>
-                                ))}
-                            </ul>
+                    <div className="tab-pane">
+                        <div className="info-grid">
+                            {userInfo && Object.entries(userInfo).map(([key, value]) => {
+                                // totalAmount는 이미 상단에 표시되므로 여기서는 제외
+                                if (key === 'totalAmount') return null;
+                                
+                                // 키를 좀 더 친숙한 레이블로 변환
+                                const keyMap = {
+                                    'memberId': '아이디',
+                                    'userName': '이름',
+                                    'email': '이메일',
+                                    'phoneNumber': '연락처',
+                                    'birth': '생년월일',
+                                    'gender': '성별'
+                                };
+
+                                return (
+                                    <div className="info-item" key={key}>
+                                        <span className="info-label">{keyMap[key] || key}</span>
+                                        <span className="info-value">{value}</span>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
                 );
