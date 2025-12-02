@@ -45,12 +45,17 @@ const InsertDonationPage = () => {
         title: '',
         content: '',
         organization: '',
+        goalAmount: '',
+        deadlineDate: '',
         target: '',
         targetCount: '',
         usagePlan: '',
         image: null,
     });
     const [imagePreview, setImagePreview] = useState(null);
+    const [categories, setCategories] = useState([]);
+
+    const categoryOptions = ["아동/청소년", "노인", "장애인", "가정", "동물", "환경", "기타"];
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -60,18 +65,62 @@ const InsertDonationPage = () => {
             setImagePreview(file ? URL.createObjectURL(file) : null);
         } else {
             let processedValue = value;
-            if (name === 'targetCount' && processedValue !== '' && Number(processedValue) < 0) {
+            if ((name === 'targetCount' || name === 'goalAmount') && processedValue !== '' && Number(processedValue) < 0) {
                 processedValue = '0';
             }
             setFormState({ ...formState, [name]: processedValue });
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleCategoryChange = (e) => {
+        const { value, checked } = e.target;
+        if (checked) {
+            setCategories([...categories, value]);
+        } else {
+            setCategories(categories.filter(category => category !== value));
+        }
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("제출 데이터:", formState); 
-        alert('기부 캠페인이 등록되었습니다. (콘솔 확인)');
-        // 실제 등록 API 호출 시 formData에 JWT 포함해서 POST 요청
+
+        const formData = new FormData();
+        formData.append('title', formState.title);
+        formData.append('content', formState.content);
+        formData.append('organization', formState.organization);
+        formData.append('goalAmount', formState.goalAmount);
+        formData.append('deadlineDate', formState.deadlineDate);
+        formData.append('target', formState.target);
+        formData.append('targetCount', formState.targetCount);
+        formData.append('usagePlan', formState.usagePlan);
+        formData.append('categories', JSON.stringify(categories));
+        if (formState.image) {
+            formData.append('image', formState.image);
+        }
+        console.log(formData);
+        try {
+            const token = localStorage.getItem("jwtToken");
+            if (!token) {
+                alert("로그인이 필요합니다.");
+                navigate("/login");
+                return;
+            }
+
+            const response = await axios.post('http://localhost:8081/api/public/insertDonation', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 200) {
+                alert('기부 캠페인이 성공적으로 등록되었습니다.');
+                navigate('/'); 
+            }
+        } catch (error) {
+            console.error("캠페인 등록 오류:", error);
+            alert('캠페인 등록에 실패했습니다. 다시 시도해주세요.');
+        }
     };
 
     useEffect(() => {
@@ -102,6 +151,16 @@ const InsertDonationPage = () => {
                 </div>
                 <div className="form-row">
                     <div className="form-group">
+                        <label htmlFor="goalAmount">목표금액</label>
+                        <input type="number" id="goalAmount" name="goalAmount" min="0" value={formState.goalAmount} onChange={handleChange} required />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="deadlineDate">캠페인 종료날짜</label>
+                        <input type="date" id="deadlineDate" name="deadlineDate" value={formState.deadlineDate} onChange={handleChange} required />
+                    </div>
+                </div>
+                <div className="form-row">
+                    <div className="form-group">
                         <label htmlFor="target">기부대상</label>
                         <input type="text" id="target" name="target" value={formState.target} onChange={handleChange} required />
                     </div>
@@ -115,11 +174,27 @@ const InsertDonationPage = () => {
                     <textarea id="usagePlan" name="usagePlan" value={formState.usagePlan} onChange={handleChange} required />
                 </div>
                 <div className="form-group">
+                    <label>카테고리</label>
+                    <div className="category-checkbox-group">
+                        {categoryOptions.map(option => (
+                            <label key={option} className="category-checkbox-label">
+                                <input
+                                    type="checkbox"
+                                    value={option}
+                                    checked={categories.includes(option)}
+                                    onChange={handleCategoryChange}
+                                />
+                                {option}
+                            </label>
+                        ))}
+                    </div>
+                </div>
+                <div className="form-group">
                     <label htmlFor="image">대표 이미지</label>
                     <input type="file" id="image" name="image" accept="image/*" onChange={handleChange} />
                     {imagePreview && <img src={imagePreview} alt="Preview" className="image-preview" />}
                 </div>
-                <button type="submit" className="submit-btn">캠페인 등록</button>
+                <button type="submit" className="submit-btn">캠페인 등록 요청</button>
             </form>
         </div>
     );

@@ -127,3 +127,25 @@ body {
   background-color: var(--primary-hover-color);
   transform: translateY(-2px);
 }
+
+.category-checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.category-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.category-checkbox-label input[type="checkbox"] {
+  width: 1.2em;
+  height: 1.2em;
+  accent-color: var(--primary-color);
+}
