@@ -13,7 +13,7 @@ const InsertDonationPage = () => {
             navigate("/"); 
             return;
         }
-
+           
         const checkPermission = async () => {
             try {
                 const res = await axios.get(`http://localhost:8081/api/public/donationApply`, {

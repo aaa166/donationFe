@@ -17,7 +17,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
     <header className="header">
       <nav className="nav">
         <ul className="nav-list">
-          <li className="nav-item"><Link to="/">기부</Link></li>
+          <li className="nav-item"><Link to="/">홈</Link></li>
           <li className="nav-item"><Link to="/funding">펀딩</Link></li>
           <li className="nav-item"><Link to="/store">스토어</Link></li>
         </ul>

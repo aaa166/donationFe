@@ -3,12 +3,32 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import DonationList from '../components/DonationList';
+import './DonationPage.css';
 
 const DonationPage = () => {
+  const [role, setRole] = useState(null);
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchRole = async () => {
+      const token = localStorage.getItem('jwtToken'); 
+      const config = {
+          headers: {
+              'Authorization': token ? `Bearer ${token}` : ''
+          }
+      };
+
+      try {
+          const response = await axios.get(`http://localhost:8081/api/public/role`,config);
+          setRole(response.data); 
+          console.log('받은 역할:', response.data);
+      } catch (error) {
+          console.error('역할 데이터를 불러오는 중 오류 발생:', error);
+          setRole(-1); 
+      }
+    };
+
     const fetchDonations = async () => {
       try {
         const response = await axios.get('http://localhost:8081/api/public/donations');
@@ -19,16 +39,30 @@ const DonationPage = () => {
         setLoading(false);
       }
     };
+    
+    fetchRole();
+    fetchDonations();
+  }, []);
 
-  fetchDonations();
-}, []);
-
+  if (loading || role === null) {
+    return <div>데이터를 불러오는 중입니다...</div>;
+  }
+  
   return (
-    <div>
-      <DonationList title="전달하는 기부>" donations={donations.slice(0, 4)} />
+    <div className="donation-page-wrap">
+      <DonationList title="전달하는 기부>" donations={donations.slice(0, 5)} />
+
       <Link to="/donationApply">
         <button>기부 신청</button>
       </Link>
+
+      {role === 0 && (
+        <div id="managerDiv">
+          <Link to="/donationApply">
+            <button>기부 승인</button>
+          </Link>
+        </div>
+      )}
     </div>
   );
 };
