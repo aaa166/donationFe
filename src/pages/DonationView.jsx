@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './DonationViewPage.css';
+import './DonationView.css';
 import ProgressBar from '../components/ProgressBar';
 import ContentTabs from '../components/ContentTabs';
 import { useParams } from 'react-router-dom';
@@ -8,7 +8,7 @@ import DonationSidebar from '../components/DonationSidebar';
 // API 호출을 위한 기본 URL
 const API_BASE_URL = 'http://localhost:8081/api';
 
-function DonationViewPage() {
+function DonationView() {
     const [activeTab, setActiveTab] = useState('story');
     const [donationData, setDonationData] = useState(null);
     const [payComments, setPayComments] = useState([]);
@@ -135,4 +135,4 @@ function DonationViewPage() {
     );
 }
 
-export default DonationViewPage;
+export default DonationView;

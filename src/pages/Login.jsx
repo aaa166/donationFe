@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import './LoginPage.css';
+import './Login.css';
 
-const LoginPage = () => {
+const Login = () => {
   const [loginMethod, setLoginMethod] = useState('social');
 
   const navigate = useNavigate();
@@ -71,4 +71,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default Login;

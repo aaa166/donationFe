@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import './SignupPage.css';
+import './Signup.css';
 
-const SignupPage = () => {
+const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -129,4 +129,4 @@ const SignupPage = () => {
   );
 };
 
-export default SignupPage;
+export default Signup;

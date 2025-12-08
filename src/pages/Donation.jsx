@@ -3,9 +3,9 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import DonationList from '../components/DonationList';
-import './DonationPage.css';
+import './Donation.css';
 
-const DonationPage = () => {
+const Donation = () => {
   const [role, setRole] = useState(null);
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,7 +49,7 @@ const DonationPage = () => {
   }
   
   return (
-    <div className="donation-page-wrap">
+    <div className="donation-wrap">
       <DonationList title="전달하는 기부>" donations={donations.slice(0, 4)} />
 
       <Link to="/donationApply" className="donationApply">
@@ -58,7 +58,7 @@ const DonationPage = () => {
 
       {role === 0 && (
         <div id="managerDiv">
-          <Link to="/donationState" className="donationState">
+          <Link to="/donationApply" className="donationStatus">
             캠페인 관리
           </Link>
         </div>
@@ -67,4 +67,4 @@ const DonationPage = () => {
   );
 };
 
-export default DonationPage;
+export default Donation;

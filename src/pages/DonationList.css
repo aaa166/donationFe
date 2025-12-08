@@ -1,10 +1,10 @@
-.donation-list-page .page-content {
+.donation-list .page-content {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.donation-list-page h1 {
+.donation-list h1 {
   font-size: 2.5rem;
   margin-bottom: 2rem;
   text-align: center;

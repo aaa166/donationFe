@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import './MyPage.css';
+import './My.css';
 
-const MyPage = () => {
+const My = () => {
     const [activeTab, setActiveTab] = useState('home');
     
     // 사용자 정보를 담을 state
@@ -123,21 +123,21 @@ const MyPage = () => {
 
     // 로딩 중일 때 표시할 UI
     if (loading) {
-        return <div className="mypage-container">로딩 중...</div>;
+        return <div className="my-container">로딩 중...</div>;
     }
 
     // 에러 발생 시 표시할 UI
     if (error) {
-        return <div className="mypage-container">에러: {error}</div>;
+        return <div className="my-container">에러: {error}</div>;
     }
     
     // 사용자 정보가 없을 때 ( raro case )
     if (!userInfo) {
-        return <div className="mypage-container">사용자 정보를 찾을 수 없습니다.</div>;
+        return <div className="my-container">사용자 정보를 찾을 수 없습니다.</div>;
     }
 
     return (
-        <div className="mypage-container">
+        <div className="my-container">
             <div className="profile-summary">
                 <div className="profile-info">
                     {/* userInfo state에서 동적으로 이름 표시 */}
@@ -152,7 +152,7 @@ const MyPage = () => {
                 </div>
             </div>
 
-            <div className="mypage-tabs">
+            <div className="my-tabs">
                 <button
                     className={`tab-button ${activeTab === 'home' ? 'active' : ''}`}
                     onClick={() => setActiveTab('home')}
@@ -174,4 +174,4 @@ const MyPage = () => {
     );
 };
 
-export default MyPage;
+export default My;

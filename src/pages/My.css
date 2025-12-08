@@ -1,5 +1,5 @@
-/* MyPage.css */
-.mypage-container {
+/* My.css */
+.my-container {
   width: 100%;
   max-width: 1200px;
   margin: 2rem auto;
@@ -56,7 +56,7 @@
   color: #00b894;
 }
 
-.mypage-tabs {
+.my-tabs {
   display: flex;
   border-bottom: 2px solid #eee;
   margin-bottom: 1.5rem;

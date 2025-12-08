@@ -25,7 +25,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
           {isLoggedIn ? (
             <>
               <li className="user-action-item">
-                <Link to="/mypage">마이페이지</Link>
+                <Link to="/my">마이페이지</Link>
               </li>
               <li className="user-action-item">
                 <button onClick={handleLogout} className="logout-button">로그아웃</button>

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom'; 
 import axios from 'axios'; 
-import './InsertDonationPage.css';
+import './InsertDonation.css';
 
-const InsertDonationPage = () => {
+const InsertDonation = () => {
     const navigate = useNavigate();
     const { isLoggedIn } = useOutletContext(); 
 
@@ -200,4 +200,4 @@ const InsertDonationPage = () => {
     );
 };
 
-export default InsertDonationPage;
+export default InsertDonation;

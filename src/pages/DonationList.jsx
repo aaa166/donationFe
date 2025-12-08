@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import Header from '../components/Header';
-import DonationList from '../components/DonationList';
+import DonationListComponent from '../components/DonationList';
 import DonationListDate from '../components/DonationListDate';
 import DonationSearch from '../components/DonationSearch';
 import DonationFilter from '../components/DonationFilter';
-import './DonationListPage.css';
+import './DonationList.css';
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -23,7 +23,7 @@ const categories = [
   { id: 'ect', code: 7 },
 ];
 
-const DonationListPage = () => {
+const DonationList = () => {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -64,10 +64,10 @@ const DonationListPage = () => {
     ;
 
   return (
-    <div className="donation-list-page">
+    <div className="donation-list">
       <div className="page-content">
         <DonationFilter selectedCategory={selectedCategory} onCategoryChange={handleCategoryChange} />
-        <DonationList title="전체" donations={filteredDonations} titleLinkable={false} />
+        <DonationListComponent title="전체" donations={filteredDonations} titleLinkable={false} />
         <DonationSearch />
         <DonationListDate />
       </div>
@@ -75,4 +75,4 @@ const DonationListPage = () => {
   );
 };
 
-export default DonationListPage;
+export default DonationList;

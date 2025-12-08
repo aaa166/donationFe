@@ -3,15 +3,15 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App'; 
-import DonationPage from './pages/DonationPage';
-import DonationViewPage from './pages/DonationViewPage';
-import DonationListPage from './pages/DonationListPage';
-import LoginPage from './pages/LoginPage';
-import ChocobeanLoginPage from './pages/ChocobeanLoginPage';
-import ChocobeanSignupPage from './pages/ChocobeanSignupPage';
-import SignupPage from './pages/SignupPage';
-import MyPage from './pages/MyPage';
-import InsertDonationPage from './pages/InsertDonationPage';
+import Donation from './pages/Donation';
+import DonationView from './pages/DonationView';
+import DonationList from './pages/DonationList';
+import Login from './pages/Login';
+import ChocobeanLogin from './pages/ChocobeanLogin';
+import ChocobeanSignup from './pages/ChocobeanSignup';
+import Signup from './pages/Signup';
+import My from './pages/My';
+import InsertDonation from './pages/InsertDonation';
 
 const router = createBrowserRouter([
   {
@@ -20,39 +20,39 @@ const router = createBrowserRouter([
     children: [ 
       {
         index: true, 
-        element: <DonationPage />,
+        element: <Donation />,
       },
       {
         path: '/donations/:donationNo', 
-        element: <DonationViewPage />,
+        element: <DonationView />,
       },
       {
         path: '/donations',
-        element: <DonationListPage />,
+        element: <DonationList />,
       },
       {
         path: '/login',
-        element: <LoginPage />,
+        element: <Login />,
       },
       {
         path: '/signup',
-        element: <SignupPage />,
+        element: <Signup />,
       },
       {
         path: '/login/chocobean',
-        element: <ChocobeanLoginPage />,
+        element: <ChocobeanLogin />,
       },
       {
         path: '/signup/chocobean',
-        element: <ChocobeanSignupPage />,
+        element: <ChocobeanSignup />,
       },
       {
-        path: '/mypage',
-        element: <MyPage />,
+        path: '/my',
+        element: <My />,
       },
       {
         path: '/donationApply', 
-        element: <InsertDonationPage />,
+        element: <InsertDonation />,
       },
     ],
   },

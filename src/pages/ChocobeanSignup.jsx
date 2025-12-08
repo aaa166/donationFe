@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import './ChocobeanSignupPage.css';
+import './ChocobeanSignup.css';
 
-const ChocobeanSignupPage = () => {
+const ChocobeanSignup = () => {
   const [formData, setFormData] = useState({
     name: '',
     userId: '',
@@ -457,4 +457,4 @@ const ChocobeanSignupPage = () => {
   );
 };
 
-export default ChocobeanSignupPage;
+export default ChocobeanSignup;

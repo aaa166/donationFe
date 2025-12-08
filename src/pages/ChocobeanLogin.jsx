@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
-import './ChocobeanLoginPage.css';
+import './ChocobeanLogin.css';
 
-const ChocobeanLoginPage = () => {
+const ChocobeanLogin = () => {
   const { isLoggedIn, setIsLoggedIn } = useOutletContext();
 
   const [id, setId] = useState('');
@@ -117,4 +117,4 @@ const ChocobeanLoginPage = () => {
   );
 };
 
-export default ChocobeanLoginPage;
+export default ChocobeanLogin;
