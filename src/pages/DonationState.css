@@ -1,0 +1,39 @@
+.donation-state-container {
+  padding: 20px;
+  margin: 0 10%;
+}
+
+.donation-state-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  table-layout: fixed; /* 추가: 고정된 테이블 레이아웃 사용 */
+}
+
+.donation-state-table th,
+.donation-state-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+  word-wrap: break-word; /* 추가: 긴 텍스트 줄 바꿈 */
+}
+
+.donation-state-table th {
+  background-color: #f2f2f2;
+}
+
+/* 각 열의 너비 설정 */
+.donation-state-table th:nth-child(1),
+.donation-state-table td:nth-child(1) {
+  width: 10%;
+}
+
+.donation-state-table th:nth-child(2),
+.donation-state-table td:nth-child(2) {
+  width: 60%;
+}
+
+.donation-state-table th:nth-child(3),
+.donation-state-table td:nth-child(3) {
+  width: 30%;
+}
