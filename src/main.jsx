@@ -12,6 +12,7 @@ import ChocobeanSignup from './pages/ChocobeanSignup';
 import Signup from './pages/Signup';
 import My from './pages/My';
 import InsertDonation from './pages/InsertDonation';
+import DonationState from './pages/DonationState';
 
 const router = createBrowserRouter([
   {
@@ -53,6 +54,10 @@ const router = createBrowserRouter([
       {
         path: '/donationApply', 
         element: <InsertDonation />,
+      },
+      {
+        path: '/donationState', 
+        element: <DonationState />,
       },
     ],
   },

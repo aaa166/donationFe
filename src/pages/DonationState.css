@@ -13,7 +13,7 @@
 .donation-state-table th,
 .donation-state-table td {
   border: 1px solid #ddd;
-  padding: 8px;
+  padding: 6px;
   text-align: left;
   word-wrap: break-word; /* 추가: 긴 텍스트 줄 바꿈 */
 }
@@ -25,15 +25,42 @@
 /* 각 열의 너비 설정 */
 .donation-state-table th:nth-child(1),
 .donation-state-table td:nth-child(1) {
-  width: 10%;
+  width: 5%;
 }
 
 .donation-state-table th:nth-child(2),
 .donation-state-table td:nth-child(2) {
-  width: 60%;
+  width: 35%;
 }
 
 .donation-state-table th:nth-child(3),
 .donation-state-table td:nth-child(3) {
-  width: 30%;
+  width: 25%;
+}
+
+.donation-state-table th:nth-child(4),
+.donation-state-table td:nth-child(4) {
+  width: 20%;
+}
+
+.donation-state-table th:nth-child(5),
+.donation-state-table td:nth-child(5) {
+  width: 10%;
+}
+
+.donation-state-table th:nth-child(6),
+.donation-state-table td:nth-child(6) {
+  width: 15%;
+}
+
+.state-P {
+    color: orange; /* 주황색: 대기 */
+}
+
+.state-A {
+    color: green; /* 초록색: 게시 (활성) */
+}
+
+.state-D {
+    color: red; /* 빨간색: 비활성화 (종료) */
 }

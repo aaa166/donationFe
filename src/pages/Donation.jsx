@@ -58,7 +58,7 @@ const Donation = () => {
 
       {role === 0 && (
         <div id="managerDiv">
-          <Link to="/donationApply" className="donationStatus">
+          <Link to="/donationState" className="donationStatus">
             캠페인 관리
           </Link>
         </div>
