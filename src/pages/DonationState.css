@@ -64,3 +64,20 @@
 .state-D {
     color: red; /* 빨간색: 비활성화 (종료) */
 }
+
+.state-button {
+    padding: 4px 8px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    margin-right: 4px;
+}
+
+.state-button.activate {
+    background-color: #28a745;
+}
+
+.state-button.deactivate {
+    background-color: #dc3545;
+}

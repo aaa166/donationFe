@@ -98,7 +98,10 @@ const DonationState = () => {
                             <td>{donation.donationOrganization}</td>
                             <td>{donation.donationDeadlineDate}</td>
                             <td className={`state-${donation.donationState}`} >{STATE_OPTIONS[donation.donationState] || donation.donationState}</td>
-                            <td></td> 
+                            <td>
+                                {(donation.donationState === 'P' || donation.donationState === 'D') && <button className="state-button activate">활성화</button>}
+                                {donation.donationState === 'A' && <button className="state-button deactivate">비활성화</button>}
+                            </td> 
                         </tr>
                     ))}
                 </tbody>
