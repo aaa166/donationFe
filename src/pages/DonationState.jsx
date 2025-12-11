@@ -7,7 +7,8 @@ const DonationState = () => {
     const [error, setError] = useState(null);
 
     const API_URL = 'http://localhost:8081/api/admin/donationState';
-    
+    const UPDATE_API_URL = 'http://localhost:8081/api/admin/updateDonationState';
+
     const STATE_OPTIONS = {
         'P': '대기',
         'A': '공개',
@@ -64,6 +65,49 @@ const DonationState = () => {
         }
     };
 
+
+    const handleStateUpdate = async (donationNo) => {
+        const token = getJwtToken();
+        if (!token) {
+            alert("인증 토큰이 없습니다. 로그인 상태를 확인하세요.");
+            return;
+        }
+
+        if (!window.confirm(`${donationNo}번 캠페인의 상태를 변경하시겠습니까?`)) {
+            return;
+        }
+
+        try {
+            const updateUrl = `${UPDATE_API_URL}/${donationNo}`;
+
+            const response = await fetch(updateUrl, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json', 
+                },
+            });
+
+            if (response.status === 401) {
+                throw new Error("인증 실패: 다시 로그인해주세요.");
+            }
+            if (response.status === 403) {
+                throw new Error("권한 부족: 관리자 권한이 필요합니다.");
+            }
+            if (!response.ok) {
+                const errorBody = await response.text(); 
+                throw new Error(`상태 변경 실패: ${response.status} - ${errorBody || '서버 오류'}`);
+            }
+
+            alert(`${donationNo}번 캠페인 상태 변경 성공! 목록을 새로고침합니다.`);
+            await fetchDonationData();
+
+        } catch (err) {
+            console.error("상태 업데이트 실패:", err);
+            setError(err.message || "상태 업데이트 중 알 수 없는 오류가 발생했습니다.");
+        }
+    };
+
     useEffect(() => {
         fetchDonationData();
     }, []); 
@@ -99,9 +143,23 @@ const DonationState = () => {
                             <td>{donation.donationDeadlineDate}</td>
                             <td className={`state-${donation.donationState}`} >{STATE_OPTIONS[donation.donationState] || donation.donationState}</td>
                             <td>
-                                {(donation.donationState === 'P' || donation.donationState === 'D') && <button className="state-button activate">공개</button>}
-                                {donation.donationState === 'A' && <button className="state-button deactivate">비공개</button>}
-                            </td> 
+                                {(donation.donationState === 'P' || donation.donationState === 'D') && 
+                                    <button 
+                                        className="state-button activate"
+                                        onClick={() => handleStateUpdate(donation.donationNo)}
+                                    >
+                                        공개
+                                    </button>
+                                }
+                                {donation.donationState === 'A' && 
+                                    <button 
+                                        className="state-button deactivate"
+                                        onClick={() => handleStateUpdate(donation.donationNo)}
+                                    >
+                                        비공개
+                                    </button>
+                                }
+                            </td>
                         </tr>
                     ))}
                 </tbody>

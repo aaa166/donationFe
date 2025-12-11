@@ -27,6 +27,7 @@
 .donation-state-table th:nth-child(1),
 .donation-state-table td:nth-child(1) {
   width: 5%;
+  text-align: center;
 }
 
 .donation-state-table th:nth-child(2),
