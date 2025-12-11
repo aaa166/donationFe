@@ -10,8 +10,8 @@ const DonationState = () => {
     
     const STATE_OPTIONS = {
         'P': '대기',
-        'A': '게시',
-        'D': '비활성화',
+        'A': '공개',
+        'D': '비공개',
     };
 
     const getJwtToken = () => {
@@ -99,8 +99,8 @@ const DonationState = () => {
                             <td>{donation.donationDeadlineDate}</td>
                             <td className={`state-${donation.donationState}`} >{STATE_OPTIONS[donation.donationState] || donation.donationState}</td>
                             <td>
-                                {(donation.donationState === 'P' || donation.donationState === 'D') && <button className="state-button activate">활성화</button>}
-                                {donation.donationState === 'A' && <button className="state-button deactivate">비활성화</button>}
+                                {(donation.donationState === 'P' || donation.donationState === 'D') && <button className="state-button activate">공개</button>}
+                                {donation.donationState === 'A' && <button className="state-button deactivate">비공개</button>}
                             </td> 
                         </tr>
                     ))}
