@@ -17,7 +17,7 @@ const DonationState = () => {
         'D': '비공개',
     };
 
-    const ITEMS_PER_PAGE = 15;
+    const ITEMS_PER_PAGE = 10;
 
     const getJwtToken = () => {
         const token = localStorage.getItem('jwtToken'); 
