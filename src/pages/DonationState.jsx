@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import ReactPaginate from 'react-paginate';
 import './DonationState.css';
 
 const DonationState = () => {
     const [donations, setDonations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [currentPage, setCurrentPage] = useState(0);
 
     const API_URL = 'http://localhost:8081/api/admin/donationState';
     const UPDATE_API_URL = 'http://localhost:8081/api/admin/updateDonationState';
@@ -14,6 +16,8 @@ const DonationState = () => {
         'A': '공개',
         'D': '비공개',
     };
+
+    const ITEMS_PER_PAGE = 15;
 
     const getJwtToken = () => {
         const token = localStorage.getItem('jwtToken'); 
@@ -112,6 +116,15 @@ const DonationState = () => {
         fetchDonationData();
     }, []); 
 
+    const handlePageClick = (event) => {
+        setCurrentPage(event.selected);
+    };
+
+    const offset = currentPage * ITEMS_PER_PAGE;
+    const currentItems = donations.slice(offset, offset + ITEMS_PER_PAGE);
+    const pageCount = Math.ceil(donations.length / ITEMS_PER_PAGE);
+    const emptyRowsCount = ITEMS_PER_PAGE - currentItems.length;
+
     if (isLoading) {
         return <div className="donation-state-container">데이터를 불러오는 중...</div>;
     }
@@ -135,7 +148,7 @@ const DonationState = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {donations.map((donation) => (
+                    {currentItems.map((donation) => (
                         <tr key={donation.donationNo}>
                             <td>{donation.donationNo}</td>
                             <td>{donation.donationTitle}</td>
@@ -162,9 +175,30 @@ const DonationState = () => {
                             </td>
                         </tr>
                     ))}
+                    {emptyRowsCount > 0 && Array.from({ length: emptyRowsCount }).map((_, index) => (
+                        <tr key={`empty-${index}`} className="empty-row">
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
             {donations.length === 0 && <p>등록된 캠페인이 없습니다.</p>}
+            <ReactPaginate
+                previousLabel={'이전'}
+                nextLabel={'다음'}
+                breakLabel={'...'}
+                pageCount={pageCount}
+                marginPagesDisplayed={2}
+                pageRangeDisplayed={5}
+                onPageChange={handlePageClick}
+                containerClassName={'pagination'}
+                activeClassName={'active'}
+            />
         </div>
     );
 };

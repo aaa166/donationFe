@@ -1,6 +1,9 @@
 .donation-state-container {
   padding: 20px;
   margin: 0 10%;
+  display: flex;
+  flex-direction: column;
+  min-height: 80vh;
 }
 
 .donation-state-table {
@@ -8,6 +11,7 @@
   border-collapse: collapse;
   margin-top: 20px;
   table-layout: fixed; /* 추가: 고정된 테이블 레이아웃 사용 */
+  flex-grow: 1;
 }
 
 .donation-state-table th,
@@ -84,4 +88,43 @@
 
 .state-button.deactivate {
     background-color: #dc3545;
+}
+
+.empty-row td {
+    color: transparent;
+    border-color: transparent;
+    background-color: transparent;
+    pointer-events: none;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.pagination li {
+    margin: 0 5px;
+}
+
+.pagination li a {
+    cursor: pointer;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    color: #333;
+    text-decoration: none;
+}
+
+.pagination li.active a {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.pagination li.disabled a {
+    color: #ccc;
+    cursor: not-allowed;
 }
