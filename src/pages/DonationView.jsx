@@ -18,11 +18,50 @@ function DonationView() {
     const [amount, setAmount] = useState("");
     const [isCustomAmount, setIsCustomAmount] = useState(false);
     const [termsAgreed, setTermsAgreed] = useState(false);
+    const [comment, setComment] = useState(""); 
     const customAmountInputRef = useRef(null);
     
-    // const donationNo = (donationData.donationNo); 
-    // const donationNo = 1; 
     const { donationNo } = useParams();
+
+    const handleDonateSubmit = async () => {
+        if (!termsAgreed) return;
+
+        const token = localStorage.getItem("jwtToken");
+
+        if (!token) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
+
+        const payData = {
+            payAmount: Number(amount),
+            payComment: comment,
+            donation: {
+                donationNo: Number(donationNo),
+            },
+        };
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/pay`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`, 
+                },
+                body: JSON.stringify(payData),
+            });
+
+            if (!response.ok) throw new Error("후원 실패");
+
+            alert("후원이 완료되었습니다.");
+            handleCloseModal();
+            fetchData();
+
+        } catch (e) {
+            alert("후원 중 오류 발생");
+        }
+    };
+    
     
     // useCallback으로 함수 재생성을 방지합니다.
     const fetchData = useCallback(async () => {
@@ -67,7 +106,10 @@ function DonationView() {
         setAmount("");
         setIsCustomAmount(false);
         setTermsAgreed(false); // 모달 닫을 때 초기화
+        setComment(""); // 모달 닫을 때 응원글 초기화
     };
+
+    
 
     const formatWithCommas = (value) => {
         if (!value) return "";
@@ -149,6 +191,7 @@ function DonationView() {
                 <DonationSidebar
                     currentAmount={donationData.donationCurrentAmount}
                     organization={donationData.donationOrganization}
+                    onDonateClick={handleDonateClick}
                 />
             </div>
             {isModalOpen && (
@@ -194,6 +237,16 @@ function DonationView() {
                                 <span className="custom-amount-unit">원</span>
                             </div>
                         </div>
+                        <div className="comment-input-wrapper">
+                            <textarea
+                                placeholder="응원의 한마디를 남겨주세요 (선택)"
+                                className="comment-input"
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                                maxLength="100"
+                            />
+                            <div className="char-counter">{comment.length}/100</div>
+                        </div>
                         <div className="terms-text-wrapper">
                             <strong>제1조 (목적)</strong><br />
                             본 약관은 후원자가 OO 플랫폼을 통해 제공되는 기부 서비스를 이용함에 있어 후원자와 플랫폼 간의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.<br /><br />
@@ -218,7 +271,13 @@ function DonationView() {
                                 후원 약관에 동의합니다.
                             </label>
                         </div>
-                        <button className="donate-submit-button" disabled={!termsAgreed}>후원하기</button>
+                        <button
+                            className="donate-submit-button"
+                            disabled={!termsAgreed || !amount}
+                            onClick={handleDonateSubmit}
+                        >
+                            후원하기
+                        </button>
                     </div>
                 </div>
             )}

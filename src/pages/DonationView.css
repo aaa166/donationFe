@@ -285,6 +285,34 @@ body {
     cursor: not-allowed;
 }
 
+.comment-input-wrapper {
+    width: 100%;
+}
+
+.comment-input {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-family: inherit;
+    resize: none;
+    box-sizing: border-box;
+    min-height: 80px;
+}
+
+.comment-input:focus {
+    outline: none;
+    border-color: #00b343;
+}
+
+.char-counter {
+    text-align: right;
+    font-size: 0.9rem;
+    color: #888;
+    margin-top: 4px;
+}
+
 .terms-text-wrapper {
     background-color: #f9f9f9;
     border: 1px solid #eee;
