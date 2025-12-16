@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './DonationView.css';
 import ProgressBar from '../components/ProgressBar';
 import ContentTabs from '../components/ContentTabs';
@@ -14,7 +14,11 @@ function DonationView() {
     const [payComments, setPayComments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [amount, setAmount] = useState("");
+    const [isCustomAmount, setIsCustomAmount] = useState(false);
+    const [termsAgreed, setTermsAgreed] = useState(false);
+    const customAmountInputRef = useRef(null);
     
     // const donationNo = (donationData.donationNo); 
     // const donationNo = 1; 
@@ -53,6 +57,22 @@ function DonationView() {
     useEffect(() => {
         fetchData();
     }, [fetchData]); // fetchData 함수를 의존성 배열에 추가합니다.
+
+    const handleDonateClick = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setAmount("");
+        setIsCustomAmount(false);
+        setTermsAgreed(false); // 모달 닫을 때 초기화
+    };
+
+    const formatWithCommas = (value) => {
+        if (!value) return "";
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    };
 
     // --- 렌더링 로직 ---
     if (loading) return <div>로딩 중...</div>;
@@ -118,7 +138,7 @@ function DonationView() {
                         target={donationData.donationGoalAmount}
                     />
                     <div className="action-buttons">
-                        <button className="donate-button main">참여하기</button>
+                        <button className="donate-button main" onClick={handleDonateClick}>참여하기</button>
                         <button className="share-button">공유</button>
                     </div>
                     <ContentTabs activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -131,6 +151,77 @@ function DonationView() {
                     organization={donationData.donationOrganization}
                 />
             </div>
+            {isModalOpen && (
+                <div className="modal-overlay" onClick={handleCloseModal}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <button className="close-button" onClick={handleCloseModal}>&times;</button>
+                        <h2>후원하기</h2>
+                        <div className="donation-amount-options">
+                            <button 
+                                onClick={() => { setAmount("1000"); setIsCustomAmount(false); }}
+                                className={!isCustomAmount && amount === '1000' ? 'active' : ''}
+                            >1,000원</button>
+                            <button 
+                                onClick={() => { setAmount("5000"); setIsCustomAmount(false); }}
+                                className={!isCustomAmount && amount === '5000' ? 'active' : ''}
+                            >5,000원</button>
+                            <button 
+                                onClick={() => { setAmount("10000"); setIsCustomAmount(false); }}
+                                className={!isCustomAmount && amount === '10000' ? 'active' : ''}
+                            >10,000원</button>
+                            <button 
+                                onClick={() => { setAmount("50000"); setIsCustomAmount(false); }}
+                                className={!isCustomAmount && amount === '50000' ? 'active' : ''}
+                            >50,000원</button>
+                            <button 
+                                onClick={() => {
+                                    setIsCustomAmount(true);
+                                    setAmount("");
+                                    customAmountInputRef.current?.focus();
+                                }}
+                                className={isCustomAmount ? 'active' : ''}
+                            >직접입력</button>
+                            <div className="custom-amount-input-wrapper">
+                                <input
+                                    ref={customAmountInputRef}
+                                    type="text"
+                                    placeholder="금액 직접 입력"
+                                    className="custom-amount-input"
+                                    value={formatWithCommas(amount)}
+                                    readOnly={!isCustomAmount}
+                                    onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ''))}
+                                />
+                                <span className="custom-amount-unit">원</span>
+                            </div>
+                        </div>
+                        <div className="terms-text-wrapper">
+                            <strong>제1조 (목적)</strong><br />
+                            본 약관은 후원자가 OO 플랫폼을 통해 제공되는 기부 서비스를 이용함에 있어 후원자와 플랫폼 간의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.<br /><br />
+                            <strong>제2조 (정의)</strong><br />
+                            1. "후원금"이란 후원자가 기부의 목적으로 플랫폼을 통해 결제한 금액을 의미합니다.<br />
+                            2. "모금단체"란 플랫폼을 통해 후원금을 모집하는 단체를 의미합니다.<br /><br />
+                            <strong>제3조 (후원금의 전달)</strong><br />
+                            플랫폼은 수수료를 제외한 후원금을 모금단체에 전달할 책임이 있습니다. 후원금 전달 내역은 플랫폼 웹사이트를 통해 투명하게 공개됩니다.<br /><br />
+                            <strong>제4조 (환불 규정)</strong><br />
+                            후원금은 기부의 특성상 결제가 완료된 이후에는 원칙적으로 환불이 불가능합니다. 단, 모금단체의 명백한 귀책사유가 있는 경우 등 예외적인 경우에 한해 내부 심사를 거쳐 환불이 가능할 수 있습니다.<br /><br />
+                            <strong>제5조 (개인정보 수집 및 이용)</strong><br />
+                            플랫폼은 후원자의 개인정보를 관련 법령에 따라 안전하게 보호하며, 기부금 영수증 발급 등의 목적을 위해서만 최소한의 정보를 수집 및 이용합니다.
+                        </div>
+                        <div className="terms-agreement">
+                            <input
+                                type="checkbox"
+                                id="terms-checkbox"
+                                checked={termsAgreed}
+                                onChange={(e) => setTermsAgreed(e.target.checked)}
+                            />
+                            <label htmlFor="terms-checkbox">
+                                후원 약관에 동의합니다.
+                            </label>
+                        </div>
+                        <button className="donate-submit-button" disabled={!termsAgreed}>후원하기</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -172,3 +172,158 @@ body {
     color: #000;
     margin-right: 8px;
 }
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Vertically center */
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  width: 90%;
+  max-width: 500px; /* Set a max-width for the modal */
+  padding: 20px;
+  border-radius: 10px; /* Rounded corners for the modal */
+  animation: fade-in 0.3s ease-out;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  position: relative;
+}
+
+.close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.modal-content h2 {
+    text-align: center;
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.donation-amount-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.donation-amount-options button {
+    padding: 15px;
+    border: 1px solid #eee;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.custom-amount-input-wrapper {
+    display: flex;
+    align-items: center;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.custom-amount-input-wrapper:focus-within {
+    border-color: #00b343;
+}
+
+.custom-amount-input {
+    flex-grow: 1;
+    padding: 15px;
+    border: none;
+    font-size: 1rem;
+    outline: none;
+    background-color: transparent;
+    width: 100%;
+}
+
+.custom-amount-unit {
+    padding-right: 15px;
+    font-size: 1rem;
+    color: #333;
+}
+
+.donation-amount-options button:focus,
+.donation-amount-options button.active {
+    border-color: #00b343;
+    color: #00b343;
+    font-weight: bold;
+}
+
+.donate-submit-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #00b343;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.donate-submit-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.terms-text-wrapper {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    padding: 15px;
+    height: 100px;
+    overflow-y: scroll;
+    font-size: 0.8rem;
+    color: #333;
+    line-height: 1.5;
+}
+
+.terms-agreement {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: #555;
+    margin-top: 10px; /* Add some space above */
+}
+
+.terms-agreement input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.terms-agreement label {
+    cursor: pointer;
+}
+
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
