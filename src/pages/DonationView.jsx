@@ -36,13 +36,11 @@ function DonationView() {
         const payData = {
             payAmount: Number(amount),
             payComment: comment,
-            donation: {
-                donationNo: Number(donationNo),
-            },
+            donationNo: Number(donationNo), 
         };
 
         try {
-            const response = await fetch(`${API_BASE_URL}/pay`, {
+            const response = await fetch(`${API_BASE_URL}/donate`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
