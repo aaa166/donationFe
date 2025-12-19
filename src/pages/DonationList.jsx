@@ -58,9 +58,9 @@ const DonationList = () => {
   };
 
   const filteredDonations = donations
-    // .filter(donation =>
-    //   donation.title.toLowerCase().includes(searchTerm.toLowerCase())
-    // )
+    .filter(donation =>
+      donation.title.toLowerCase().includes(searchTerm.toLowerCase())
+    )
     ;
 
   return (
