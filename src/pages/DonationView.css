@@ -355,3 +355,48 @@ body {
     transform: scale(1);
   }
 }
+
+.modal-navigation-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.back-button {
+    padding: 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-navigation-buttons .back-button {
+    background-color: #6c757d;
+    color: white;
+    flex-basis: 30%;
+}
+
+.modal-navigation-buttons .donate-submit-button {
+    flex-grow: 1;
+}
+
+.donation-confirmation {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+
+.donation-confirmation h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.donation-confirmation p {
+    margin: 5px 0;
+    font-size: 1rem;
+}
