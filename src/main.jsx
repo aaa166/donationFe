@@ -13,6 +13,7 @@ import Signup from './pages/Signup';
 import My from './pages/My';
 import InsertDonation from './pages/InsertDonation';
 import DonationState from './pages/DonationState';
+import UserState from './pages/UserState';
 
 const router = createBrowserRouter([
   {
@@ -58,6 +59,10 @@ const router = createBrowserRouter([
       {
         path: '/donationState', 
         element: <DonationState />,
+      },
+      {
+        path: '/userState', 
+        element: <UserState />,
       },
     ],
   },
