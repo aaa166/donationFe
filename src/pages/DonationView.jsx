@@ -20,6 +20,7 @@ function DonationView() {
     const [termsAgreed, setTermsAgreed] = useState(false);
     const [comment, setComment] = useState(""); 
     const [step, setStep] = useState(1); // 모달 단계를 위한 상태
+    const [isProcessing, setIsProcessing] = useState(false); // 결제 진행 상태
     const customAmountInputRef = useRef(null);
     
     const { donationNo } = useParams();
@@ -27,10 +28,13 @@ function DonationView() {
     const handleDonateSubmit = async () => {
         if (!termsAgreed) return;
 
+        setIsProcessing(true); // 결제 시작
+
         const token = localStorage.getItem("jwtToken");
 
         if (!token) {
             alert("로그인이 필요합니다.");
+            setIsProcessing(false);
             return;
         }
 
@@ -41,6 +45,9 @@ function DonationView() {
         };
 
         try {
+            // Simulate network delay
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
             const response = await fetch(`${API_BASE_URL}/donate`, {
                 method: "POST",
                 headers: {
@@ -58,6 +65,8 @@ function DonationView() {
 
         } catch (e) {
             alert("후원 중 오류 발생");
+        } finally {
+            setIsProcessing(false); // 결제 종료
         }
     };
     
@@ -287,26 +296,36 @@ function DonationView() {
 
                         {step === 2 && (
                             <>
-                                <div className="donation-confirmation">
-                                    <h3>후원 내역 확인</h3>
-                                    <p><strong>후원 금액:</strong> {formatWithCommas(amount)}원</p>
-                                    {comment && <p><strong>응원 메시지:</strong> {comment}</p>}
-                                    <p>후원 약관에 동의하셨습니다.</p>
-                                </div>
-                                <div className="modal-navigation-buttons">
-                                    <button
-                                        className="back-button"
-                                        onClick={() => setStep(1)}
-                                    >
-                                        뒤로
-                                    </button>
-                                    <button
-                                        className="donate-submit-button"
-                                        onClick={handleDonateSubmit}
-                                    >
-                                        {formatWithCommas(amount)}원 후원하기
-                                    </button>
-                                </div>
+                                {isProcessing ? (
+                                    <div className="payment-processing">
+                                        <div className="spinner"></div>
+                                        <h3>결제 진행 중...</h3>
+                                        <p>잠시만 기다려주세요.</p>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className="donation-confirmation">
+                                            <h3>후원 내역 확인</h3>
+                                            <p><strong>후원 금액:</strong> {formatWithCommas(amount)}원</p>
+                                            {comment && <p><strong>응원 메시지:</strong> {comment}</p>}
+                                            <p>후원 약관에 동의하셨습니다.</p>
+                                        </div>
+                                        <div className="modal-navigation-buttons">
+                                            <button
+                                                className="back-button"
+                                                onClick={() => setStep(1)}
+                                            >
+                                                뒤로
+                                            </button>
+                                            <button
+                                                className="donate-submit-button"
+                                                onClick={handleDonateSubmit}
+                                            >
+                                                {formatWithCommas(amount)}원 후원하기
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
                             </>
                         )}
                     </div>
