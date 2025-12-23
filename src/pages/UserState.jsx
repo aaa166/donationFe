@@ -9,6 +9,7 @@ const UserState = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const API_URL = 'http://localhost:8081/api/auth/admin/userState';
     const UPDATE_API_URL = 'http://localhost:8081/api/admin/users'; // Assumed endpoint
@@ -129,9 +130,18 @@ const UserState = () => {
         setSelectedUser(null);
     };
 
+    const filteredUsers = userStates.filter(user => {
+        const searchLower = searchTerm.toLowerCase();
+        return (
+            (user.userId && user.userId.toLowerCase().includes(searchLower)) ||
+            (user.userName && user.userName.toLowerCase().includes(searchLower)) ||
+            (user.userEmail && user.userEmail.toLowerCase().includes(searchLower))
+        );
+    });
+
     const offset = currentPage * ITEMS_PER_PAGE;
-    const currentItems = userStates.slice(offset, offset + ITEMS_PER_PAGE);
-    const pageCount = Math.ceil(userStates.length / ITEMS_PER_PAGE);
+    const currentItems = filteredUsers.slice(offset, offset + ITEMS_PER_PAGE);
+    const pageCount = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
     const emptyRowsCount = ITEMS_PER_PAGE - currentItems.length;
 
     if (isLoading) {
@@ -145,6 +155,17 @@ const UserState = () => {
     return (
         <div className="user-state-container">
             <h1>사용자 관리</h1>
+            <div className="search-container">
+                <input
+                    type="text"
+                    placeholder="ID, 이름, 이메일로 검색"
+                    value={searchTerm}
+                    onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        setCurrentPage(0); // Reset to first page on new search
+                    }}
+                />
+            </div>
             <table className="user-state-table">
                 <thead>
                     <tr>
@@ -175,7 +196,7 @@ const UserState = () => {
                             </td>
                         </tr>
                     ))}
-                    {emptyRowsCount > 0 && Array.from({ length: emptyRowsCount }).map((_, index) => (
+                    {emptyRowsCount > 0 && currentItems.length > 0 && Array.from({ length: emptyRowsCount }).map((_, index) => (
                         <tr key={`empty-${index}`} className="empty-row">
                             <td>&nbsp;</td>
                             <td>&nbsp;</td>
@@ -190,6 +211,7 @@ const UserState = () => {
                     ))}
                 </tbody>
             </table>
+            {userStates.length > 0 && filteredUsers.length === 0 && <p>검색 결과가 없습니다.</p>}
             {userStates.length === 0 && <p>등록된 사용자가 없습니다.</p>}
             <ReactPaginate
                 previousLabel={'이전'}
@@ -208,10 +230,21 @@ const UserState = () => {
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <button className="close-button" onClick={handleCloseModal}>&times;</button>
                         <h2>'{selectedUser.userId}' 경고 내역</h2>
-                        <p>현재 상태: <span className={`state-${selectedUser.userState}`}>{STATE_MAP[selectedUser.userState]}</span></p>
+                        <div className="warning-history">
+                                        {selectedUser.userWarningHistory && selectedUser.userWarningHistory.length > 0 ? (
+                                            <ul>
+                                                {selectedUser.userWarningHistory.map((warning, index) => (
+                                                    <li key={index}>{warning}</li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <p>경고 내역이 없습니다.</p>
+                                        )}
+                                    </div>
                         <div className="modal-state-buttons">
                             {selectedUser.userState === 'A' && (
                                 <>
+                                    
                                     <button  className="state-button suspend">추가</button>
                                     <button  className="state-button delete">비활</button>
                                 </>

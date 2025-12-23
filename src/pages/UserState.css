@@ -206,10 +206,37 @@ tr.empty-row:hover,
     display: flex;
     justify-content: center;
     gap: 10px;
+    margin-top: 15px;
 }
 
 .modal-state-buttons .state-button {
     max-width: 80px;
     font-size: 1em;
     padding: 8px 12px;
+}
+
+.search-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}
+
+.search-container input {
+    padding: 8px 12px;
+    width: 300px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.reason-input-container {
+    margin-bottom: 15px;
+}
+
+.reason-input-container input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
 }
