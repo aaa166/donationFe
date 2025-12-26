@@ -12,131 +12,49 @@ const UserState = () => {
     const [searchTerm, setSearchTerm] = useState('');
 
     const API_URL = 'http://localhost:8081/api/auth/admin/userState';
-    const UPDATE_API_URL = 'http://localhost:8081/api/admin/users'; // Assumed endpoint
+    const CHANGE_STATE_URL = 'http://localhost:8081/api/auth/admin/changeUserState';
     const ITEMS_PER_PAGE = 10;
 
-    const ROLE_MAP = {
-        0: '관리자',
-        1: '일반',
-        2: '기업',
-    };
+    const ROLE_MAP = { 0: '관리자', 1: '일반', 2: '기업' };
+    const STATE_MAP = { 'A': '활성화', 'I': '비활성화' };
 
-    const STATE_MAP = {
-        'A': '활성화',
-        'I': '비활성화',
-    };
+    const getJwtToken = () => localStorage.getItem('jwtToken');
 
-    const getJwtToken = () => {
-        const token = localStorage.getItem('jwtToken'); 
-        if (!token) {
-            console.error("JWT 토큰을 찾을 수 없습니다. 로그인 상태를 확인하세요.");
-            return null;
-        }
-        return token;
-    };
-
+    // 1️⃣ 사용자 데이터 가져오기
     const fetchUserData = async () => {
         setIsLoading(true);
         setError(null);
-
         const token = getJwtToken();
-        if (!token) {
-            setIsLoading(false);
-            setError("UNAUTHORIZED: JWT 토큰이 없어 인증할 수 없습니다. 로그인 상태를 확인하세요.");
-            return;
-        }
-        
+        if (!token) { setError('JWT 토큰 없음'); setIsLoading(false); return; }
+
         try {
-            const response = await fetch(API_URL, {
+            const res = await fetch(API_URL, {
                 method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` 
-                },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
             });
-
-            if (response.status === 401) {
-                throw new Error("UNAUTHORIZED: 인증이 필요합니다. 관리자 로그인 상태를 확인하세요.");
-            }
-            if (response.status === 403) {
-                throw new Error("NO_PERMISSION: 관리자 권한이 필요합니다.");
-            }
-            if (!response.ok) {
-                throw new Error(`HTTP Error: ${response.status}`);
-            }
-
-            const data = await response.json();
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
             setUserStates(data);
-
         } catch (err) {
-            console.error("데이터 가져오기 실패:", err);
-            setError(err.message || "사용자 데이터를 가져오는 데 실패했습니다.");
-        } finally {
-            setIsLoading(false);
-        }
+            setError(err.message || '사용자 데이터 불러오기 실패');
+        } finally { setIsLoading(false); }
     };
 
-    const handleStateUpdate = async (userId, newState) => {
-        const token = getJwtToken();
-        if (!token) {
-            alert("인증 토큰이 없습니다. 로그인 상태를 확인하세요.");
-            return;
-        }
+    useEffect(() => { fetchUserData(); }, []);
 
-        if (!window.confirm(`사용자 '${userId}'의 상태를 '${STATE_MAP[newState]}'로 변경하시겠습니까?`)) {
-            return;
-        }
+    // 2️⃣ 페이지 변경
+    const handlePageClick = (event) => setCurrentPage(event.selected);
 
-        try {
-            const response = await fetch(`${UPDATE_API_URL}/${userId}/state`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json', 
-                },
-                body: JSON.stringify({ state: newState })
-            });
+    // 3️⃣ 모달 열기/닫기
+    const handleOpenModal = (user) => { setSelectedUser(user); setIsModalOpen(true); };
+    const handleCloseModal = () => { setSelectedUser(null); setIsModalOpen(false); };
 
-            if (!response.ok) {
-                const errorBody = await response.text(); 
-                throw new Error(`상태 변경 실패: ${response.status} - ${errorBody || '서버 오류'}`);
-            }
-
-            alert(`'${userId}' 사용자의 상태가 성공적으로 변경되었습니다.`);
-            await fetchUserData();
-            handleCloseModal();
-
-        } catch (err) {
-            console.error("상태 업데이트 실패:", err);
-            setError(err.message || "상태 업데이트 중 알 수 없는 오류가 발생했습니다.");
-        }
-    };
-
-    useEffect(() => {
-        fetchUserData();
-    }, []); 
-
-    const handlePageClick = (event) => {
-        setCurrentPage(event.selected);
-    };
-
-    const handleOpenModal = (user) => {
-        setSelectedUser(user);
-        setIsModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setSelectedUser(null);
-    };
-
-    const filteredUsers = userStates.filter(user => {
-        const searchLower = searchTerm.toLowerCase();
-        return (
-            (user.userId && user.userId.toLowerCase().includes(searchLower)) ||
-            (user.userName && user.userName.toLowerCase().includes(searchLower)) ||
-            (user.userEmail && user.userEmail.toLowerCase().includes(searchLower))
-        );
+    // 4️⃣ 검색 필터
+    const filteredUsers = userStates.filter(u => {
+        const term = searchTerm.toLowerCase();
+        return u.userId?.toLowerCase().includes(term) ||
+               u.userName?.toLowerCase().includes(term) ||
+               u.userEmail?.toLowerCase().includes(term);
     });
 
     const offset = currentPage * ITEMS_PER_PAGE;
@@ -144,44 +62,57 @@ const UserState = () => {
     const pageCount = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
     const emptyRowsCount = ITEMS_PER_PAGE - currentItems.length;
 
-    if (isLoading) {
-        return <div className="user-state-container">데이터를 불러오는 중...</div>;
-    }
+    // 5️⃣ 상태 변경 함수
+    const handleStateUpdate = async (newState) => {
+        if (!selectedUser) return;
+        const token = getJwtToken();
+        if (!token) { alert('JWT 없음'); return; }
 
-    if (error) {
-        return <div className="user-state-container" style={{ color: 'red', fontWeight: 'bold' }}>오류: {error}</div>;
-    }
+
+        try {
+            const res = await fetch(CHANGE_STATE_URL, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userNo: selectedUser.userNo,
+                    userRole: selectedUser.userRole,
+                    userState: newState
+                })
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            fetchUserData();
+            handleCloseModal();
+        } catch (err) {
+            console.error(err);
+            alert('상태 변경 실패');
+        }
+    };
+
+    if (isLoading) return <div className="user-state-container">데이터 로딩 중...</div>;
+    if (error) return <div className="user-state-container" style={{ color: 'red' }}>오류: {error}</div>;
 
     return (
         <div className="user-state-container">
             <h1>사용자 관리</h1>
+
             <div className="search-container">
                 <input
                     type="text"
-                    placeholder="ID, 이름, 이메일로 검색"
+                    placeholder="ID, 이름, 이메일 검색"
                     value={searchTerm}
-                    onChange={(e) => {
-                        setSearchTerm(e.target.value);
-                        setCurrentPage(0); // Reset to first page on new search
-                    }}
+                    onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(0); }}
                 />
             </div>
+
             <table className="user-state-table">
                 <thead>
                     <tr>
-                        <th>No</th>
-                        <th>ID</th>
-                        <th>이름</th>
-                        <th>E-mail</th>
-                        <th>전화번호</th>
-                        <th>Role</th>
-                        <th>기부 금액</th>
-                        <th>상태</th>
-                        <th>제제 내역</th>
+                        <th>No</th><th>ID</th><th>이름</th><th>E-mail</th><th>전화번호</th>
+                        <th>Role</th><th>기부 금액</th><th>상태</th><th>제제 내역</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {currentItems.map((user) => (
+                    {currentItems.map(user => (
                         <tr key={user.userNo}>
                             <td>{user.userNo}</td>
                             <td>{user.userId}</td>
@@ -190,67 +121,41 @@ const UserState = () => {
                             <td>{user.userPhone}</td>
                             <td>{ROLE_MAP[user.userRole] || 'Unknown'}</td>
                             <td>{user.totalAmount.toLocaleString()}원</td>
-                            <td className={`state-${user.userState}`}>{STATE_MAP[user.userState] || 'Unknown'}</td>
+                            <td className={`state-${user.userState}`}>{STATE_MAP[user.userState]}</td>
                             <td>
-                                <button onClick={() => handleOpenModal(user)} className="state-button change">보기</button>
+                                <button className="state-button change" onClick={() => handleOpenModal(user)}>보기</button>
                             </td>
                         </tr>
                     ))}
-                    {emptyRowsCount > 0 && currentItems.length > 0 && Array.from({ length: emptyRowsCount }).map((_, index) => (
-                        <tr key={`empty-${index}`} className="empty-row">
-                            <td>&nbsp;</td>
-                            <td>&nbsp;</td>
-                            <td>&nbsp;</td>
-                            <td>&nbsp;</td>
-                            <td>&nbsp;</td>
-                            <td>&nbsp;</td>
-                            <td>&nbsp;</td>
-                            <td>&nbsp;</td>
-                            <td>&nbsp;</td>
-                        </tr>
+                    {emptyRowsCount > 0 && currentItems.length > 0 && Array.from({ length: emptyRowsCount }).map((_, i) => (
+                        <tr key={`empty-${i}`} className="empty-row"><td colSpan="9">&nbsp;</td></tr>
                     ))}
                 </tbody>
             </table>
-            {userStates.length > 0 && filteredUsers.length === 0 && <p>검색 결과가 없습니다.</p>}
-            {userStates.length === 0 && <p>등록된 사용자가 없습니다.</p>}
+
             <ReactPaginate
-                previousLabel={'이전'}
-                nextLabel={'다음'}
-                breakLabel={'...'}
-                pageCount={pageCount}
-                marginPagesDisplayed={2}
-                pageRangeDisplayed={5}
-                onPageChange={handlePageClick}
-                containerClassName={'pagination'}
-                activeClassName={'active'}
+                previousLabel={'이전'} nextLabel={'다음'} breakLabel={'...'}
+                pageCount={pageCount} marginPagesDisplayed={2} pageRangeDisplayed={5}
+                onPageChange={handlePageClick} containerClassName={'pagination'} activeClassName={'active'}
             />
 
+            {/* 모달 */}
             {isModalOpen && selectedUser && (
                 <div className="modal-overlay" onClick={handleCloseModal}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
                         <button className="close-button" onClick={handleCloseModal}>&times;</button>
                         <h2>'{selectedUser.userId}' 경고 내역</h2>
                         <div className="warning-history">
-                                        {selectedUser.userWarningHistory && selectedUser.userWarningHistory.length > 0 ? (
-                                            <ul>
-                                                {selectedUser.userWarningHistory.map((warning, index) => (
-                                                    <li key={index}>{warning}</li>
-                                                ))}
-                                            </ul>
-                                        ) : (
-                                            <p>경고 내역이 없습니다.</p>
-                                        )}
-                                    </div>
+                            {selectedUser.userWarningHistory?.length > 0 ? (
+                                <ul>{selectedUser.userWarningHistory.map((w,i) => <li key={i}>{w}</li>)}</ul>
+                            ) : <p>경고 내역 없음</p>}
+                        </div>
                         <div className="modal-state-buttons">
                             {selectedUser.userState === 'A' && (
-                                <>
-                                    
-                                    <button  className="state-button suspend">추가</button>
-                                    <button  className="state-button delete">비활</button>
-                                </>
+                                <button onClick={() => handleStateUpdate('A')} className="state-button delete">비활</button>
                             )}
                             {selectedUser.userState === 'I' && (
-                                    <button onClick={() => handleStateUpdate(selectedUser.userId, 'A')} className="state-button activate">활성</button>
+                                <button onClick={() => handleStateUpdate('I')} className="state-button activate">활성</button>
                             )}
                         </div>
                     </div>

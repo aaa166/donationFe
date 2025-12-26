@@ -77,6 +77,11 @@
     font-weight: bold;
 }
 
+.state-I {
+    color: red;
+    font-weight: bold;
+}
+
 .state-buttons {
     display: flex;
     gap: 5px;
