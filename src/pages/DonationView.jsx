@@ -153,6 +153,7 @@ function DonationView() {
                                 <p><strong>후원금액:</strong> {comment.payAmount?.toLocaleString()}원</p>
                                 <p><strong>응원글:</strong> {comment.payComment}</p>
                                 <p><strong>작성일:</strong> {new Date(comment.payDate).toLocaleDateString()}</p>
+                                <button className="report-button">신고</button>
                             </div>
                         ))}
                     </div>
