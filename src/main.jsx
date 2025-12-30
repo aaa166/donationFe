@@ -14,6 +14,7 @@ import My from './pages/My';
 import InsertDonation from './pages/InsertDonation';
 import DonationState from './pages/DonationState';
 import UserState from './pages/UserState';
+import Report from './pages/Report';
 
 const router = createBrowserRouter([
   {
@@ -63,6 +64,10 @@ const router = createBrowserRouter([
       {
         path: '/userState', 
         element: <UserState />,
+      },
+      {
+        path: '/report',
+        element: <Report />,
       },
     ],
   },

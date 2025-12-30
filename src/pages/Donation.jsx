@@ -66,7 +66,7 @@ const Donation = () => {
             유저 관리
           </Link>
           &nbsp;&nbsp;&nbsp;&nbsp;
-          <Link to="/" className="donationStatus">
+          <Link to="/report" className="report">
             신고 관리
           </Link>
           &nbsp;&nbsp;&nbsp;&nbsp;

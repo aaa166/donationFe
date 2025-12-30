@@ -1,0 +1,161 @@
+.user-state-container {
+  padding: 20px;
+  margin: 0 10%;
+  display: flex;
+  flex-direction: column;
+  min-height: 80vh;
+}
+
+.user-state-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  table-layout: fixed;
+  flex-grow: 1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.user-state-table th,
+.user-state-table td {
+  padding: 12px 15px;
+  text-align: left;
+  word-wrap: break-word;
+  border-bottom: 1px solid #ddd;
+}
+
+.user-state-table th {
+  background-color: #4CAF50; /* Matching DonationState color */
+  color: white;
+  font-weight: 600;
+  text-align: center;
+}
+
+.user-state-table tbody tr:nth-of-type(even) {
+  background-color: #f9f9f9;
+}
+
+.user-state-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.user-state-table pre {
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin: 0;
+    font-family: inherit;
+    font-size: 0.9em;
+}
+
+/* Column widths for 6 columns */
+.user-state-table th:nth-child(1) { width: 10%; }
+.user-state-table th:nth-child(2) { width: 15%; }
+.user-state-table th:nth-child(3) { width: 15%; }
+.user-state-table th:nth-child(4) { width: 35%; }
+.user-state-table th:nth-child(5) { width: 15%; }
+.user-state-table th:nth-child(6) { width: 10%; }
+
+
+.user-state-table td, .user-state-table th {
+    text-align: center;
+}
+
+/* State-based coloring */
+.state-A {
+    color: green;
+    font-weight: bold;
+}
+.state-S {
+    color: orange;
+    font-weight: bold;
+}
+.state-D {
+    color: red;
+    font-weight: bold;
+}
+
+.state-I {
+    color: red;
+    font-weight: bold;
+}
+
+.state-buttons {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+}
+
+.state-button {
+    width: 100%;
+    max-width: 50px;
+    margin: auto;
+    padding: 4px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    text-align: center;
+    font-size: 0.8em;
+}
+
+.state-button.activate {
+    background-color: #28a745; /* Green */
+}
+.state-button.suspend {
+    background-color: #ffc107; /* Amber */
+}
+.state-button.delete {
+    background-color: #dc3545; /* Red */
+}
+
+.state-button.change {
+    background-color: #007bff;
+    max-width: 60px;
+    font-size: 0.9em;
+}
+
+
+.empty-row,
+tr.empty-row:hover,
+.user-state-table tbody tr:nth-of-type(even).empty-row {
+    background-color: transparent !important;
+}
+
+.empty-row td {
+    border-color: transparent;
+    pointer-events: none;
+    color: transparent;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.pagination li {
+    margin: 0 5px;
+}
+
+.pagination li a {
+    cursor: pointer;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    color: #333;
+    text-decoration: none;
+}
+
+.pagination li.active a {
+    background-color: #4CAF50;
+    color: white;
+    border-color: #4CAF50;
+}
+
+.pagination li.disabled a {
+    color: #ccc;
+    cursor: not-allowed;
+}

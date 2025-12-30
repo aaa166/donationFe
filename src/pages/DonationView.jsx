@@ -31,7 +31,7 @@ function DonationView() {
         setIsProcessing(true); // 결제 시작
 
         const token = localStorage.getItem("jwtToken");
-
+        console.log(token);
         if (!token) {
             alert("로그인이 필요합니다.");
             setIsProcessing(false);
@@ -69,6 +69,49 @@ function DonationView() {
             setIsProcessing(false); // 결제 종료
         }
     };
+
+    const handleReport = async (reportedId, reportDetails, payNo) => {
+        const token = localStorage.getItem("jwtToken");
+
+        if (!token) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
+
+        const reportData = {
+            reportedId,
+            reportDetails,
+            payNo,
+        };
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/insertReport`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`, 
+            },
+            body: JSON.stringify(reportData),
+            });
+
+            if (response.status === 401) {
+                alert("로그인이 만료되었거나 권한이 없습니다. 다시 로그인해주세요.");
+                return;
+            }
+
+            if (!response.ok) {
+                const errText = await response.text();
+                throw new Error(errText || "신고 실패");
+            }
+
+            alert("신고가 접수되었습니다.");
+        } catch (e) {
+            console.error("신고 오류:", e);
+            alert("신고 중 오류가 발생했습니다.");
+        }
+    };
+
+
     
     
     // useCallback으로 함수 재생성을 방지합니다.
@@ -89,9 +132,18 @@ function DonationView() {
 
             const donationJson = await donationResponse.json();
             const commentsJson = await commentsResponse.json();
+            console.log("원본 댓글 데이터:", commentsJson);
+
+            // 각 댓글에 payNo 추가
+            const commentsWithPayNo = commentsJson.map(comment => ({
+                ...comment,                // 기존 데이터 유지
+                payNo: comment.payNo // payNo 추가 (백엔드에서 실제 payNo가 있으면 그걸 사용)
+            }));
+
+            
 
             setDonationData(donationJson);
-            setPayComments(commentsJson);
+            setPayComments(commentsWithPayNo);
 
         } catch (err) {
             setError(err.message);
@@ -146,16 +198,20 @@ function DonationView() {
             case 'reviews':
                 return (
                     <div>
-                        {payComments?.map((comment) => (
-                            // map 사용 시 index보다 고유한 id를 key로 사용하는 것이 좋습니다.
-                            <div key={comment.payCommentId || comment.id} className="review-item">
+                        {payComments?.map((comment, index) => (
+                            <div key={comment.payCommentId || comment.id || index} className="review-item">
                                 <p><strong>작성자:</strong> {comment.userName}</p>
                                 <p><strong>후원금액:</strong> {comment.payAmount?.toLocaleString()}원</p>
                                 <p><strong>응원글:</strong> {comment.payComment}</p>
                                 <p><strong>작성일:</strong> {new Date(comment.payDate).toLocaleDateString()}</p>
-                                <button className="report-button">신고</button>
+                                <button className="report-button" onClick={() =>{
+                                        console.log("보내는 payNo:", comment.payNo);
+                                        handleReport(comment.userNo, comment.payComment, comment.payNo )}}>
+                                    신고
+                                </button>
                             </div>
                         ))}
+
                     </div>
                 );
             case 'info':
