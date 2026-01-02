@@ -108,7 +108,7 @@ const UserState = () => {
                 <thead>
                     <tr>
                         <th>No</th><th>ID</th><th>이름</th><th>E-mail</th><th>전화번호</th>
-                        <th>Role</th><th>기부 금액</th><th>상태</th><th>제제 내역</th>
+                        <th>Role</th><th>기부 금액</th><th>상태</th><th>제재 내역</th>
                     </tr>
                 </thead>
                 <tbody>

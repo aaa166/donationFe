@@ -4,6 +4,8 @@ import './Report.css';
 
 const Report = () => {
   const [currentPage, setCurrentPage] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchType, setSearchType] = useState('reporter');
   const ITEMS_PER_PAGE = 10;
 
   // Dummy data for the report table
@@ -25,14 +27,34 @@ const Report = () => {
     setCurrentPage(event.selected);
   };
 
+  const filteredReports = reports.filter(report => {
+    const term = searchTerm.toLowerCase();
+    if (!term) return true;
+
+    const valueToSearch = report[searchType] ? report[searchType].toLowerCase() : '';
+    return valueToSearch.includes(term);
+  });
+
   const offset = currentPage * ITEMS_PER_PAGE;
-  const currentItems = reports.slice(offset, offset + ITEMS_PER_PAGE);
-  const pageCount = Math.ceil(reports.length / ITEMS_PER_PAGE);
+  const currentItems = filteredReports.slice(offset, offset + ITEMS_PER_PAGE);
+  const pageCount = Math.ceil(filteredReports.length / ITEMS_PER_PAGE);
   const emptyRowsCount = ITEMS_PER_PAGE - currentItems.length;
 
   return (
     <div className="user-state-container">
       <h1>신고 관리</h1>
+      <div className="search-container">
+        <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
+          <option value="reporter">신고자</option>
+          <option value="reportedUser">신고된 사용자</option>
+        </select>
+        <input
+          type="text"
+          placeholder="검색..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
       <table className="user-state-table">
         <thead>
           <tr>

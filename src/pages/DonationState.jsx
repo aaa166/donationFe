@@ -7,6 +7,8 @@ const DonationState = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchType, setSearchType] = useState('donationTitle');
 
     const API_URL = 'http://localhost:8081/api/admin/donationState';
     const UPDATE_API_URL = 'http://localhost:8081/api/admin/updateDonationState';
@@ -120,9 +122,17 @@ const DonationState = () => {
         setCurrentPage(event.selected);
     };
 
+    const filteredDonations = donations.filter(donation => {
+        const term = searchTerm.toLowerCase();
+        if (!term) return true;
+
+        const valueToSearch = donation[searchType] ? donation[searchType].toLowerCase() : '';
+        return valueToSearch.includes(term);
+    });
+
     const offset = currentPage * ITEMS_PER_PAGE;
-    const currentItems = donations.slice(offset, offset + ITEMS_PER_PAGE);
-    const pageCount = Math.ceil(donations.length / ITEMS_PER_PAGE);
+    const currentItems = filteredDonations.slice(offset, offset + ITEMS_PER_PAGE);
+    const pageCount = Math.ceil(filteredDonations.length / ITEMS_PER_PAGE);
     const emptyRowsCount = ITEMS_PER_PAGE - currentItems.length;
 
     if (isLoading) {
@@ -136,6 +146,18 @@ const DonationState = () => {
     return (
         <div className="donation-state-container">
             <h1>캠페인 상태</h1>
+            <div className="search-container">
+                <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
+                    <option value="donationTitle">캠페인</option>
+                    <option value="donationOrganization">기관</option>
+                </select>
+                <input
+                    type="text"
+                    placeholder="검색..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </div>
             <table className="donation-state-table">
                 <thead>
                     <tr>
