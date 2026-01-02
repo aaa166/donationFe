@@ -1,0 +1,75 @@
+.sidebar {
+  width: 150px;
+  background-color: #202020; 
+  padding: 5px;
+  position: fixed;
+  right: 10px;
+  top: 10%; 
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  color: #e0e0e0; 
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  border-radius: 10px;
+  z-index: 1000;
+  opacity: 0.9;
+}
+
+.sidebar h2 {
+  margin-top: 0;
+  font-size: 1.4rem;
+  border-bottom: 1px solid #2a2a3e;
+  padding-bottom: 15px;
+  color: #ffffff;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+  margin-top: 25px;
+}
+
+.sidebar ul li {
+  margin-bottom: 15px;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar ul li a {
+  text-decoration: none;
+  color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border-radius: 5px;
+}
+
+.sidebar ul li a:hover {
+  background-color: #2a2a3e;
+  color: #ffffff;
+}
+
+.sidebar ul li a .icon {
+  margin-right: 15px;
+  font-size: 1.2rem;
+}
+
+.sidebar-toggle-button {
+  position: fixed;
+  top: 10%;
+  right: 10px; /* Adjust this to be next to the sidebar */
+  z-index: 1001; /* Make sure it's on top of the sidebar */
+  background-color: #202020;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+.sidebar-toggle-button.close {
+  top: 10%;
+  right: 10px;
+  opacity: 0.9;
+}

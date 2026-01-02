@@ -1,4 +1,3 @@
-
 .header {
   background-color: #fff;
   border-bottom: 1px solid #eee;
@@ -49,4 +48,9 @@
   font-family: inherit;
 }
 
-
+.sidebar-toggle-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}

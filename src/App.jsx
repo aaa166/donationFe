@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Header from './components/Header';
+import Sidebar from './components/Sidebar';
+import './App.css';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -43,11 +45,14 @@ function App() {
   }, [navigate]);
 
   return (
-    <div>
+    <div className="app-container">
       <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-      <main>
-        <Outlet context={{ isLoggedIn, setIsLoggedIn }} />
-      </main>
+      <div className="main-wrapper">
+        <main className="main-content">
+          <Outlet context={{ isLoggedIn, setIsLoggedIn }} />
+        </main>
+      </div>
+      <Sidebar />
     </div>
   );
 }
