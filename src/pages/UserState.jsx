@@ -10,7 +10,9 @@ const UserState = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [reportHistories, setReportHistories] = useState([]);
 
+    const REPORT_HISTORY_URL = 'http://localhost:8081/api/findReportHistory';
     const API_URL = 'http://localhost:8081/api/auth/admin/userState';
     const CHANGE_STATE_URL = 'http://localhost:8081/api/auth/admin/changeUserState';
     const ITEMS_PER_PAGE = 10;
@@ -19,6 +21,36 @@ const UserState = () => {
     const STATE_MAP = { 'A': '활성화', 'I': '비활성화' };
 
     const getJwtToken = () => localStorage.getItem('jwtToken');
+
+
+    const fetchReportHistory = async (userNo) => {
+        const token = getJwtToken();
+        if (!token) {
+            alert('JWT 토큰 없음');
+            return;
+        }
+
+        try {
+            const res = await fetch(
+                `${REPORT_HISTORY_URL}?userNo=${userNo}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+            const data = await res.json();
+            setReportHistories(data);
+        } catch (err) {
+            console.error(err);
+            setReportHistories([]);
+        }
+    };
 
     // 1️⃣ 사용자 데이터 가져오기
     const fetchUserData = async () => {
@@ -46,8 +78,16 @@ const UserState = () => {
     const handlePageClick = (event) => setCurrentPage(event.selected);
 
     // 3️⃣ 모달 열기/닫기
-    const handleOpenModal = (user) => { setSelectedUser(user); setIsModalOpen(true); };
-    const handleCloseModal = () => { setSelectedUser(null); setIsModalOpen(false); };
+    const handleOpenModal = (user) => {
+        setSelectedUser(user);
+        setIsModalOpen(true);
+        fetchReportHistory(user.userNo); 
+    };
+    const handleCloseModal = () => {
+        setSelectedUser(null);
+        setReportHistories([]);
+        setIsModalOpen(false);
+    };
 
     // 4️⃣ 검색 필터
     const filteredUsers = userStates.filter(u => {
@@ -146,9 +186,19 @@ const UserState = () => {
                         <button className="close-button" onClick={handleCloseModal}>&times;</button>
                         <h2>'{selectedUser.userId}' 경고 내역</h2>
                         <div className="warning-history">
-                            {selectedUser.userWarningHistory?.length > 0 ? (
-                                <ul>{selectedUser.userWarningHistory.map((w,i) => <li key={i}>{w}</li>)}</ul>
-                            ) : <p>경고 내역 없음</p>}
+                            {reportHistories.length > 0 ? (
+                                <ul>
+                                    {reportHistories.map((report, index) => (
+                                        <li key={index}>
+                                            <div>신고일: {report.reportDate}</div>
+                                            <div>사유: {report.reportDetails}</div>
+                                            <div>상태: {report.reportStatus}</div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p>제재 내역 없음</p>
+                            )}
                         </div>
                         <div className="modal-state-buttons">
                             {selectedUser.userState === 'A' && (
