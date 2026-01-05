@@ -20,7 +20,7 @@ const DonationPage = () => {
       };
 
       try {
-          const response = await axios.get(`http://localhost:8081/api/public/role`,config);
+          const response = await axios.get(`http://localhost:8081/api/user/role`,config);
           setRole(response.data); 
           console.log('받은 역할:', response.data);
       } catch (error) {

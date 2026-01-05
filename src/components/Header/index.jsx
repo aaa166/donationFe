@@ -1,18 +1,9 @@
+// Header.jsx
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './Header.css';
 
-const Header = ({ isLoggedIn, setIsLoggedIn }) => {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem('jwtToken');
-
-    setIsLoggedIn(false);
-
-    navigate('/');
-  };
-
+const Header = ({ isLoggedIn, handleLogout }) => { // App에서 전달된 handleLogout 사용
   return (
     <header className="header">
       <nav className="nav">

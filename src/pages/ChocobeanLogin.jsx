@@ -3,7 +3,7 @@ import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import './ChocobeanLogin.css';
 
 const ChocobeanLogin = () => {
-  const { isLoggedIn, setIsLoggedIn } = useOutletContext();
+  const { setIsLoggedIn, setIsAdmin } = useOutletContext(); // isAdmin 추가
 
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
@@ -25,13 +25,20 @@ const ChocobeanLogin = () => {
         }),
       });
 
-
       if (response.ok) {
         const data = await response.json();
         const token = data.token;
+
+        // 1️⃣ 토큰 저장
         localStorage.setItem('jwtToken', token);
-        
+
+        // 2️⃣ 토큰 디코딩 (payload 가져오기)
+        const payload = JSON.parse(atob(token.split('.')[1]));
+
+        // 3️⃣ 상태 즉시 업데이트
         setIsLoggedIn(true);
+        setIsAdmin(payload.role === 'admin');
+
         console.log('Login successful:', data);
 
         navigate('/');

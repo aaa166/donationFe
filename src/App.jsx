@@ -1,3 +1,4 @@
+// App.jsx
 import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Header from './components/Header';
@@ -6,37 +7,48 @@ import './App.css';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
 
-  // JWT 만료 확인 함수
   const checkTokenExpiration = () => {
     const token = localStorage.getItem('jwtToken');
-    if (!token) return false;
+    if (!token) {
+      setIsLoggedIn(false);
+      setIsAdmin(false);
+      return false;
+    }
 
     try {
-      const payload = JSON.parse(atob(token.split('.')[1])); // JWT payload 디코딩
-      const exp = payload.exp * 1000; // ms 단위로 변환
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const exp = payload.exp * 1000;
+
       if (Date.now() > exp) {
-        localStorage.removeItem('jwtToken');
-        setIsLoggedIn(false);
-        alert('로그인 세션이 만료되었습니다.');
-        navigate('/'); // 홈으로 이동
+        handleLogout(); // 만료 시 로그아웃 처리
         return false;
       }
+
+      setIsLoggedIn(true);
+      setIsAdmin(payload.role === 'admin');
       return true;
     } catch (error) {
       console.error('토큰 확인 중 오류 발생:', error);
-      localStorage.removeItem('jwtToken');
-      setIsLoggedIn(false);
+      handleLogout();
       return false;
     }
   };
 
-  useEffect(() => {
-    const tokenValid = checkTokenExpiration();
-    setIsLoggedIn(tokenValid);
+  // 로그아웃 함수
+  const handleLogout = () => {
+    localStorage.removeItem('jwtToken');
+    setIsLoggedIn(false);
+    setIsAdmin(false);
+    navigate('/');
+  };
 
-    // 1분마다 자동 체크
+  // 새로고침/마운트 시 토큰 체크
+  useEffect(() => {
+    checkTokenExpiration();
+
     const interval = setInterval(() => {
       checkTokenExpiration();
     }, 60000);
@@ -44,15 +56,30 @@ function App() {
     return () => clearInterval(interval);
   }, [navigate]);
 
+  // 로그인 직후 상태 반영
+  useEffect(() => {
+    if (isLoggedIn) {
+      const token = localStorage.getItem('jwtToken');
+      if (token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        setIsAdmin(payload.role === 'admin');
+      }
+    }
+  }, [isLoggedIn]);
+
   return (
     <div className="app-container">
-      <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+      <Header
+        isLoggedIn={isLoggedIn}
+        setIsLoggedIn={setIsLoggedIn}
+        handleLogout={handleLogout} // Header에서 로그아웃 버튼 사용
+      />
       <div className="main-wrapper">
         <main className="main-content">
-          <Outlet context={{ isLoggedIn, setIsLoggedIn }} />
+          <Outlet context={{ isLoggedIn, setIsLoggedIn, isAdmin, setIsAdmin }} />
         </main>
       </div>
-      <Sidebar />
+      {isAdmin && <Sidebar />}
     </div>
   );
 }
