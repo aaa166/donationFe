@@ -70,7 +70,7 @@ function DonationView() {
         }
     };
 
-    const handleReport = async (reportedId, reportDetails, payNo) => {
+    const handleReport = async (reportedId, reportDetails, typeNo, reportType) => {
         const token = localStorage.getItem("jwtToken");
 
         if (!token) {
@@ -81,7 +81,8 @@ function DonationView() {
         const reportData = {
             reportedId,
             reportDetails,
-            payNo,
+            typeNo,
+            reportType,
         };
 
         try {
@@ -205,8 +206,7 @@ function DonationView() {
                                 <p><strong>응원글:</strong> {comment.payComment}</p>
                                 <p><strong>작성일:</strong> {new Date(comment.payDate).toLocaleDateString()}</p>
                                 <button className="report-button" onClick={() =>{
-                                        console.log("보내는 payNo:", comment.payNo);
-                                        handleReport(comment.userNo, comment.payComment, comment.payNo )}}>
+                                        handleReport(comment.userNo, comment.payComment, comment.payNo ,"payComment")}}>
                                     신고
                                 </button>
                             </div>

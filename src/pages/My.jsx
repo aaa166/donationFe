@@ -27,7 +27,7 @@ const My = () => {
 
                 // 사용자 정보와 기부 내역을 동시에 요청
                 const [userResponse, donationsResponse] = await Promise.all([
-                    fetch('http://localhost:8081/api/auth/mypage', { headers }),
+                    fetch('http://localhost:8081/api/mypage', { headers }),
                     fetch('http://localhost:8081/api/mydonation', { headers }) // 기부 내역 API 엔드포인트 (가정)
                 ]);
 
