@@ -12,9 +12,9 @@ const UserState = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [reportHistories, setReportHistories] = useState([]);
 
-    const REPORT_HISTORY_URL = 'http://localhost:8081/api/findReportHistory';
+    const REPORT_HISTORY_URL = 'http://localhost:8081/api/admin/findReportHistory';
     const API_URL = 'http://localhost:8081/api/auth/admin/userState';
-    const CHANGE_STATE_URL = 'http://localhost:8081/api/auth/admin/changeUserState';
+    const CHANGE_STATE_URL = 'http://localhost:8081/api/admin/changeUserState';
     const ITEMS_PER_PAGE = 10;
 
     const ROLE_MAP = { 0: '관리자', 1: '일반', 2: '기업' };

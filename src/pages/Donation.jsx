@@ -58,12 +58,12 @@ const Donation = () => {
 
       {role === 0 && (
         <div id="managerDiv">
-          <Link to="/donationState" className="donationStatus">
-            캠페인 관리
-          </Link>
-          &nbsp;&nbsp;&nbsp;&nbsp;
           <Link to="/userState" className="userStatus">
             유저 관리
+          </Link>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <Link to="/donationState" className="donationStatus">
+            캠페인 관리
           </Link>
           &nbsp;&nbsp;&nbsp;&nbsp;
           <Link to="/report" className="report">

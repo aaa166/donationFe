@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Sidebar.css';
 
 function Sidebar() {
-  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+  const [isSidebarVisible, setIsSidebarVisible] = useState(() => {
+    const savedState = localStorage.getItem('isSidebarVisible');
+    return savedState !== null ? JSON.parse(savedState) : false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('isSidebarVisible', JSON.stringify(isSidebarVisible));
+  }, [isSidebarVisible]);
 
   const toggleSidebar = () => {
     setIsSidebarVisible(!isSidebarVisible);
