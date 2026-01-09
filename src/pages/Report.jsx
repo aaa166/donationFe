@@ -68,6 +68,30 @@ const Report = () => {
   const pageCount = Math.ceil(filteredReports.length / ITEMS_PER_PAGE);
   const emptyRowsCount = ITEMS_PER_PAGE - currentItems.length;
 
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'P':
+        return '대기';
+      case 'C':
+        return '철회';
+      case 'R':
+        return '완료';
+      default:
+        return status;
+    }
+  };
+
+  const getReportTypeText = (type) => {
+    switch (type) {
+      case 'payComment':
+        return '응원';
+      case 'donationPost':
+        return '기부게시글';
+      default:
+        return type;
+    }
+  };
+
   if (isLoading) return <div className="user-state-container">로딩 중...</div>;
   if (error) return <div className="user-state-container" style={{ color: 'red' }}>{error}</div>;
 
@@ -98,6 +122,8 @@ const Report = () => {
             <th>신고자</th>
             <th>피신고자</th>
             <th>사유</th>
+            <th>관리자</th>
+            <th>유형</th>
             <th>상태</th>
             <th>신고일</th>
             <th>처리</th>
@@ -107,10 +133,12 @@ const Report = () => {
           {currentItems.map(report => (
             <tr key={report.reportNo}>
               <td>{report.reportNo}</td>
-              <td>{report.reporterNo}</td>
-              <td>{report.reportedNo}</td>
+              <td>{report.reporterId}</td>
+              <td>{report.reportedId}</td>
               <td>{report.reportDetails}</td>
-              <td>{report.reportStatus}</td>
+              <td>{report.adminNo}</td>
+              <td>{getReportTypeText(report.reportType)}</td>
+              <td>{getStatusText(report.reportStatus)}</td>
               <td>{report.reportDate}</td>
               <td>
                 <button className="state-button change">처리</button>
@@ -121,7 +149,7 @@ const Report = () => {
           {emptyRowsCount > 0 && currentItems.length > 0 &&
             Array.from({ length: emptyRowsCount }).map((_, i) => (
               <tr key={`empty-${i}`} className="empty-row">
-                <td colSpan="7">&nbsp;</td>
+                <td colSpan="9">&nbsp;</td>
               </tr>
             ))
           }
