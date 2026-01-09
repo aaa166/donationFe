@@ -13,7 +13,7 @@ const UserState = () => {
     const [reportHistories, setReportHistories] = useState([]);
 
     const REPORT_HISTORY_URL = 'http://localhost:8081/api/admin/findReportHistory';
-    const API_URL = 'http://localhost:8081/api/auth/admin/userState';
+    const API_URL = 'http://localhost:8081/api/admin/userState';
     const CHANGE_STATE_URL = 'http://localhost:8081/api/admin/changeUserState';
     const ITEMS_PER_PAGE = 10;
 
