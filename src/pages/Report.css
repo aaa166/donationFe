@@ -29,6 +29,23 @@
   width: 250px;
 }
 
+.toggle-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.toggle-container label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.toggle-container input[type="checkbox"] {
+  margin-right: 8px;
+}
+
 .user-state-table {
   width: 100%;
   border-collapse: collapse;

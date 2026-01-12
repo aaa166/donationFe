@@ -10,6 +10,7 @@ const Report = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState('reporterNo');
+  const [showPendingOnly, setShowPendingOnly] = useState(false);
 
   const ITEMS_PER_PAGE = 10;
 
@@ -54,8 +55,14 @@ const Report = () => {
     setCurrentPage(event.selected);
   };
 
-  // ✅ 검색 필터
+  // ✅ 검색 및 토글 필터
   const filteredReports = reports.filter(report => {
+    // 토글 필터
+    if (showPendingOnly && report.reportStatus !== 'P') {
+      return false;
+    }
+
+    // 검색어 필터
     const term = searchTerm.toLowerCase();
     if (!term) return true;
 
@@ -84,7 +91,7 @@ const Report = () => {
   const getReportTypeText = (type) => {
     switch (type) {
       case 'payComment':
-        return '응원';
+        return '응원글';
       case 'donationPost':
         return '기부게시글';
       default:
@@ -113,6 +120,17 @@ const Report = () => {
             setCurrentPage(0);
           }}
         />
+      </div>
+
+      <div className="toggle-container">
+        <label>
+          <input
+            type="checkbox"
+            checked={showPendingOnly}
+            onChange={(e) => setShowPendingOnly(e.target.checked)}
+          />
+          대기 중인 신고만 보기
+        </label>
       </div>
 
       <table className="user-state-table">

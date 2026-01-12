@@ -95,6 +95,11 @@ function DonationView() {
             body: JSON.stringify(reportData),
             });
 
+            if (response.status === 409) {
+            alert("이미 신고된 게시글입니다.");
+            return;
+        }
+
             if (response.status === 401) {
                 alert("로그인이 만료되었거나 권한이 없습니다. 다시 로그인해주세요.");
                 return;
