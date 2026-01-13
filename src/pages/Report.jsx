@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
 import './Report.css';
 import ReportModal from '../components/ReportModal/ReportModal';
@@ -25,6 +26,7 @@ const Report = () => {
   const CHANGE_STATE_C_URL = 'http://localhost:8081/api/admin/changeReportStateC';
   const CHANGE_STATE_R_URL = 'http://localhost:8081/api/admin/changeReportStateR';
 
+  
   const changeReportState = async (reportNo, type) => {
   const token = getJwtToken();
     if (!token || token.trim() === '') {
@@ -154,6 +156,20 @@ const Report = () => {
     handleCloseModal();
   };
 
+  const renderReportDetails = (report) => {
+    const { reportType, typeNo, donationNo, reportDetails } = report;
+
+    let link = '/'; 
+    if (reportType === 'payComment') {
+      link = `/donations/${donationNo}`;
+    }
+    // else if (reportType === 'donationPost') {
+    //   link = typeNo ? `/donations/${donationNo}` : '/';
+    // }
+
+    return <Link to={link}>{reportDetails}</Link>;
+  };
+
   if (isLoading) return <div className="user-state-container">로딩 중...</div>;
   if (error) return <div className="user-state-container" style={{ color: 'red' }}>{error}</div>;
 
@@ -208,13 +224,13 @@ const Report = () => {
               <td>{report.reportNo}</td>
               <td>{report.reporterId}</td>
               <td>{report.reportedId}</td>
-              <td>{report.reportDetails}</td>
+              <td>{renderReportDetails(report)}</td>
               <td>{report.adminNo}</td>
               <td>{getReportTypeText(report.reportType)}</td>
               <td>{getStatusText(report.reportStatus)}</td>
               <td>{report.reportDate}</td>
               <td>
-                <button className="state-button change" onClick={() => handleOpenModal(report)}>처리</button>
+                <button className="state-button change" onClick={() => handleOpenModal(report)}>신고</button>
               </td>
             </tr>
           ))}
