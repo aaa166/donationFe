@@ -157,6 +157,12 @@ body {
     margin-bottom: 15px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     position: relative;
+    transition: background-color 1s ease;
+}
+
+.review-item.highlight {
+    background-color: #e8f5e9; /* A light green highlight */
+    border-color: #00b343;
 }
 
 .report-button {

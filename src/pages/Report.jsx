@@ -159,15 +159,15 @@ const Report = () => {
   const renderReportDetails = (report) => {
     const { reportType, typeNo, donationNo, reportDetails } = report;
 
-    let link = '/'; 
-    if (reportType === 'payComment') {
-      link = `/donations/${donationNo}`;
+    if (reportType === 'donationPost' && typeNo) {
+      return <Link to={`/donations/${typeNo}`}>{reportDetails}</Link>;
     }
-    // else if (reportType === 'donationPost') {
-    //   link = typeNo ? `/donations/${donationNo}` : '/';
-    // }
 
-    return <Link to={link}>{reportDetails}</Link>;
+    if (reportType === 'payComment' && donationNo && typeNo) {
+      return <Link to={`/donations/${donationNo}#comment-${typeNo}`} state={{ openTab: 'reviews' }}>{reportDetails}</Link>;
+    }
+
+    return reportDetails;
   };
 
   if (isLoading) return <div className="user-state-container">로딩 중...</div>;

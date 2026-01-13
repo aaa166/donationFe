@@ -2,14 +2,15 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './DonationView.css';
 import ProgressBar from '../components/ProgressBar';
 import ContentTabs from '../components/ContentTabs';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import DonationSidebar from '../components/DonationSidebar';
 
 // API 호출을 위한 기본 URL
 const API_BASE_URL = 'http://localhost:8081/api';
 
 function DonationView() {
-    const [activeTab, setActiveTab] = useState('story');
+    const location = useLocation();
+    const [activeTab, setActiveTab] = useState(location.state?.openTab || 'story');
     const [donationData, setDonationData] = useState(null);
     const [payComments, setPayComments] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -24,6 +25,20 @@ function DonationView() {
     const customAmountInputRef = useRef(null);
     
     const { donationNo } = useParams();
+
+    useEffect(() => {
+        if (!loading && location.hash) {
+            const id = location.hash.substring(1); // Remove '#'
+            setTimeout(() => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    element.classList.add('highlight');
+                    setTimeout(() => element.classList.remove('highlight'), 2000); // Highlight for 2 seconds
+                }
+            }, 100); // Delay to ensure rendering is complete
+        }
+    }, [loading, location.hash]);
 
     const handleDonateSubmit = async () => {
         if (!termsAgreed) return;
@@ -205,7 +220,7 @@ function DonationView() {
                 return (
                     <div>
                         {payComments?.map((comment, index) => (
-                            <div key={comment.payCommentId || comment.id || index} className="review-item">
+                            <div key={comment.payCommentId || comment.id || index} id={`comment-${comment.payNo}`} className="review-item">
                                 <p><strong>작성자:</strong> {comment.userName}</p>
                                 <p><strong>후원금액:</strong> {comment.payAmount?.toLocaleString()}원</p>
                                 <p><strong>응원글:</strong> {comment.payComment}</p>
