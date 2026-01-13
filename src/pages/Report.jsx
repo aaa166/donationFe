@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactPaginate from 'react-paginate';
 import './Report.css';
+import ReportModal from '../components/ReportModal/ReportModal';
 
 const Report = () => {
   const [reports, setReports] = useState([]);
@@ -12,10 +13,49 @@ const Report = () => {
   const [searchType, setSearchType] = useState('reporterNo');
   const [showPendingOnly, setShowPendingOnly] = useState(false);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedReport, setSelectedReport] = useState(null);
+
   const ITEMS_PER_PAGE = 10;
+
 
   const REPORT_STATE_URL = 'http://localhost:8081/api/admin/findReportState';
   const getJwtToken = () => localStorage.getItem('jwtToken');
+
+  const CHANGE_STATE_C_URL = 'http://localhost:8081/api/admin/changeReportStateC';
+  const CHANGE_STATE_R_URL = 'http://localhost:8081/api/admin/changeReportStateR';
+
+  const changeReportState = async (reportNo, type) => {
+  const token = getJwtToken();
+    if (!token || token.trim() === '') {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    const url =
+      type === 'C'
+        ? `${CHANGE_STATE_C_URL}?reportNo=${reportNo}`
+        : `${CHANGE_STATE_R_URL}?reportNo=${reportNo}`;
+
+    try {
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      alert(type === 'C' ? '신고가 철회되었습니다.' : '신고가 처리되었습니다.');
+
+      // ✅ 목록 새로고침
+      fetchReports();
+    } catch (e) {
+      console.error(e);
+      alert('상태 변경 중 오류가 발생했습니다.');
+    }
+  };
 
   // ✅ 신고 목록 조회
   const fetchReports = async () => {
@@ -80,7 +120,7 @@ const Report = () => {
       case 'P':
         return '대기';
       case 'C':
-        return '철회';
+        return '반려';
       case 'R':
         return '완료';
       default:
@@ -97,6 +137,21 @@ const Report = () => {
       default:
         return type;
     }
+  };
+
+  const handleOpenModal = (report) => {
+    setSelectedReport(report);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedReport(null);
+  };
+
+  const handleConfirmReport = (report, type) => {
+    changeReportState(report.reportNo, type);
+    handleCloseModal();
   };
 
   if (isLoading) return <div className="user-state-container">로딩 중...</div>;
@@ -139,12 +194,12 @@ const Report = () => {
             <th>신고 번호</th>
             <th>신고자</th>
             <th>피신고자</th>
-            <th>사유</th>
+            <th>신고 내용</th>
             <th>관리자</th>
             <th>유형</th>
             <th>상태</th>
             <th>신고일</th>
-            <th>처리</th>
+            <th>확인</th>
           </tr>
         </thead>
         <tbody>
@@ -159,7 +214,7 @@ const Report = () => {
               <td>{getStatusText(report.reportStatus)}</td>
               <td>{report.reportDate}</td>
               <td>
-                <button className="state-button change">처리</button>
+                <button className="state-button change" onClick={() => handleOpenModal(report)}>처리</button>
               </td>
             </tr>
           ))}
@@ -185,6 +240,14 @@ const Report = () => {
         containerClassName={'pagination'}
         activeClassName={'active'}
       />
+
+      {isModalOpen && (
+        <ReportModal
+          report={selectedReport}
+          onClose={handleCloseModal}
+          onConfirm={handleConfirmReport}
+        />
+      )}
     </div>
   );
 };
