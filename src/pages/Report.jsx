@@ -221,7 +221,7 @@ const Report = () => {
       <table className="user-state-table">
         <thead>
           <tr>
-            <th>신고 번호</th>
+            <th>번호</th>
             <th>신고자</th>
             <th>피신고자</th>
             <th>신고 내용</th>

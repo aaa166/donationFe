@@ -56,8 +56,8 @@
 .user-state-table th:nth-child(5) { width: 12%; } /* Phone */
 .user-state-table th:nth-child(6) { width: 8%; } /* Role */
 .user-state-table th:nth-child(7) { width: 12%; } /* Total Amount */
-.user-state-table th:nth-child(8) { width: 10%; } /* State */
-.user-state-table th:nth-child(9) { width: 15%; } /* State Change */
+.user-state-table th:nth-child(8) { width: 50px; } /* State */
+.user-state-table th:nth-child(9) { width: 40px; } /* State Change */
 
 .user-state-table td, .user-state-table th {
     text-align: center;

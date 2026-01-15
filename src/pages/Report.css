@@ -89,12 +89,15 @@
 }
 
 /* Column widths for 6 columns */
-.user-state-table th:nth-child(1) { width: 10%; }
+.user-state-table th:nth-child(1) { width: 5%; }
 .user-state-table th:nth-child(2) { width: 15%; }
 .user-state-table th:nth-child(3) { width: 15%; }
-.user-state-table th:nth-child(4) { width: 35%; }
+.user-state-table th:nth-child(4) { width: 30%; }
 .user-state-table th:nth-child(5) { width: 15%; }
-.user-state-table th:nth-child(6) { width: 10%; }
+.user-state-table th:nth-child(6) { width: 50px; }
+.user-state-table th:nth-child(7) { width: 40px; }
+.user-state-table th:nth-child(8) { width: 15%; }
+.user-state-table th:nth-child(9) { width: 40px; }
 
 
 .user-state-table td, .user-state-table th {
