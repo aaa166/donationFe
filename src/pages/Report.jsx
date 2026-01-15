@@ -11,7 +11,7 @@ const Report = () => {
 
   const [currentPage, setCurrentPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchType, setSearchType] = useState('reporterNo');
+  const [searchType, setSearchType] = useState('reporterId');
   const [showPendingOnly, setShowPendingOnly] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -179,8 +179,8 @@ const Report = () => {
 
       <div className="search-container">
         <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
-          <option value="reporterNo">신고자 번호</option>
-          <option value="reportedNo">피신고자 번호</option>
+          <option value="reporterId">신고자</option>
+          <option value="reportedId">피신고자</option>
         </select>
         <input
           type="text"
