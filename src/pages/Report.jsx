@@ -241,7 +241,9 @@ const Report = () => {
               <td>{renderReportDetails(report)}</td>
               <td>{report.adminNo}</td>
               <td>{getReportTypeText(report.reportType)}</td>
-              <td>{getStatusText(report.reportStatus)}</td>
+              <td className={`report-state-${report.reportStatus}`}>
+                {getStatusText(report.reportStatus)}
+              </td>
               <td>{report.reportDate}</td>
               <td>
                 <button className="state-button change" onClick={() => handleOpenModal(report)}>신고</button>

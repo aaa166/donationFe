@@ -69,33 +69,42 @@
 /* 각 열의 너비 설정 */
 .donation-state-table th:nth-child(1),
 .donation-state-table td:nth-child(1) {
-  width: 5%;
+  width: 5%; /* 번호 */
   text-align: center;
 }
 
 .donation-state-table th:nth-child(2),
 .donation-state-table td:nth-child(2) {
-  width: 35%;
+  width: 30%; /* 캠페인 */
 }
 
 .donation-state-table th:nth-child(3),
 .donation-state-table td:nth-child(3) {
-  width: 25%;
+  width: 10%; /* 기관 */
+  text-align: center;
 }
 
 .donation-state-table th:nth-child(4),
 .donation-state-table td:nth-child(4) {
-  width: 20%;
+  width: 25%; /* 모금액 */
+  text-align: center;
 }
 
 .donation-state-table th:nth-child(5),
 .donation-state-table td:nth-child(5) {
-  width: 10%;
+  width: 15%; /* 마감일 */
+  text-align: center;
 }
 
 .donation-state-table th:nth-child(6),
 .donation-state-table td:nth-child(6) {
-  width: 15%;
+  width: 50px; /* 상태 */
+  text-align: center;
+}
+
+.donation-state-table th:nth-child(7),
+.donation-state-table td:nth-child(7) {
+  width: 50px; /* 상태 변경 */
   text-align: center;
 }
 
@@ -112,6 +121,11 @@
 .state-D {
     color: red; /* 빨간색: 비활성화 (종료) */
     font-weight: bold;
+}
+
+.deadline-past {
+  color: red;
+  font-weight: bold;
 }
 
 .state-button {

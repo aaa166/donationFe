@@ -199,3 +199,17 @@ tr.empty-row:hover,
     color: #ccc;
     cursor: not-allowed;
 }
+
+/* Report status coloring */
+.report-state-P {
+  color: orange; /* 대기 */
+  font-weight: bold;
+}
+.report-state-C {
+  color: green; /* 반려 */
+  font-weight: bold;
+}
+.report-state-R {
+  color: red; /* 완료 */
+  font-weight: bold;
+}

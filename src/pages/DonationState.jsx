@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
 import './DonationState.css';
 
@@ -164,6 +165,7 @@ const DonationState = () => {
                         <th>번호</th>
                         <th>캠페인</th>
                         <th>기관</th>
+                        <th>모금액</th>
                         <th>마감일</th>
                         <th>상태</th>
                         <th>상태 변경</th> 
@@ -173,9 +175,18 @@ const DonationState = () => {
                     {currentItems.map((donation) => (
                         <tr key={donation.donationNo}>
                             <td>{donation.donationNo}</td>
-                            <td>{donation.donationTitle}</td>
+                            <td>
+                                {donation.donationState === 'D' ? (
+                                    <a href="#" onClick={(e) => { e.preventDefault(); alert('비활성화된 게시글입니다.'); }}>
+                                        {donation.donationTitle}
+                                    </a>
+                                ) : (
+                                    <Link to={`/donations/${donation.donationNo}`}>{donation.donationTitle}</Link>
+                                )}
+                            </td>
                             <td>{donation.donationOrganization}</td>
-                            <td>{donation.donationDeadlineDate}</td>
+                            <td>{donation.donationCurrentAmount?.toLocaleString('ko-KR')}원 / {donation.donationGoalAmount?.toLocaleString('ko-KR')}원</td>
+                            <td className={new Date(donation.donationDeadlineDate) < new Date().setHours(0,0,0,0) ? 'deadline-past' : ''}>{donation.donationDeadlineDate}</td>
                             <td className={`state-${donation.donationState}`} >{STATE_OPTIONS[donation.donationState] || donation.donationState}</td>
                             <td>
                                 {(donation.donationState === 'P' || donation.donationState === 'D') && 
