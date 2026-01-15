@@ -157,7 +157,21 @@ const Report = () => {
   };
 
   const renderReportDetails = (report) => {
-    const { reportType, typeNo, donationNo, reportDetails } = report;
+    const { reportType, typeNo, donationNo, reportDetails, reportStatus } = report;
+
+    if (reportStatus === 'R') {
+      return (
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            alert('게시글이 비활성화되었습니다.');
+          }}
+        >
+          {reportDetails}
+        </a>
+      );
+    }
 
     if (reportType === 'donationPost' && typeNo) {
       return <Link to={`/donations/${typeNo}`}>{reportDetails}</Link>;

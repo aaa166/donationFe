@@ -126,6 +126,8 @@ function DonationView() {
             }
 
             alert("신고가 접수되었습니다.");
+            fetchData();
+            setActiveTab('reviews');
         } catch (e) {
             console.error("신고 오류:", e);
             alert("신고 중 오류가 발생했습니다.");

@@ -245,3 +245,40 @@ tr.empty-row:hover,
     border-radius: 4px;
     box-sizing: border-box;
 }
+
+/* Warning History List in Modal */
+.warning-history {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: #fff;
+}
+
+.warning-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.warning-list li {
+    border-bottom: 1px solid #ddd;
+    padding: 15px 10px;
+    text-align: left;
+}
+
+.warning-list li:last-child {
+    border-bottom: none;
+}
+
+.warning-list li div {
+    margin-bottom: 5px;
+}
+
+.warning-list li div:last-child {
+    margin-bottom: 0;
+}
+
+

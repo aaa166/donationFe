@@ -187,12 +187,12 @@ const UserState = () => {
                         <h2>'{selectedUser.userId}' 경고 내역</h2>
                         <div className="warning-history">
                             {reportHistories.length > 0 ? (
-                                <ul>
+                                <ul className="warning-list">
                                     {reportHistories.map((report, index) => (
                                         <li key={index}>
-                                            <div>신고일: {report.reportDate}</div>
-                                            <div>사유: {report.reportDetails}</div>
-                                            <div>상태: {report.reportStatus}</div>
+                                            <div><strong>신고일:</strong> {report.reportDate}</div>
+                                            <div><strong>사유:</strong> {report.reportDetails}</div>
+                                            {/* <div>상태: {report.reportStatus}</div> */}
                                         </li>
                                     ))}
                                 </ul>
