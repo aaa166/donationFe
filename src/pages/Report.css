@@ -104,6 +104,14 @@
     text-align: center;
 }
 
+.report-details-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 0;
+  text-align: left !important; /* Ellipsis works best with left-align */
+}
+
 /* State-based coloring */
 .state-A {
     color: green;

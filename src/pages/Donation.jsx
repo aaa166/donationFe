@@ -52,9 +52,7 @@ const Donation = () => {
     <div className="donation-wrap">
       <DonationList title="전달하는 기부>" donations={donations.slice(0, 4)} />
 
-      <Link to="/donationApply" className="donationApply">
-        기부 신청
-      </Link>
+      
 
       {role === 0 && (
         <div id="managerDiv">

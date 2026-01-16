@@ -146,7 +146,7 @@ const DonationState = () => {
 
     return (
         <div className="donation-state-container">
-            <h1>캠페인 상태</h1>
+            <h1>캠페인</h1>
             <div className="search-container">
                 <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
                     <option value="donationTitle">캠페인</option>

@@ -66,12 +66,12 @@ const My = () => {
                                 
                                 // 키를 좀 더 친숙한 레이블로 변환
                                 const keyMap = {
-                                    'memberId': '아이디',
+                                    'userId': 'ID',
                                     'userName': '이름',
-                                    'email': '이메일',
-                                    'phoneNumber': '연락처',
-                                    'birth': '생년월일',
-                                    'gender': '성별'
+                                    'userEmail': '이메일',
+                                    'userPhone': '연락처',
+                                    'userBirth': '생년월일',
+                                    'userRole': '계정 유형'
                                 };
 
                                 return (

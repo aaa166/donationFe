@@ -10,7 +10,7 @@ const Header = ({ isLoggedIn, handleLogout }) => { // App에서 전달된 handle
         <ul className="nav-list">
           <li className="nav-item"><Link to="/">홈</Link></li>
           <li className="nav-item"><Link to="/">문의</Link></li>
-          <li className="nav-item"><Link to="/store">스토어</Link></li>
+          <li className="nav-item"><Link to="/donationApply" className="donationApply">기부 신청</Link></li>
         </ul>
         <ul className="user-actions">
           {isLoggedIn ? (

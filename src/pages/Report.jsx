@@ -189,7 +189,7 @@ const Report = () => {
 
   return (
     <div className="user-state-container">
-      <h1>신고 관리</h1>
+      <h1>신고</h1>
 
       <div className="search-container">
         <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
@@ -238,7 +238,7 @@ const Report = () => {
               <td>{report.reportNo}</td>
               <td>{report.reporterId}</td>
               <td>{report.reportedId}</td>
-              <td>{renderReportDetails(report)}</td>
+              <td className="report-details-cell" title={report.reportDetails}>{renderReportDetails(report)}</td>
               <td>{report.adminNo}</td>
               <td>{getReportTypeText(report.reportType)}</td>
               <td className={`report-state-${report.reportStatus}`}>
