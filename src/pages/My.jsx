@@ -74,10 +74,21 @@ const My = () => {
                                     'userRole': '계정 유형'
                                 };
 
+                                // userRole 값을 변환
+                                let displayValue = value;
+                                if (key === 'userRole') {
+                                    const roleMap = {
+                                        0: '관리자',
+                                        1: '일반',
+                                        2: '기업'
+                                    };
+                                    displayValue = roleMap[value];
+                                }
+
                                 return (
                                     <div className="info-item" key={key}>
                                         <span className="info-label">{keyMap[key] || key}</span>
-                                        <span className="info-value">{value}</span>
+                                        <span className="info-value">{displayValue}</span>
                                     </div>
                                 );
                             })}
