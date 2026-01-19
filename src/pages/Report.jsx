@@ -3,113 +3,54 @@ import { Link } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
 import './Report.css';
 import ReportModal from '../components/ReportModal/ReportModal';
+import api from '../api/axiosInstance';
 
 const Report = () => {
   const [reports, setReports] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const [currentPage, setCurrentPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState('reporterId');
   const [showPendingOnly, setShowPendingOnly] = useState(false);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState(null);
-
   const ITEMS_PER_PAGE = 10;
 
-
-  const REPORT_STATE_URL = 'http://localhost:8081/api/admin/findReportState';
-  const getJwtToken = () => localStorage.getItem('jwtToken');
-
-  const CHANGE_STATE_C_URL = 'http://localhost:8081/api/admin/changeReportStateC';
-  const CHANGE_STATE_R_URL = 'http://localhost:8081/api/admin/changeReportStateR';
-
-  
-  const changeReportState = async (reportNo, type) => {
-  const token = getJwtToken();
-    if (!token || token.trim() === '') {
-      alert('로그인이 필요합니다.');
-      return;
-    }
-
-    const url =
-      type === 'C'
-        ? `${CHANGE_STATE_C_URL}?reportNo=${reportNo}`
-        : `${CHANGE_STATE_R_URL}?reportNo=${reportNo}`;
-
-    try {
-      const res = await fetch(url, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-      alert(type === 'C' ? '신고가 철회되었습니다.' : '신고가 처리되었습니다.');
-
-      // ✅ 목록 새로고침
-      fetchReports();
-    } catch (e) {
-      console.error(e);
-      alert('상태 변경 중 오류가 발생했습니다.');
-    }
-  };
-
-  // ✅ 신고 목록 조회
   const fetchReports = async () => {
-    const token = getJwtToken();
-    if (!token) {
-      setError('JWT 토큰 없음');
-      setIsLoading(false);
-      return;
-    }
-
+    setIsLoading(true);
+    setError(null);
     try {
-      const res = await fetch(REPORT_STATE_URL, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-      const data = await res.json();
-      setReports(data);
+      const res = await api.get('/api/admin/findReportState');
+      setReports(res.data);
     } catch (err) {
       console.error(err);
-      setError('신고 목록 불러오기 실패');
-    } finally {
-      setIsLoading(false);
+      setError(err.response?.data?.message || '신고 목록 불러오기 실패');
+    } finally { setIsLoading(false); }
+  };
+
+  const changeReportState = async (reportNo, type) => {
+    try {
+      await api.get(type === 'C'
+        ? `/api/admin/changeReportStateC?reportNo=${reportNo}`
+        : `/api/admin/changeReportStateR?reportNo=${reportNo}`
+      );
+      alert(type === 'C' ? '신고가 철회되었습니다.' : '신고가 처리되었습니다.');
+      fetchReports();
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || '상태 변경 중 오류 발생');
     }
   };
 
-  useEffect(() => {
-    fetchReports();
-  }, []);
+  useEffect(() => { fetchReports(); }, []);
+  const handlePageClick = e => setCurrentPage(e.selected);
 
-  const handlePageClick = (event) => {
-    setCurrentPage(event.selected);
-  };
-
-  // ✅ 검색 및 토글 필터
   const filteredReports = reports.filter(report => {
-    // 토글 필터
-    if (showPendingOnly && report.reportStatus !== 'P') {
-      return false;
-    }
-
-    // 검색어 필터
-    const term = searchTerm.toLowerCase();
-    if (!term) return true;
-
-    const value = report[searchType];
-    return value && value.toString().toLowerCase().includes(term);
+    if (showPendingOnly && report.reportStatus !== 'P') return false;
+    if (!searchTerm) return true;
+    const value = report[searchType]?.toLowerCase();
+    return value?.includes(searchTerm.toLowerCase());
   });
 
   const offset = currentPage * ITEMS_PER_PAGE;
@@ -117,71 +58,18 @@ const Report = () => {
   const pageCount = Math.ceil(filteredReports.length / ITEMS_PER_PAGE);
   const emptyRowsCount = ITEMS_PER_PAGE - currentItems.length;
 
-  const getStatusText = (status) => {
-    switch (status) {
-      case 'P':
-        return '대기';
-      case 'C':
-        return '반려';
-      case 'R':
-        return '완료';
-      default:
-        return status;
-    }
-  };
+  const getStatusText = s => ({ P: '대기', C: '반려', R: '완료' }[s] || s);
+  const getReportTypeText = t => ({ payComment: '응원글', donationPost: '기부게시글' }[t] || t);
 
-  const getReportTypeText = (type) => {
-    switch (type) {
-      case 'payComment':
-        return '응원글';
-      case 'donationPost':
-        return '기부게시글';
-      default:
-        return type;
-    }
-  };
+  const handleOpenModal = report => { setSelectedReport(report); setIsModalOpen(true); };
+  const handleCloseModal = () => { setSelectedReport(null); setIsModalOpen(false); };
+  const handleConfirmReport = (report, type) => { changeReportState(report.reportNo, type); handleCloseModal(); };
 
-  const handleOpenModal = (report) => {
-    setSelectedReport(report);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedReport(null);
-  };
-
-  const handleConfirmReport = (report, type) => {
-    changeReportState(report.reportNo, type);
-    handleCloseModal();
-  };
-
-  const renderReportDetails = (report) => {
-    const { reportType, typeNo, donationNo, reportDetails, reportStatus } = report;
-
-    if (reportStatus === 'R') {
-      return (
-        <a
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            alert('게시글이 비활성화되었습니다.');
-          }}
-        >
-          {reportDetails}
-        </a>
-      );
-    }
-
-    if (reportType === 'donationPost' && typeNo) {
-      return <Link to={`/donations/${typeNo}`}>{reportDetails}</Link>;
-    }
-
-    if (reportType === 'payComment' && donationNo && typeNo) {
-      return <Link to={`/donations/${donationNo}#comment-${typeNo}`} state={{ openTab: 'reviews' }}>{reportDetails}</Link>;
-    }
-
-    return reportDetails;
+  const renderReportDetails = report => {
+    if (report.reportStatus === 'R') return <a href="#" onClick={e => { e.preventDefault(); alert('게시글 비활성화'); }}>{report.reportDetails}</a>;
+    if (report.reportType === 'donationPost' && report.typeNo) return <Link to={`/donations/${report.typeNo}`}>{report.reportDetails}</Link>;
+    if (report.reportType === 'payComment' && report.donationNo && report.typeNo) return <Link to={`/donations/${report.donationNo}#comment-${report.typeNo}`}>{report.reportDetails}</Link>;
+    return report.reportDetails;
   };
 
   if (isLoading) return <div className="user-state-container">로딩 중...</div>;
@@ -190,96 +78,46 @@ const Report = () => {
   return (
     <div className="user-state-container">
       <h1>신고</h1>
-
       <div className="search-container">
-        <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
+        <select value={searchType} onChange={e => setSearchType(e.target.value)}>
           <option value="reporterId">신고자</option>
           <option value="reportedId">피신고자</option>
         </select>
-        <input
-          type="text"
-          placeholder="검색..."
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setCurrentPage(0);
-          }}
-        />
+        <input type="text" placeholder="검색..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
       </div>
-
       <div className="toggle-container">
         <label>
-          <input
-            type="checkbox"
-            checked={showPendingOnly}
-            onChange={(e) => setShowPendingOnly(e.target.checked)}
-          />
-          대기 중인 신고만 보기
+          <input type="checkbox" checked={showPendingOnly} onChange={e => setShowPendingOnly(e.target.checked)} /> 대기 중인 신고만 보기
         </label>
       </div>
 
       <table className="user-state-table">
         <thead>
-          <tr>
-            <th>번호</th>
-            <th>신고자</th>
-            <th>피신고자</th>
-            <th>신고 내용</th>
-            <th>관리자</th>
-            <th>유형</th>
-            <th>상태</th>
-            <th>신고일</th>
-            <th>확인</th>
-          </tr>
+          <tr><th>번호</th><th>신고자</th><th>피신고자</th><th>신고 내용</th><th>관리자</th><th>유형</th><th>상태</th><th>신고일</th><th>확인</th></tr>
         </thead>
         <tbody>
-          {currentItems.map(report => (
-            <tr key={report.reportNo}>
-              <td>{report.reportNo}</td>
-              <td>{report.reporterId}</td>
-              <td>{report.reportedId}</td>
-              <td className="report-details-cell" title={report.reportDetails}>{renderReportDetails(report)}</td>
-              <td>{report.adminNo}</td>
-              <td>{getReportTypeText(report.reportType)}</td>
-              <td className={`report-state-${report.reportStatus}`}>
-                {getStatusText(report.reportStatus)}
-              </td>
-              <td>{report.reportDate}</td>
-              <td>
-                <button className="state-button change" onClick={() => handleOpenModal(report)}>신고</button>
-              </td>
+          {currentItems.map(r => (
+            <tr key={r.reportNo}>
+              <td>{r.reportNo}</td>
+              <td>{r.reporterId}</td>
+              <td>{r.reportedId}</td>
+              <td className="report-details-cell">{renderReportDetails(r)}</td>
+              <td>{r.adminNo}</td>
+              <td>{getReportTypeText(r.reportType)}</td>
+              <td className={`report-state-${r.reportStatus}`}>{getStatusText(r.reportStatus)}</td>
+              <td>{r.reportDate}</td>
+              <td><button className="state-button change" onClick={() => handleOpenModal(r)}>신고</button></td>
             </tr>
           ))}
-
-          {emptyRowsCount > 0 && currentItems.length > 0 &&
-            Array.from({ length: emptyRowsCount }).map((_, i) => (
-              <tr key={`empty-${i}`} className="empty-row">
-                <td colSpan="9">&nbsp;</td>
-              </tr>
-            ))
-          }
+          {emptyRowsCount > 0 && currentItems.length > 0 && Array.from({ length: emptyRowsCount }).map((_, i) => (
+            <tr key={`empty-${i}`} className="empty-row"><td colSpan="9">&nbsp;</td></tr>
+          ))}
         </tbody>
       </table>
 
-      <ReactPaginate
-        previousLabel={'이전'}
-        nextLabel={'다음'}
-        breakLabel={'...'}
-        pageCount={pageCount}
-        marginPagesDisplayed={2}
-        pageRangeDisplayed={5}
-        onPageChange={handlePageClick}
-        containerClassName={'pagination'}
-        activeClassName={'active'}
-      />
+      <ReactPaginate previousLabel="이전" nextLabel="다음" breakLabel="..." pageCount={pageCount} marginPagesDisplayed={2} pageRangeDisplayed={5} onPageChange={handlePageClick} containerClassName="pagination" activeClassName="active" />
 
-      {isModalOpen && (
-        <ReportModal
-          report={selectedReport}
-          onClose={handleCloseModal}
-          onConfirm={handleConfirmReport}
-        />
-      )}
+      {isModalOpen && selectedReport && <ReportModal report={selectedReport} onClose={handleCloseModal} onConfirm={handleConfirmReport} />}
     </div>
   );
 };

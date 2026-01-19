@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../api/axiosInstance';
 import { Link } from 'react-router-dom';
-import Header from '../components/Header';
 import DonationList from '../components/DonationList';
 import './Donation.css';
 

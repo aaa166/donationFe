@@ -1,51 +1,35 @@
 import React, { useState, useEffect } from 'react';
+import api from '../api/axiosInstance'; // Axios 인스턴스 사용
 import './My.css';
 
 const My = () => {
     const [activeTab, setActiveTab] = useState('home');
-    
-    // 사용자 정보를 담을 state
     const [userInfo, setUserInfo] = useState(null);
-    // 기부 내역을 담을 state
     const [myDonation, setMyDonation] = useState([]);
-    // 로딩 및 에러 상태 관리
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const token = localStorage.getItem('jwtToken');
-                if (!token) {
-                    throw new Error('인증 토큰이 없습니다. 로그인이 필요합니다.');
-                }
-
-                const headers = {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                };
-
                 // 사용자 정보와 기부 내역을 동시에 요청
                 const [userResponse, donationsResponse] = await Promise.all([
-                    fetch('http://localhost:8081/api/mypage', { headers }),
-                    fetch('http://localhost:8081/api/mydonation', { headers }) // 기부 내역 API 엔드포인트 (가정)
+                    api.get('/api/mypage'),
+                    api.get('/api/mydonation') // 기부 내역 API
                 ]);
 
-                if (!userResponse.ok) {
-                    throw new Error('사용자 정보를 가져오는데 실패했습니다.');
-                }
-                if (!donationsResponse.ok) {
-                    throw new Error('기부 내역을 가져오는데 실패했습니다.');
-                }
-
-                const userData = await userResponse.json();
-                const donationsData = await donationsResponse.json();
-
-                setUserInfo(userData);
-                setMyDonation(donationsData);
+                setUserInfo(userResponse.data);
+                setMyDonation(donationsResponse.data);
 
             } catch (err) {
-                setError(err.message);
+                if (err.response?.status === 401) {
+                    setError('로그인이 필요합니다. 다시 로그인해주세요.');
+                } else if (err.response?.status === 403) {
+                    setError('권한이 없습니다.');
+                } else {
+                    setError('데이터를 불러오는 중 오류가 발생했습니다.');
+                    console.error(err);
+                }
             } finally {
                 setLoading(false);
             }
@@ -61,10 +45,7 @@ const My = () => {
                     <div className="tab-pane">
                         <div className="info-grid">
                             {userInfo && Object.entries(userInfo).map(([key, value]) => {
-                                // totalAmount는 이미 상단에 표시되므로 여기서는 제외
                                 if (key === 'totalAmount') return null;
-                                
-                                // 키를 좀 더 친숙한 레이블로 변환
                                 const keyMap = {
                                     'userId': 'ID',
                                     'userName': '이름',
@@ -74,14 +55,9 @@ const My = () => {
                                     'userRole': '계정 유형'
                                 };
 
-                                // userRole 값을 변환
                                 let displayValue = value;
                                 if (key === 'userRole') {
-                                    const roleMap = {
-                                        0: '관리자',
-                                        1: '일반',
-                                        2: '기업'
-                                    };
+                                    const roleMap = { 0: '관리자', 1: '일반', 2: '기업' };
                                     displayValue = roleMap[value];
                                 }
 
@@ -132,32 +108,19 @@ const My = () => {
         }
     };
 
-    // 로딩 중일 때 표시할 UI
-    if (loading) {
-        return <div className="my-container">로딩 중...</div>;
-    }
-
-    // 에러 발생 시 표시할 UI
-    if (error) {
-        return <div className="my-container">에러: {error}</div>;
-    }
-    
-    // 사용자 정보가 없을 때 ( raro case )
-    if (!userInfo) {
-        return <div className="my-container">사용자 정보를 찾을 수 없습니다.</div>;
-    }
+    if (loading) return <div className="my-container">로딩 중...</div>;
+    if (error) return <div className="my-container">에러: {error}</div>;
+    if (!userInfo) return <div className="my-container">사용자 정보를 찾을 수 없습니다.</div>;
 
     return (
         <div className="my-container">
             <div className="profile-summary">
                 <div className="profile-info">
-                    {/* userInfo state에서 동적으로 이름 표시 */}
                     <h2>{userInfo.userName}님</h2>
                 </div>
                 <div className="donation-summary">
                     <div>
                         <p>총 기부금액</p>
-                        {/* userInfo state에서 동적으로 총 기부금액 표시 */}
                         <span>{parseInt(userInfo.totalAmount).toLocaleString()}원</span>
                     </div>
                 </div>

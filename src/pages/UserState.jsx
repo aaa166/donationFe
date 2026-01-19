@@ -1,218 +1,150 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
-import './UserState.css';
+import './DonationState.css';
+import api from '../api/axiosInstance'; // axiosInstance 사용
 
-const UserState = () => {
-    const [userStates, setUserStates] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+const DonationState = () => {
+    const [donations, setDonations] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedUser, setSelectedUser] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
-    const [reportHistories, setReportHistories] = useState([]);
+    const [searchType, setSearchType] = useState('donationTitle');
 
-    const REPORT_HISTORY_URL = 'http://localhost:8081/api/admin/findReportHistory';
-    const API_URL = 'http://localhost:8081/api/admin/userState';
-    const CHANGE_STATE_URL = 'http://localhost:8081/api/admin/changeUserState';
+    const STATE_LABELS = { P: '대기', A: '공개', D: '비공개' };
     const ITEMS_PER_PAGE = 10;
 
-    const ROLE_MAP = { 0: '관리자', 1: '일반', 2: '기업' };
-    const STATE_MAP = { 'A': '활성화', 'I': '비활성화' };
-
-    const getJwtToken = () => localStorage.getItem('jwtToken');
-
-
-    const fetchReportHistory = async (userNo) => {
-        const token = getJwtToken();
-        if (!token) {
-            alert('JWT 토큰 없음');
-            return;
-        }
-
-        try {
-            const res = await fetch(
-                `${REPORT_HISTORY_URL}?userNo=${userNo}`,
-                {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-            const data = await res.json();
-            setReportHistories(data);
-        } catch (err) {
-            console.error(err);
-            setReportHistories([]);
-        }
-    };
-
-    // 1️⃣ 사용자 데이터 가져오기
-    const fetchUserData = async () => {
-        setIsLoading(true);
+    // 캠페인 데이터 가져오기
+    const fetchDonations = async () => {
+        setLoading(true);
         setError(null);
-        const token = getJwtToken();
-        if (!token) { setError('JWT 토큰 없음'); setIsLoading(false); return; }
-
         try {
-            const res = await fetch(API_URL, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
-            });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            setUserStates(data);
+            const res = await api.get('/api/admin/donationState');
+            setDonations(res.data || []);
         } catch (err) {
-            setError(err.message || '사용자 데이터 불러오기 실패');
-        } finally { setIsLoading(false); }
+            console.error('데이터 가져오기 실패:', err);
+            setError(err.response?.data?.message || err.message || '캠페인 데이터를 가져오는 데 실패했습니다.');
+        } finally {
+            setLoading(false);
+        }
     };
 
-    useEffect(() => { fetchUserData(); }, []);
+    // 캠페인 상태 변경
+    const handleStateUpdate = async (donationNo) => {
+        if (!window.confirm(`${donationNo}번 캠페인의 상태를 변경하시겠습니까?`)) return;
 
-    // 2️⃣ 페이지 변경
+        try {
+            await api.patch(`/api/admin/updateDonationState/${donationNo}`);
+            alert(`${donationNo}번 캠페인 상태 변경 성공!`);
+            fetchDonations();
+        } catch (err) {
+            console.error('상태 업데이트 실패:', err);
+            setError(err.response?.data?.message || err.message || '상태 업데이트 중 오류가 발생했습니다.');
+        }
+    };
+
+    useEffect(() => {
+        fetchDonations();
+    }, []);
+
     const handlePageClick = (event) => setCurrentPage(event.selected);
 
-    // 3️⃣ 모달 열기/닫기
-    const handleOpenModal = (user) => {
-        setSelectedUser(user);
-        setIsModalOpen(true);
-        fetchReportHistory(user.userNo); 
-    };
-    const handleCloseModal = () => {
-        setSelectedUser(null);
-        setReportHistories([]);
-        setIsModalOpen(false);
-    };
-
-    // 4️⃣ 검색 필터
-    const filteredUsers = userStates.filter(u => {
-        const term = searchTerm.toLowerCase();
-        return u.userId?.toLowerCase().includes(term) ||
-               u.userName?.toLowerCase().includes(term) ||
-               u.userEmail?.toLowerCase().includes(term);
+    // 검색 필터 적용
+    const filteredDonations = donations.filter((donation) => {
+        const term = searchTerm.trim().toLowerCase();
+        if (!term) return true;
+        const value = donation[searchType]?.toString().toLowerCase() || '';
+        return value.includes(term);
     });
 
     const offset = currentPage * ITEMS_PER_PAGE;
-    const currentItems = filteredUsers.slice(offset, offset + ITEMS_PER_PAGE);
-    const pageCount = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
+    const currentItems = filteredDonations.slice(offset, offset + ITEMS_PER_PAGE);
+    const pageCount = Math.ceil(filteredDonations.length / ITEMS_PER_PAGE);
     const emptyRowsCount = ITEMS_PER_PAGE - currentItems.length;
 
-    // 5️⃣ 상태 변경 함수
-    const handleStateUpdate = async (newState) => {
-        if (!selectedUser) return;
-        const token = getJwtToken();
-        if (!token) { alert('JWT 없음'); return; }
-
-
-        try {
-            const res = await fetch(CHANGE_STATE_URL, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    userNo: selectedUser.userNo,
-                    userRole: selectedUser.userRole,
-                    userState: newState
-                })
-            });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            fetchUserData();
-            handleCloseModal();
-        } catch (err) {
-            console.error(err);
-            alert('상태 변경 실패');
-        }
-    };
-
-    if (isLoading) return <div className="user-state-container">데이터 로딩 중...</div>;
-    if (error) return <div className="user-state-container" style={{ color: 'red' }}>오류: {error}</div>;
+    if (loading) return <div className="donation-state-container">데이터를 불러오는 중...</div>;
+    if (error) return <div className="donation-state-container" style={{ color: 'red' }}>{error}</div>;
 
     return (
-        <div className="user-state-container">
-            <h1>사용자 관리</h1>
+        <div className="donation-state-container">
+            <h1>캠페인 관리</h1>
 
             <div className="search-container">
+                <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
+                    <option value="donationTitle">캠페인</option>
+                    <option value="donationOrganization">기관</option>
+                </select>
                 <input
                     type="text"
-                    placeholder="ID, 이름, 이메일 검색"
+                    placeholder="검색..."
                     value={searchTerm}
                     onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(0); }}
                 />
             </div>
 
-            <table className="user-state-table">
+            <table className="donation-state-table">
                 <thead>
                     <tr>
-                        <th>No</th><th>ID</th><th>이름</th><th>E-mail</th><th>전화번호</th>
-                        <th>Role</th><th>기부 금액</th><th>상태</th><th>제재 내역</th>
+                        <th>번호</th>
+                        <th>캠페인</th>
+                        <th>기관</th>
+                        <th>모금액</th>
+                        <th>마감일</th>
+                        <th>상태</th>
+                        <th>상태 변경</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {currentItems.map(user => (
-                        <tr key={user.userNo}>
-                            <td>{user.userNo}</td>
-                            <td>{user.userId}</td>
-                            <td>{user.userName}</td>
-                            <td>{user.userEmail}</td>
-                            <td>{user.userPhone}</td>
-                            <td>{ROLE_MAP[user.userRole] || 'Unknown'}</td>
-                            <td>{user.totalAmount.toLocaleString()}원</td>
-                            <td className={`state-${user.userState}`}>{STATE_MAP[user.userState]}</td>
+                    {currentItems.map((donation) => (
+                        <tr key={donation.donationNo}>
+                            <td>{donation.donationNo}</td>
                             <td>
-                                <button className="state-button change" onClick={() => handleOpenModal(user)}>보기</button>
+                                {donation.donationState === 'D' ? (
+                                    <a href="#" onClick={(e) => { e.preventDefault(); alert('비활성화된 게시글입니다.'); }}>
+                                        {donation.donationTitle}
+                                    </a>
+                                ) : (
+                                    <Link to={`/donations/${donation.donationNo}`}>{donation.donationTitle}</Link>
+                                )}
+                            </td>
+                            <td>{donation.donationOrganization}</td>
+                            <td>{donation.donationCurrentAmount?.toLocaleString()}원 / {donation.donationGoalAmount?.toLocaleString()}원</td>
+                            <td className={new Date(donation.donationDeadlineDate) < new Date().setHours(0,0,0,0) ? 'deadline-past' : ''}>
+                                {donation.donationDeadlineDate}
+                            </td>
+                            <td className={`state-${donation.donationState}`}>{STATE_LABELS[donation.donationState]}</td>
+                            <td>
+                                {(donation.donationState === 'P' || donation.donationState === 'D') && (
+                                    <button className="state-button activate" onClick={() => handleStateUpdate(donation.donationNo)}>공개</button>
+                                )}
+                                {donation.donationState === 'A' && (
+                                    <button className="state-button deactivate" onClick={() => handleStateUpdate(donation.donationNo)}>비공개</button>
+                                )}
                             </td>
                         </tr>
                     ))}
                     {emptyRowsCount > 0 && currentItems.length > 0 && Array.from({ length: emptyRowsCount }).map((_, i) => (
-                        <tr key={`empty-${i}`} className="empty-row"><td colSpan="9">&nbsp;</td></tr>
+                        <tr key={`empty-${i}`} className="empty-row"><td colSpan="7">&nbsp;</td></tr>
                     ))}
                 </tbody>
             </table>
 
-            <ReactPaginate
-                previousLabel={'이전'} nextLabel={'다음'} breakLabel={'...'}
-                pageCount={pageCount} marginPagesDisplayed={2} pageRangeDisplayed={5}
-                onPageChange={handlePageClick} containerClassName={'pagination'} activeClassName={'active'}
-            />
+            {donations.length === 0 && <p>등록된 캠페인이 없습니다.</p>}
 
-            {/* 모달 */}
-            {isModalOpen && selectedUser && (
-                <div className="modal-overlay" onClick={handleCloseModal}>
-                    <div className="modal-content" onClick={e => e.stopPropagation()}>
-                        <button className="close-button" onClick={handleCloseModal}>&times;</button>
-                        <h2>'{selectedUser.userId}' 경고 내역</h2>
-                        <div className="warning-history">
-                            {reportHistories.length > 0 ? (
-                                <ul className="warning-list">
-                                    {reportHistories.map((report, index) => (
-                                        <li key={index}>
-                                            <div><strong>신고일:</strong> {report.reportDate}</div>
-                                            <div><strong>사유:</strong> {report.reportDetails}</div>
-                                            {/* <div>상태: {report.reportStatus}</div> */}
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p>제재 내역 없음</p>
-                            )}
-                        </div>
-                        <div className="modal-state-buttons">
-                            {selectedUser.userState === 'A' && (
-                                <button onClick={() => handleStateUpdate('A')} className="state-button delete">비활</button>
-                            )}
-                            {selectedUser.userState === 'I' && (
-                                <button onClick={() => handleStateUpdate('I')} className="state-button activate">활성</button>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            )}
+            <ReactPaginate
+                previousLabel="이전"
+                nextLabel="다음"
+                breakLabel="..."
+                pageCount={pageCount}
+                marginPagesDisplayed={2}
+                pageRangeDisplayed={5}
+                onPageChange={handlePageClick}
+                containerClassName="pagination"
+                activeClassName="active"
+            />
         </div>
     );
 };
 
-export default UserState;
+export default DonationState;

@@ -4,8 +4,8 @@ import ProgressBar from '../components/ProgressBar';
 import ContentTabs from '../components/ContentTabs';
 import { useParams, useLocation } from 'react-router-dom';
 import DonationSidebar from '../components/DonationSidebar';
+import api from '../api/axiosInstance'; // ✅ JWT 인터셉터
 
-// API 호출을 위한 기본 URL
 const API_BASE_URL = 'http://localhost:8081/api';
 
 function DonationView() {
@@ -20,269 +20,190 @@ function DonationView() {
     const [isCustomAmount, setIsCustomAmount] = useState(false);
     const [termsAgreed, setTermsAgreed] = useState(false);
     const [comment, setComment] = useState(""); 
-    const [step, setStep] = useState(1); // 모달 단계를 위한 상태
-    const [isProcessing, setIsProcessing] = useState(false); // 결제 진행 상태
+    const [step, setStep] = useState(1);
+    const [isProcessing, setIsProcessing] = useState(false);
     const customAmountInputRef = useRef(null);
-    
+
     const { donationNo } = useParams();
 
-    useEffect(() => {
-        if (!loading && location.hash) {
-            const id = location.hash.substring(1); // Remove '#'
-            setTimeout(() => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    element.classList.add('highlight');
-                    setTimeout(() => element.classList.remove('highlight'), 2000); // Highlight for 2 seconds
-                }
-            }, 100); // Delay to ensure rendering is complete
-        }
-    }, [loading, location.hash]);
-
-    const handleDonateSubmit = async () => {
-        if (!termsAgreed) return;
-
-        setIsProcessing(true); // 결제 시작
-
-        const token = localStorage.getItem("jwtToken");
-        console.log(token);
-        if (!token) {
-            alert("로그인이 필요합니다.");
-            setIsProcessing(false);
-            return;
-        }
-
-        const payData = {
-            payAmount: Number(amount),
-            payComment: comment,
-            donationNo: Number(donationNo), 
-        };
-
-        try {
-            // Simulate network delay
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            const response = await fetch(`${API_BASE_URL}/donate`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`, 
-                },
-                body: JSON.stringify(payData),
-            });
-
-            if (!response.ok) throw new Error("후원 실패");
-
-            alert("후원이 완료되었습니다.");
-            handleCloseModal();
-            fetchData();
-
-        } catch (e) {
-            alert("후원 중 오류 발생");
-        } finally {
-            setIsProcessing(false); // 결제 종료
-        }
-    };
-
-    const handleReport = async (reportedId, reportDetails, typeNo, reportType) => {
-        const token = localStorage.getItem("jwtToken");
-
-        if (!token) {
-            alert("로그인이 필요합니다.");
-            return;
-        }
-
-        const reportData = {
-            reportedId,
-            reportDetails,
-            typeNo,
-            reportType,
-        };
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/insertReport`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`, 
-            },
-            body: JSON.stringify(reportData),
-            });
-
-            if (response.status === 409) {
-            alert("이미 신고된 게시글입니다.");
-            return;
-        }
-
-            if (response.status === 401) {
-                alert("로그인이 만료되었거나 권한이 없습니다. 다시 로그인해주세요.");
-                return;
-            }
-
-            if (!response.ok) {
-                const errText = await response.text();
-                throw new Error(errText || "신고 실패");
-            }
-
-            alert("신고가 접수되었습니다.");
-            fetchData();
-            setActiveTab('reviews');
-        } catch (e) {
-            console.error("신고 오류:", e);
-            alert("신고 중 오류가 발생했습니다.");
-        }
-    };
-
-
-    
-    
-    // useCallback으로 함수 재생성을 방지합니다.
+    /* ================= 데이터 로딩 ================= */
     const fetchData = useCallback(async () => {
         setLoading(true);
         setError(null);
 
         try {
-            const [donationResponse, commentsResponse] = await Promise.all([
+            const [donationRes, commentRes] = await Promise.all([
                 fetch(`${API_BASE_URL}/public/donationView/${donationNo}`),
-                fetch(`${API_BASE_URL}/public/donationComments/${donationNo}`),
+                fetch(`${API_BASE_URL}/public/donationComments/${donationNo}`)
             ]);
 
-            if (!donationResponse.ok || !commentsResponse.ok) {
-                const errorStatus = !donationResponse.ok ? donationResponse.status : commentsResponse.status;
-                throw new Error(`데이터를 불러오는 데 실패했습니다. (Status: ${errorStatus})`);
+            if (!donationRes.ok || !commentRes.ok) {
+                throw new Error('데이터 조회 실패');
             }
 
-            const donationJson = await donationResponse.json();
-            const commentsJson = await commentsResponse.json();
-            console.log("원본 댓글 데이터:", commentsJson);
-
-            // 각 댓글에 payNo 추가
-            const commentsWithPayNo = commentsJson.map(comment => ({
-                ...comment,                // 기존 데이터 유지
-                payNo: comment.payNo // payNo 추가 (백엔드에서 실제 payNo가 있으면 그걸 사용)
-            }));
-
-            
-
-            setDonationData(donationJson);
-            setPayComments(commentsWithPayNo);
-
-        } catch (err) {
-            setError(err.message);
+            setDonationData(await donationRes.json());
+            setPayComments(await commentRes.json());
+        } catch (e) {
+            setError(e.message);
         } finally {
             setLoading(false);
         }
-
-    }, [donationNo]); // donationNo가 변경될 때만 함수가 재생성됩니다.
+    }, [donationNo]);
 
     useEffect(() => {
         fetchData();
-    }, [fetchData]); // fetchData 함수를 의존성 배열에 추가합니다.
+    }, [fetchData]);
 
+    /* ================= 후원 ================= */
+    const handleDonateSubmit = async () => {
+        if (!termsAgreed) return;
+
+        setIsProcessing(true);
+        try {
+            await api.post('/api/donate', {
+                payAmount: Number(amount),
+                payComment: comment,
+                donationNo: Number(donationNo),
+            });
+
+            alert('후원이 완료되었습니다.');
+            handleCloseModal();
+            fetchData();
+        } catch (e) {
+            if (e.response?.status === 401) {
+                alert('로그인이 필요합니다.');
+            } else {
+                alert('후원 중 오류 발생');
+            }
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
+    /* ================= 신고 ================= */
+    const handleReport = async (reportedId, reportDetails, typeNo, reportType) => {
+        try {
+            await api.post('/api/insertReport', {
+                reportedId,
+                reportDetails,
+                typeNo,
+                reportType,
+            });
+
+            alert('신고가 접수되었습니다.');
+            fetchData();
+            setActiveTab('reviews');
+        } catch (e) {
+            if (e.response?.status === 409) {
+                alert('이미 신고된 게시글입니다.');
+            } else if (e.response?.status === 401) {
+                alert('로그인이 필요합니다.');
+            } else {
+                alert('신고 중 오류 발생');
+            }
+        }
+    };
+
+    /* ================= UI 헬퍼 ================= */
     const handleDonateClick = () => {
         setIsModalOpen(true);
-        setStep(1); // 모달 열 때 항상 1단계부터 시작
+        setStep(1);
     };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setAmount("");
         setIsCustomAmount(false);
-        setTermsAgreed(false); // 모달 닫을 때 초기화
-        setComment(""); // 모달 닫을 때 응원글 초기화
-        setStep(1); // 모달 닫을 때 단계 초기화
+        setTermsAgreed(false);
+        setComment("");
+        setStep(1);
     };
 
-    
+    const formatWithCommas = (value) =>
+        value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "";
 
-    const formatWithCommas = (value) => {
-        if (!value) return "";
-        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    };
-
-    // --- 렌더링 로직 ---
     if (loading) return <div>로딩 중...</div>;
     if (error) return <div style={{ color: 'red' }}>에러: {error}</div>;
-    if (!donationData) return <div>데이터가 없습니다.</div>;
-    const CDate = new Date(donationData.donationCreateDate);
-    const DDate = new Date(donationData.donationCreateDate);
+    if (!donationData) return <div>데이터 없음</div>;
 
+    /* ================= 탭 콘텐츠 ================= */
     const renderContent = () => {
         switch (activeTab) {
             case 'story':
-                // 옵셔널 체이닝(?.)을 사용하여 데이터가 확실히 있을 때만 안전하게 렌더링
                 return (
                     <div>
-                        <div>{donationData?.donationContent}</div>
-                        <div>{donationData?.donationAmountPlan}</div>
+                        <div>{donationData.donationContent}</div>
+                        <div>{donationData.donationAmountPlan}</div>
                     </div>
                 );
             case 'reviews':
+                return payComments.map((c, i) => (
+                    <div key={i} className="review-item">
+                        <p><strong>작성자:</strong> {c.userName}</p>
+                        <p><strong>후원금:</strong> {c.payAmount.toLocaleString()}원</p>
+                        <p>{c.payComment}</p>
+                        <button
+                            className="report-button"
+                            onClick={() =>
+                                handleReport(c.userNo, c.payComment, c.payNo, 'payComment')
+                            }
+                        >
+                            신고
+                        </button>
+                    </div>
+                ));
+            case 'info':
                 return (
                     <div>
-                        {payComments?.map((comment, index) => (
-                            <div key={comment.payCommentId || comment.id || index} id={`comment-${comment.payNo}`} className="review-item">
-                                <p><strong>작성자:</strong> {comment.userName}</p>
-                                <p><strong>후원금액:</strong> {comment.payAmount?.toLocaleString()}원</p>
-                                <p><strong>응원글:</strong> {comment.payComment}</p>
-                                <p><strong>작성일:</strong> {new Date(comment.payDate).toLocaleDateString()}</p>
-                                <button className="report-button" onClick={() =>{
-                                        handleReport(comment.userNo, comment.payComment, comment.payNo ,"payComment")}}>
-                                    신고
-                                </button>
-                            </div>
-                        ))}
-
+                        <p><strong>단체:</strong> {donationData.donationOrganization}</p>
+                        <p>{donationData.donationAmountPlan}</p>
                     </div>
                 );
-            case 'info':
-                return <div>
-                            <h3>모금단체 정보</h3>
-                            <p><strong>단체명:</strong> {donationData.donationOrganization}</p>
-                            <p><strong>모금기간:</strong> {CDate.toLocaleString()} ~ {DDate.toLocaleString()}</p>
-                            <h3>모금액 사용 계획</h3>
-                            <p>{donationData.donationAmountPlan}</p>
-                        </div>
             default:
-                return <div>스토리를 확인해주세요.</div>;
+                return null;
         }
     };
-    
+
     return (
-        <div>
-            {/* 옵셔널 체이닝을 적용하여 안정성 향상 */}
-            <div className="container">
-                <main className="main-content">
-                    <div className="donation-header">
-                        <div className="tags">
-                            {/* donationData.donationCode가 배열이 아닐 경우를 대비하여 방어 코드 추가 */}
-                            {Array.isArray(donationData.donationCode) && donationData.donationCode.map((tag, index) => (
-                                <span key={index} className="tag">{tag}</span>
-                            ))}
-                        </div>
-                        <h1>{donationData.donationTitle}</h1>
-                        <img src={donationData.donationImg} alt={donationData.donationTitle} className="main-image" />
-                    </div>
-                    <ProgressBar
-                        current={donationData.donationCurrentAmount}
-                        target={donationData.donationGoalAmount}
+        <div className="container">
+            <main className="main-content">
+                {/* 🔥 헤더 / 이미지 복구 */}
+                <div className="donation-header">
+                    <h1>{donationData.donationTitle}</h1>
+                    <img
+                        src={donationData.donationImg}
+                        alt={donationData.donationTitle}
+                        className="main-image"
                     />
-                    <div className="action-buttons">
-                        <button className="donate-button main" onClick={handleDonateClick}>참여하기</button>
-                        <button className="share-button">공유</button>
-                    </div>
-                    <ContentTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-                    <div className="content-section">
-                        {renderContent()}
-                    </div>
-                </main>
-                <DonationSidebar
-                    currentAmount={donationData.donationCurrentAmount}
-                    organization={donationData.donationOrganization}
-                    onDonateClick={handleDonateClick}
+                </div>
+
+                <ProgressBar
+                    current={donationData.donationCurrentAmount}
+                    target={donationData.donationGoalAmount}
                 />
-            </div>
+
+                {/* 🔥 action-buttons 복구 */}
+                <div className="action-buttons">
+                    <button className="donate-button main" onClick={handleDonateClick}>
+                        참여하기
+                    </button>
+                    <button className="share-button">공유</button>
+                </div>
+
+                <ContentTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+
+                <div className="content-section">
+                    {renderContent()}
+                </div>
+            </main>
+
+            <DonationSidebar
+                currentAmount={donationData.donationCurrentAmount}
+                organization={donationData.donationOrganization}
+                onDonateClick={handleDonateClick}
+            />
+
+            {/* 🔥 모달 그대로 유지 */}
             {isModalOpen && (
                 <div className="modal-overlay" onClick={handleCloseModal}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -415,3 +336,4 @@ function DonationView() {
 }
 
 export default DonationView;
+

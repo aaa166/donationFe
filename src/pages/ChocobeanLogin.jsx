@@ -3,7 +3,7 @@ import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import './ChocobeanLogin.css';
 
 const ChocobeanLogin = () => {
-  const { setIsLoggedIn, setIsAdmin } = useOutletContext(); // isAdmin 추가
+  const { setIsLoggedIn, setIsAdmin } = useOutletContext();
 
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
@@ -16,36 +16,31 @@ const ChocobeanLogin = () => {
     try {
       const response = await fetch('http://localhost:8081/api/auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id: id,
-          password: password
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, password }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        const token = data.token;
-
-        // 1️⃣ 토큰 저장
-        localStorage.setItem('jwtToken', token);
-
-        // 2️⃣ 토큰 디코딩 (payload 가져오기)
-        const payload = JSON.parse(atob(token.split('.')[1]));
-
-        // 3️⃣ 상태 즉시 업데이트
-        setIsLoggedIn(true);
-        setIsAdmin(payload.role === 'admin');
-
-        console.log('Login successful:', data);
-
-        navigate('/');
-      } else {
-        console.error('Login failed:', response.statusText);
-        alert('로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.');
+      if (!response.ok) {
+        alert('로그인 실패: 아이디와 비밀번호를 확인해주세요.');
+        return;
       }
+
+      const data = await response.json();
+
+      // ✅ accessToken, refreshToken 저장
+      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+
+      // 토큰 payload 디코딩
+      const payload = JSON.parse(atob(data.accessToken.split('.')[1]));
+
+      // 상태 업데이트
+      setIsLoggedIn(true);
+      setIsAdmin(payload.role === 'admin');
+
+      console.log('Login successful:', data);
+
+      navigate('/');
     } catch (error) {
       console.error('Network error:', error);
       alert('네트워크 오류가 발생했습니다. 다시 시도해주세요.');
@@ -62,7 +57,7 @@ const ChocobeanLogin = () => {
         <button className="back-button" onClick={handleBackToSocialLogin}>
           ← 뒤로
         </button>
-        
+
         <div className="chocobean-header">
           <div className="chocobean-logo">
             <span className="chocobean-icon">🍫</span>
@@ -74,7 +69,6 @@ const ChocobeanLogin = () => {
           <div className="input-group">
             <input
               type="text"
-              id="email"
               value={id}
               onChange={(e) => setId(e.target.value)}
               placeholder="아이디"
@@ -82,11 +76,10 @@ const ChocobeanLogin = () => {
               className="chocobean-input"
             />
           </div>
-          
+
           <div className="input-group">
             <input
               type="password"
-              id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="비밀번호"

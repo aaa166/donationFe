@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
-import Header from '../components/Header';
+import api from '../api/axiosInstance'; // Axios 인스턴스 사용
 import DonationList from '../components/DonationList';
 import './DonationPage.css';
 
@@ -12,26 +11,19 @@ const DonationPage = () => {
 
   useEffect(() => {
     const fetchRole = async () => {
-      const token = localStorage.getItem('jwtToken'); 
-      const config = {
-          headers: {
-              'Authorization': token ? `Bearer ${token}` : ''
-          }
-      };
-
       try {
-          const response = await axios.get(`http://localhost:8081/api/user/role`,config);
-          setRole(response.data); 
-          console.log('받은 역할:', response.data);
+        const response = await api.get('/api/user/role'); // 인터셉터가 자동으로 토큰 추가
+        setRole(response.data); // 예: "ROLE_ADMIN" 또는 "ROLE_USER"
+        console.log('받은 역할:', response.data);
       } catch (error) {
-          console.error('역할 데이터를 불러오는 중 오류 발생:', error);
-          setRole(-1); 
+        console.error('역할 데이터를 불러오는 중 오류 발생:', error);
+        setRole('ROLE_USER'); // 기본값: 일반 사용자
       }
     };
 
     const fetchDonations = async () => {
       try {
-        const response = await axios.get('http://localhost:8081/api/public/donations');
+        const response = await api.get('/api/public/donations');
         setDonations(response.data);
       } catch (error) {
         console.error('데이터를 불러오는 중 오류 발생:', error);
@@ -39,24 +31,26 @@ const DonationPage = () => {
         setLoading(false);
       }
     };
-    
+
     fetchRole();
     fetchDonations();
   }, []);
 
-  if (loading || role === null) {
+  if (loading) {
     return <div>데이터를 불러오는 중입니다...</div>;
   }
-  
+
+  const isAdmin = role === 'ROLE_ADMIN';
+
   return (
     <div className="donation-page-wrap">
-      <DonationList title="전달하는 기부>" donations={donations.slice(0, 4)} />
+      <DonationList title="전달하는 기부" donations={donations.slice(0, 4)} />
 
       <Link to="/donationApply" className="donationApply">
         기부 신청
       </Link>
 
-      {role === 0 && (
+      {isAdmin && (
         <div id="managerDiv">
           <Link to="/donationState" className="donationState">
             캠페인 관리
