@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import api from '../api/axiosInstance'; // Axios 인스턴스 사용
+import api from '../api/axiosInstance';
 import './My.css';
+import { 
+  User, Mail, Phone, Calendar, Shield, 
+  ChevronRight, Download, Filter, Heart 
+} from 'lucide-react'; // 아이콘 라이브러리 예시 (lucide-react)
 
 const My = () => {
     const [activeTab, setActiveTab] = useState('home');
@@ -12,140 +16,137 @@ const My = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // 사용자 정보와 기부 내역을 동시에 요청
                 const [userResponse, donationsResponse] = await Promise.all([
                     api.get('/api/mypage'),
-                    api.get('/api/mydonation') // 기부 내역 API
+                    api.get('/api/mydonation')
                 ]);
-
                 setUserInfo(userResponse.data);
                 setMyDonation(donationsResponse.data);
-
             } catch (err) {
-                if (err.response?.status === 401) {
-                    setError('로그인이 필요합니다. 다시 로그인해주세요.');
-                } else if (err.response?.status === 403) {
-                    setError('권한이 없습니다.');
-                } else {
-                    setError('데이터를 불러오는 중 오류가 발생했습니다.');
-                    console.error(err);
-                }
+                setError('데이터를 불러오는 중 오류가 발생했습니다.');
             } finally {
                 setLoading(false);
             }
         };
-
         fetchData();
     }, []);
 
-    const renderContent = () => {
-        switch (activeTab) {
-            case 'home':
-                return (
-                    <div className="tab-pane">
-                        <div className="info-grid">
-                            {userInfo && Object.entries(userInfo).map(([key, value]) => {
-                                if (key === 'totalAmount') return null;
-                                const keyMap = {
-                                    'userId': 'ID',
-                                    'userName': '이름',
-                                    'userEmail': '이메일',
-                                    'userPhone': '연락처',
-                                    'userBirth': '생년월일',
-                                    'userRole': '계정 유형'
-                                };
-
-                                let displayValue = value;
-                                if (key === 'userRole') {
-                                    const roleMap = { 0: '관리자', 1: '일반', 2: '기업' };
-                                    displayValue = roleMap[value];
-                                }
-
-                                return (
-                                    <div className="info-item" key={key}>
-                                        <span className="info-label">{keyMap[key] || key}</span>
-                                        <span className="info-value">{displayValue}</span>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                );
-            case 'donations':
-                return (
-                    <div className="tab-pane">
-                        <h3>나의 기부 내역</h3>
-                        <table className="donation-table">
-                            <thead>
-                                <tr>
-                                    <th style={{width: '10%'}}>번호</th>
-                                    <th style={{width: '50%'}}>기부 캠페인</th>
-                                    <th style={{width: '20%'}}>기부금액</th>
-                                    <th style={{width: '20%'}}>기부일자</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {myDonation.length > 0 ? (
-                                    myDonation.map((donation, index) => (
-                                        <tr key={index}>
-                                            <td>{index + 1}</td>
-                                            <td>{donation.donationTitle}</td>
-                                            <td>{`${donation.payAmount.toLocaleString()}원`}</td>
-                                            <td>{new Date(donation.payDate).toLocaleDateString()}</td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan="4" style={{textAlign: 'center'}}>기부 내역이 없습니다.</td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                );
-            default:
-                return null;
-        }
-    };
-
-    if (loading) return <div className="my-container">로딩 중...</div>;
-    if (error) return <div className="my-container">에러: {error}</div>;
-    if (!userInfo) return <div className="my-container">사용자 정보를 찾을 수 없습니다.</div>;
+    if (loading) return <div className="loading-state">데이터를 불러오는 중...</div>;
+    if (error) return <div className="error-state">{error}</div>;
 
     return (
-        <div className="my-container">
-            <div className="profile-summary">
-                <div className="profile-info">
-                    <h2>{userInfo.userName}님</h2>
-                </div>
-                <div className="donation-summary">
-                    <div>
-                        <p>총 기부금액</p>
-                        <span>{parseInt(userInfo.totalAmount).toLocaleString()}원</span>
+        <div className="desktop-my-page">
+            {/* 상단 프로필 히어로 섹션 */}
+            <header className="profile-hero">
+                <div className="hero-content">
+                    <div className="user-meta">
+                        <div className="avatar-wrapper">
+                            {/* <img src="/default-avatar.png" alt="Profile" /> */}
+                            <User size={70} />
+                            {/* <span className="badge">VIP</span> */}
+                        </div>
+                        <div className="user-titles">
+                            <h1>{userInfo.userName}님, 반갑습니다!</h1>
+                            <p className="user-status">세상을 따뜻하게 만드는 기부자님</p>
+                        </div>
+                    </div>
+                    <div className="total-donation-card">
+                        <span className="label">누적 기부 금액</span>
+                        <h2 className="amount">{parseInt(userInfo.totalAmount).toLocaleString()}원</h2>
+                        
                     </div>
                 </div>
-            </div>
+            </header>
 
-            <div className="my-tabs">
-                <button
-                    className={`tab-button ${activeTab === 'home' ? 'active' : ''}`}
+            {/* 탭 네비게이션 */}
+            <nav className="my-tabs-nav">
+                <button 
+                    className={`nav-item ${activeTab === 'home' ? 'active' : ''}`}
                     onClick={() => setActiveTab('home')}
                 >
                     마이홈
                 </button>
-                <button
-                    className={`tab-button ${activeTab === 'donations' ? 'active' : ''}`}
+                <button 
+                    className={`nav-item ${activeTab === 'donations' ? 'active' : ''}`}
                     onClick={() => setActiveTab('donations')}
                 >
-                    나의 기부
+                    기부 내역
                 </button>
-            </div>
+            </nav>
 
-            <div className="tab-content">
-                {renderContent()}
-            </div>
+            <main className="tab-content-area">
+                {activeTab === 'home' ? (
+                    <div className="home-grid">
+                        <section className="info-section">
+                            <h3>계정 정보</h3>
+                            <div className="info-cards-container">
+                                <InfoCard icon={<User />} label="아이디" value={userInfo.userId} />
+                                <InfoCard icon={<Mail />} label="이메일" value={userInfo.userEmail} />
+                                <InfoCard icon={<Phone />} label="연락처" value={userInfo.userPhone} />
+                                <InfoCard icon={<Calendar />} label="생년월일" value={userInfo.userBirth} />
+                                <InfoCard 
+                                    icon={<Shield />} 
+                                    label="계정 유형" 
+                                    value={userInfo.userRole === 0 ? '관리자' : userInfo.userRole === 1 ? '일반' : '기업'} 
+                                />
+                            </div>
+                        </section>
+                        <aside className="sidebar-section">
+                            <div className="action-card settings">
+                                <h4>계정 설정</h4>
+                                <button className="action-btn">프로필 수정 <ChevronRight size={16} /></button>
+                                <button className="action-btn">비밀번호 변경 <ChevronRight size={16} /></button>
+                                <button className="logout-btn">로그아웃</button>
+                            </div>
+                        </aside>
+                    </div>
+                ) : (
+                    <div className="donation-view">
+                        <div className="view-header">
+                            <h3>나의 기부 내역</h3>
+                            <div className="view-actions">
+                                
+                            </div>
+                        </div>
+                        <div className="table-wrapper">
+                            <table className="modern-table">
+                                <thead>
+                                    <tr>
+                                        <th>번호</th>
+                                        <th>기부 캠페인</th>
+                                        <th>기부금액</th>
+                                        <th>기부일자</th>
+                                        <th>증명서</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {myDonation.map((item, idx) => (
+                                        <tr key={idx}>
+                                            <td>{idx + 1}</td>
+                                            <td className="campaign-cell">{item.donationTitle}</td>
+                                            <td className="amount-cell">{item.payAmount.toLocaleString()}원</td>
+                                            <td>{new Date(item.payDate).toLocaleDateString()}</td>
+                                            <td><button className="cert-btn">발급</button></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+            </main>
         </div>
     );
 };
+
+const InfoCard = ({ icon, label, value }) => (
+    <div className="info-card">
+        <div className="card-icon">{icon}</div>
+        <div className="card-txt">
+            <span className="card-label">{label}</span>
+            <span className="card-value">{value}</span>
+        </div>
+    </div>
+);
 
 export default My;
