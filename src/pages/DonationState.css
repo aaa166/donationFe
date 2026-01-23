@@ -1,193 +1,219 @@
-.donation-state-container {
-  padding: 20px;
-  margin: 0 10%;
-  display: flex;
-  flex-direction: column;
-  min-height: 80vh;
+.admin-layout {
+    padding: 40px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
 }
 
-.search-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
-  gap: 10px;
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 30px;
 }
 
-.search-container select,
-.search-container input {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1em;
+.header-title h1 {
+    font-size: 24px;
+    margin: 0;
+    color: #1a1a1a;
 }
 
-.search-container select {
-  background-color: #f9f9f9;
+.header-title p {
+    color: #666;
+    margin: 5px 0 0;
 }
 
-.search-container input {
-  width: 250px;
+.search-group {
+    display: flex;
+    gap: 10px;
 }
 
-.donation-state-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  table-layout: fixed;
-  flex-grow: 1;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  overflow: hidden;
+.search-group select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
 }
 
-.donation-state-table th,
-.donation-state-table td {
-  padding: 12px 15px;
-  text-align: left;
-  word-wrap: break-word;
-  border-bottom: 1px solid #ddd;
+.search-group input {
+    width: 250px;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
 }
 
-.donation-state-table th {
-  background-color: #4CAF50;
-  color: white;
-  font-weight: 600;
-  text-align: center;
+/* Stats Cards */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
 }
 
-.donation-state-table tbody tr:nth-of-type(even) {
-  background-color: #f9f9f9;
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.donation-state-table tbody tr:hover {
-  background-color: #f1f1f1;
+.stat-card .label { color: #888; font-size: 13px; font-weight: 600; }
+.stat-card .value { display: block; font-size: 28px; font-weight: 700; margin-top: 5px; }
+.stat-card.active .value { color: #4CAF50; }
+.stat-card.pending .value { color: #ff9800; }
+
+/* Table Section */
+.table-container {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
-
-
-
-/* 각 열의 너비 설정 */
-.donation-state-table th:nth-child(1),
-.donation-state-table td:nth-child(1) {
-  width: 5%; /* 번호 */
-  text-align: center;
-}
-
-.donation-state-table th:nth-child(2),
-.donation-state-table td:nth-child(2) {
-  width: 30%; /* 캠페인 */
-}
-
-.donation-state-table th:nth-child(3),
-.donation-state-table td:nth-child(3) {
-  width: 10%; /* 기관 */
-  text-align: center;
-}
-
-.donation-state-table th:nth-child(4),
-.donation-state-table td:nth-child(4) {
-  width: 25%; /* 모금액 */
-  text-align: center;
-}
-
-.donation-state-table th:nth-child(5),
-.donation-state-table td:nth-child(5) {
-  width: 15%; /* 마감일 */
-  text-align: center;
-}
-
-.donation-state-table th:nth-child(6),
-.donation-state-table td:nth-child(6) {
-  width: 50px; /* 상태 */
-  text-align: center;
-}
-
-.donation-state-table th:nth-child(7),
-.donation-state-table td:nth-child(7) {
-  width: 50px; /* 상태 변경 */
-  text-align: center;
-}
-
-.state-P {
-    color: orange; /* 주황색: 대기 */
-    font-weight: bold;
-}
-
-.state-A {
-    color: green; /* 초록색: 게시 (활성) */
-    font-weight: bold;
-}
-
-.state-D {
-    color: red; /* 빨간색: 비활성화 (종료) */
-    font-weight: bold;
-}
-
-.deadline-past {
-  color: red;
-  font-weight: bold;
-}
-
-.state-button {
+.admin-table {
     width: 100%;
-    max-width: 60px;
-    margin: auto;
-    padding: 4px;
+    border-collapse: collapse;
+}
+
+.admin-table th {
+    text-align: left;
+    /* padding: 15px; */
+    background: #fbfbfb;
+    border-bottom: 2px solid #eee;
+    color: #444;
+    font-size: 14px;
+}
+
+.admin-table td {
+    padding: 10px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+}
+
+.title-link {
+    text-decoration: none;
+    color: #1a1a1a;
+    font-weight: 600;
+}
+
+.title-link:hover { color: #4CAF50; }
+
+.amount-text strong { color: #2d3436; }
+.amount-text span { color: #999; font-size: 12px; }
+
+/* Badges */
+.state-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.state-A { background: #e6f7ed; color: #28a745; }
+.state-P { background: #fff4e6; color: #ff9800; }
+.state-D { background: #fff1f0; color: #f44336; }
+
+/* Action Button */
+.action-btn {
     border: none;
-    border-radius: 4px;
-    color: white;
+    border-radius: 6px;
     cursor: pointer;
-    text-align: center;
+    font-size: 12px;
+    transition: 0.2s;
+    padding: 0;    
+    width: 85px; 
+    align-items: center;
 }
 
-.state-button.activate {
-    background-color: #28a745;
-}
+.action-btn.show { background: #4CAF50; color: white; }
+.action-btn.hide { background: #eee; color: #666; }
+.action-btn:hover { opacity: 0.8; }
 
-.state-button.deactivate {
-    background-color: #dc3545;
-}
-
-.empty-row,
-tr.empty-row:hover,
-.donation-state-table tbody tr:nth-of-type(even).empty-row {
-    background-color: transparent !important;
-}
-
-.empty-row td {
-    border-color: transparent;
-    pointer-events: none;
-    color: transparent;
-}
-
-.pagination {
+/* Pagination */
+.pagination-bar {
     display: flex;
     justify-content: center;
     list-style: none;
+    margin-top: 25px;
+    gap: 5px;
     padding: 0;
-    margin-top: 20px;
 }
 
-.pagination li {
-    margin: 0 5px;
-}
-
-.pagination li a {
-    cursor: pointer;
-    padding: 8px 12px;
+.pagination-bar li a {
+    padding: 8px 14px;
     border: 1px solid #ddd;
-    border-radius: 4px;
-    color: #333;
+    border-radius: 6px;
+    cursor: pointer;
     text-decoration: none;
+    color: #666;
 }
 
-.pagination li.active a {
-    background-color: #4CAF50;
+.pagination-bar li.active a {
+    background: #4CAF50;
     color: white;
     border-color: #4CAF50;
 }
+/* Progress Bar Styles */
+.progress-cell {
+    width: 130px; /* 고정 너비로 정렬 유지 */
+}
 
-.pagination li.disabled a {
-    color: #ccc;
-    cursor: not-allowed;
+.progress-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.progress-percentage {
+    font-size: 13px;
+    font-weight: 700;
+    color: #4CAF50; /* 달성률 강조 색상 */
+}
+
+.progress-track {
+    width: 100%;
+    height: 8px;
+    background-color: #eee;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: #4CAF50; /* 채워지는 색상 (그린) */
+    border-radius: 10px;
+    transition: width 0.4s ease-in-out; /* 부드러운 애니메이션 */
+}
+
+/* 달성 완료 시 (선택 사항) */
+.progress-fill[style*="width: 100%"] {
+    background-color: #2196F3; /* 100% 달성 시 파란색으로 변경 가능 */
+}
+
+/* 기존 테이블 셀 여백 조정 */
+.admin-table td {
+    vertical-align: middle;
+}
+
+.admin-table th:nth-child(1),
+.admin-table td:nth-child(1) {
+    width: 5px; 
+}
+
+.admin-table th:nth-child(7),
+.admin-table td:nth-child(7) {
+    width: 60px; 
+}
+
+.admin-table th:nth-child(8),
+.admin-table td:nth-child(8) {
+    width: 80px; 
 }

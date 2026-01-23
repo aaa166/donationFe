@@ -1,125 +1,151 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
-import './Report.css';
-import ReportModal from '../components/ReportModal/ReportModal';
 import api from '../api/axiosInstance';
+import ReportModal from '../components/ReportModal/ReportModal';
+import './Report.css';
 
 const Report = () => {
-  const [reports, setReports] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchType, setSearchType] = useState('reporterId');
-  const [showPendingOnly, setShowPendingOnly] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedReport, setSelectedReport] = useState(null);
-  const ITEMS_PER_PAGE = 10;
+    const [reports, setReports] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchType, setSearchType] = useState('reporterId');
+    const [showPendingOnly, setShowPendingOnly] = useState(false);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedReport, setSelectedReport] = useState(null);
 
-  const fetchReports = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const res = await api.get('/api/admin/findReportState');
-      setReports(res.data);
-    } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.message || '신고 목록 불러오기 실패');
-    } finally { setIsLoading(false); }
-  };
+    const ITEMS_PER_PAGE = 10;
 
-  const changeReportState = async (reportNo, type) => {
-    try {
-      await api.get(type === 'C'
-        ? `/api/admin/changeReportStateC?reportNo=${reportNo}`
-        : `/api/admin/changeReportStateR?reportNo=${reportNo}`
-      );
-      alert(type === 'C' ? '신고가 철회되었습니다.' : '신고가 처리되었습니다.');
-      fetchReports();
-    } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.message || '상태 변경 중 오류 발생');
-    }
-  };
+    const fetchReports = async () => {
+        setIsLoading(true);
+        try {
+            const res = await api.get('/api/admin/findReportState');
+            setReports(res.data);
+        } catch (err) { console.error(err); }
+        finally { setIsLoading(false); }
+    };
 
-  useEffect(() => { fetchReports(); }, []);
-  const handlePageClick = e => setCurrentPage(e.selected);
+    useEffect(() => { fetchReports(); }, []);
 
-  const filteredReports = reports.filter(report => {
-    if (showPendingOnly && report.reportStatus !== 'P') return false;
-    if (!searchTerm) return true;
-    const value = report[searchType]?.toLowerCase();
-    return value?.includes(searchTerm.toLowerCase());
-  });
+    const filteredReports = reports.filter(r => {
+        if (showPendingOnly && r.reportStatus !== 'P') return false;
+        const value = r[searchType]?.toLowerCase();
+        return value?.includes(searchTerm.toLowerCase());
+    });
 
-  const offset = currentPage * ITEMS_PER_PAGE;
-  const currentItems = filteredReports.slice(offset, offset + ITEMS_PER_PAGE);
-  const pageCount = Math.ceil(filteredReports.length / ITEMS_PER_PAGE);
-  const emptyRowsCount = ITEMS_PER_PAGE - currentItems.length;
+    const currentItems = filteredReports.slice(currentPage * ITEMS_PER_PAGE, (currentPage + 1) * ITEMS_PER_PAGE);
+    const pageCount = Math.ceil(filteredReports.length / ITEMS_PER_PAGE);
 
-  const getStatusText = s => ({ P: '대기', C: '반려', R: '완료' }[s] || s);
-  const getReportTypeText = t => ({ payComment: '응원글', donationPost: '기부게시글' }[t] || t);
+    const stats = {
+        total: reports.length,
+        pending: reports.filter(r => r.reportStatus === 'P').length,
+        resolved: reports.filter(r => r.reportStatus === 'R').length
+    };
 
-  const handleOpenModal = report => { setSelectedReport(report); setIsModalOpen(true); };
-  const handleCloseModal = () => { setSelectedReport(null); setIsModalOpen(false); };
-  const handleConfirmReport = (report, type) => { changeReportState(report.reportNo, type); handleCloseModal(); };
+    const getStatusText = s => ({ P: '대기', C: '반려', R: '완료' }[s] || s);
+    const getReportTypeText = t => ({ payComment: '응원글', donationPost: '기부게시글' }[t] || t);
 
-  const renderReportDetails = report => {
-    if (report.reportStatus === 'R') return <a href="#" onClick={e => { e.preventDefault(); alert('게시글 비활성화'); }}>{report.reportDetails}</a>;
-    if (report.reportType === 'donationPost' && report.typeNo) return <Link to={`/donations/${report.typeNo}`}>{report.reportDetails}</Link>;
-    if (report.reportType === 'payComment' && report.donationNo && report.typeNo) return <Link to={`/donations/${report.donationNo}#comment-${report.typeNo}`}>{report.reportDetails}</Link>;
-    return report.reportDetails;
-  };
+    return (
+        <div className="admin-layout">
+            <header className="admin-header">
+                <div className="header-title">
+                    <h1>신고 관리</h1>
+                    <p>커뮤니티 내 접수된 신고 내역을 검토하고 처리합니다.</p>
+                </div>
+                <div className="header-actions">
+                    <label className="toggle-pending">
+                        <input type="checkbox" checked={showPendingOnly} onChange={e => setShowPendingOnly(e.target.checked)} />
+                        <span>대기 중인 신고만</span>
+                    </label>
+                    <div className="search-group">
+                        <select value={searchType} onChange={e => setSearchType(e.target.value)}>
+                            <option value="reporterId">신고자 ID</option>
+                            <option value="reportedId">피신고자 ID</option>
+                        </select>
+                        <input 
+                            type="text" 
+                            placeholder="검색어 입력..." 
+                            value={searchTerm} 
+                            onChange={e => setSearchTerm(e.target.value)} 
+                        />
+                    </div>
+                </div>
+            </header>
 
-  if (isLoading) return <div className="user-state-container">로딩 중...</div>;
-  if (error) return <div className="user-state-container" style={{ color: 'red' }}>{error}</div>;
+            <div className="stats-container">
+                <div className="stat-card">
+                    <span className="label">누적 신고 건수</span>
+                    <span className="value">{stats.total}</span>
+                </div>
+                <div className="stat-card pending">
+                    <span className="label">미처리 신고</span>
+                    <span className="value">{stats.pending}</span>
+                </div>
+                <div className="stat-card resolved">
+                    <span className="label">처리 완료</span>
+                    <span className="value">{stats.resolved}</span>
+                </div>
+            </div>
 
-  return (
-    <div className="user-state-container">
-      <h1>신고</h1>
-      <div className="search-container">
-        <select value={searchType} onChange={e => setSearchType(e.target.value)}>
-          <option value="reporterId">신고자</option>
-          <option value="reportedId">피신고자</option>
-        </select>
-        <input type="text" placeholder="검색..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
-      </div>
-      <div className="toggle-container">
-        <label>
-          <input type="checkbox" checked={showPendingOnly} onChange={e => setShowPendingOnly(e.target.checked)} /> 대기 중인 신고만 보기
-        </label>
-      </div>
+            <main className="table-container">
+                <table className="admin-table">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>신고자</th>
+                            <th>피신고자</th>
+                            <th>신고 내용</th>
+                            <th>유형</th>
+                            <th>상태</th>
+                            <th>신고일</th>
+                            <th>관리</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {isLoading ? (
+                            <tr><td colSpan="8" className="loading">데이터 로드 중...</td></tr>
+                        ) : currentItems.map(r => (
+                            <tr key={r.reportNo}>
+                                <td>{r.reportNo}</td>
+                                <td className="font-bold">{r.reporterId}</td>
+                                <td className="font-bold text-danger">{r.reportedId}</td>
+                                <td className="report-details-cell">{r.reportDetails}</td>
+                                <td><span className="type-tag">{getReportTypeText(r.reportType)}</span></td>
+                                <td>
+                                    <span className={`state-badge report-state-${r.reportStatus}`}>
+                                        {getStatusText(r.reportStatus)}
+                                    </span>
+                                </td>
+                                <td className="text-sub">{r.reportDate}</td>
+                                <td>
+                                    <button className="view-btn" onClick={() => { setSelectedReport(r); setIsModalOpen(true); }}>
+                                        검토
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
 
-      <table className="user-state-table">
-        <thead>
-          <tr><th>번호</th><th>신고자</th><th>피신고자</th><th>신고 내용</th><th>관리자</th><th>유형</th><th>상태</th><th>신고일</th><th>확인</th></tr>
-        </thead>
-        <tbody>
-          {currentItems.map(r => (
-            <tr key={r.reportNo}>
-              <td>{r.reportNo}</td>
-              <td>{r.reporterId}</td>
-              <td>{r.reportedId}</td>
-              <td className="report-details-cell">{renderReportDetails(r)}</td>
-              <td>{r.adminNo}</td>
-              <td>{getReportTypeText(r.reportType)}</td>
-              <td className={`report-state-${r.reportStatus}`}>{getStatusText(r.reportStatus)}</td>
-              <td>{r.reportDate}</td>
-              <td><button className="state-button change" onClick={() => handleOpenModal(r)}>신고</button></td>
-            </tr>
-          ))}
-          {emptyRowsCount > 0 && currentItems.length > 0 && Array.from({ length: emptyRowsCount }).map((_, i) => (
-            <tr key={`empty-${i}`} className="empty-row"><td colSpan="9">&nbsp;</td></tr>
-          ))}
-        </tbody>
-      </table>
+                <ReactPaginate
+                    previousLabel="이전" nextLabel="다음"
+                    pageCount={pageCount}
+                    onPageChange={({ selected }) => setCurrentPage(selected)}
+                    containerClassName="pagination-bar"
+                    activeClassName="active"
+                />
+            </main>
 
-      <ReactPaginate previousLabel="이전" nextLabel="다음" breakLabel="..." pageCount={pageCount} marginPagesDisplayed={2} pageRangeDisplayed={5} onPageChange={handlePageClick} containerClassName="pagination" activeClassName="active" />
-
-      {isModalOpen && selectedReport && <ReportModal report={selectedReport} onClose={handleCloseModal} onConfirm={handleConfirmReport} />}
-    </div>
-  );
+            {isModalOpen && selectedReport && (
+                <ReportModal 
+                    report={selectedReport} 
+                    onClose={() => setIsModalOpen(false)} 
+                    onConfirm={() => { fetchReports(); setIsModalOpen(false); }} 
+                />
+            )}
+        </div>
+    );
 };
 
 export default Report;
