@@ -175,9 +175,9 @@ const UserManagement = () => {
 
                         <div className="modal-footer">
                             {selectedUser.userState === 'A' ? (
-                                <button onClick={() => handleStateUpdate('I')} className="action-btn block">계정 비활성화</button>
+                                <button onClick={() => handleStateUpdate('A')} className="action-btn block">계정 비활성화</button>
                             ) : (
-                                <button onClick={() => handleStateUpdate('A')} className="action-btn activate">계정 활성화</button>
+                                <button onClick={() => handleStateUpdate('I')} className="action-btn activate">계정 활성화</button>
                             )}
                         </div>
                     </div>

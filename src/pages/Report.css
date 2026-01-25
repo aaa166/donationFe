@@ -198,3 +198,13 @@
     min-width: 60px;
 }
 
+.report-details-cell.clickable {
+    cursor: pointer;
+    text-decoration: underline;
+    color: #007bff;
+}
+
+.report-details-cell.clickable:hover {
+    color: #0056b3;
+    font-weight: bold;
+}

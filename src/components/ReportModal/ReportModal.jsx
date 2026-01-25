@@ -2,18 +2,13 @@ import React from 'react';
 import './ReportModal.css';
 
 const ReportModal = ({ report, onClose, onConfirm }) => {
-  if (!report) {
-    return null;
-  }
+  if (!report) return null;
 
   const getReportTypeText = (type) => {
     switch (type) {
-      case 'payComment':
-        return '응원글';
-      case 'donationPost':
-        return '기부게시글';
-      default:
-        return type;
+      case 'payComment': return '응원글';
+      case 'donationPost': return '기부게시글';
+      default: return type;
     }
   };
 
