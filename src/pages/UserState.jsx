@@ -119,7 +119,7 @@ const UserManagement = () => {
                     <thead>
                         <tr>
                             <th>No</th><th>ID</th><th>이름</th><th>E-mail</th>
-                            <th>Role</th><th>기부 금액</th><th>상태</th><th>상세 보기</th>
+                            <th>Role</th><th>기부 금액</th><th className="status-cell">상태</th><th>상세 보기</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -133,7 +133,7 @@ const UserManagement = () => {
                                 <td className="text-sub">{user.userEmail}</td>
                                 <td><span className={`role-badge role-${user.userRole}`}>{ROLE_MAP[user.userRole]}</span></td>
                                 <td>{user.totalAmount?.toLocaleString()}원</td>
-                                <td>
+                                <td className="status-cell">
                                     <span className={`state-indicator state-${user.userState}`}>
                                         {STATE_MAP[user.userState]}
                                     </span>

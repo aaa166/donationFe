@@ -70,9 +70,6 @@ const Donation = () => {
           <Link to="/" className="donationStatus">
             문의/버그 관리
           </Link>
-          <li>
-            공유
-          </li>
         </div>
       )}
     </div>

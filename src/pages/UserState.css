@@ -1,6 +1,8 @@
 /* Layout Base */
 .admin-layout {
-    padding: 40px;
+    width: 100%;
+    max-width: 80vw;
+    padding: 0 10%;
     background-color: #f8f9fa;
     min-height: 100vh;
     font-family: 'Inter', sans-serif;
@@ -106,7 +108,6 @@
     border-radius: 50%;
     margin-right: 8px;
 }
-
 .state-A::before { background: #4CAF50; }
 .state-I::before { background: #f44336; }
 
@@ -236,3 +237,11 @@
 
 .action-btn.activate { background: #f6ffed; color: #4CAF50; }
 .action-btn.activate:hover { background: #4CAF50; color: white; }
+
+.status-cell {
+    min-width: 80px; 
+    text-align: center; 
+}
+th{
+   text-align: center !important;
+}

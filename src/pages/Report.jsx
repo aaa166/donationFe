@@ -92,14 +92,15 @@ const Report = () => {
                 <table className="admin-table">
                     <thead>
                         <tr>
-                            <th>No</th>
-                            <th>신고자</th>
-                            <th>피신고자</th>
-                            <th>신고 내용</th>
-                            <th>유형</th>
-                            <th>상태</th>
-                            <th>신고일</th>
-                            <th>관리</th>
+                            <th className="report-no">No</th>
+                            <th className="report-repoter">신고자</th>
+                            <th className="report-repoted">피신고자</th>
+                            <th className="report-manager">관리자</th>
+                            <th className="report-details">신고 내용</th>
+                            <th className="report-type">유형</th>
+                            <th className="report-state">상태</th>
+                            <th className="report-date">신고일</th>
+                            <th className="report-view">관리</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -110,6 +111,7 @@ const Report = () => {
                                 <td>{r.reportNo}</td>
                                 <td className="font-bold">{r.reporterId}</td>
                                 <td className="font-bold text-danger">{r.reportedId}</td>
+                                <td>{r.adminNo}</td>
                                 <td className="report-details-cell">{r.reportDetails}</td>
                                 <td><span className="type-tag">{getReportTypeText(r.reportType)}</span></td>
                                 <td>

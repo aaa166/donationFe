@@ -207,7 +207,10 @@
 .admin-table td:nth-child(1) {
     width: 5px; 
 }
-
+.admin-table th:nth-child(2),
+.admin-table td:nth-child(2) {
+    min-width: 100px; 
+}
 .admin-table th:nth-child(7),
 .admin-table td:nth-child(7) {
     width: 60px; 
