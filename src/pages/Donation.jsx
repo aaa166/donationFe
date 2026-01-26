@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from '../api/axiosInstance';
+import api from '../api/axiosInstance';
 import { Link } from 'react-router-dom';
 import DonationList from '../components/DonationList';
 import './Donation.css';
@@ -11,34 +11,27 @@ const Donation = () => {
 
   useEffect(() => {
     const fetchRole = async () => {
-      const token = localStorage.getItem('jwtToken'); 
-      const config = {
-          headers: {
-              'Authorization': token ? `Bearer ${token}` : ''
-          }
-      };
-
       try {
-          const response = await axios.get(`http://localhost:8081/api/user/role`,config);
-          setRole(response.data); 
-          console.log('받은 역할:', response.data);
+        const res = await api.get('/api/user/role');
+        setRole(res.data);
+        console.log('받은 역할:', res.data);
       } catch (error) {
-          console.error('역할 데이터를 불러오는 중 오류 발생:', error);
-          setRole(-1); 
+        console.error('역할 데이터를 불러오는 중 오류:', error);
+        setRole(-1);
       }
     };
 
     const fetchDonations = async () => {
       try {
-        const response = await axios.get('http://localhost:8081/api/public/donations');
-        setDonations(response.data);
+        const res = await api.get('/api/public/donations');
+        setDonations(res.data);
       } catch (error) {
-        console.error('데이터를 불러오는 중 오류 발생:', error);
+        console.error('기부 데이터 로딩 오류:', error);
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchRole();
     fetchDonations();
   }, []);
@@ -51,25 +44,15 @@ const Donation = () => {
     <div className="donation-wrap">
       <DonationList title="전달하는 기부>" donations={donations.slice(0, 4)} />
 
-      
-
       {role === 0 && (
         <div id="managerDiv">
-          <Link to="/userState" className="userStatus">
-            유저 관리
-          </Link>
+          <Link to="/userState" className="userStatus">유저 관리</Link>
           &nbsp;&nbsp;&nbsp;&nbsp;
-          <Link to="/donationState" className="donationStatus">
-            캠페인 관리
-          </Link>
+          <Link to="/donationState" className="donationStatus">캠페인 관리</Link>
           &nbsp;&nbsp;&nbsp;&nbsp;
-          <Link to="/report" className="report">
-            신고 관리
-          </Link>
+          <Link to="/report" className="report">신고 관리</Link>
           &nbsp;&nbsp;&nbsp;&nbsp;
-          <Link to="/" className="donationStatus">
-            문의/버그 관리
-          </Link>
+          <Link to="/" className="donationStatus">문의/버그 관리</Link>
         </div>
       )}
     </div>

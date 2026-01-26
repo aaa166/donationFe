@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom'; 
 import axios from 'axios'; 
+import api from '../api/axiosInstance';
 import './InsertDonation.css';
 
 const InsertDonation = () => {
@@ -16,9 +17,7 @@ const InsertDonation = () => {
            
         const checkPermission = async () => {
             try {
-                const res = await axios.get(`http://localhost:8081/api/public/donationApply`, {
-                  headers: { Authorization: `Bearer ${localStorage.getItem("jwtToken")}` }
-                });
+                const res = await api.get('/api/public/donationApply');
 
                 if (res.status === 200 && res.data === "ok") {
                     console.log("기부 캠페인 등록 권한 확인 완료.");
@@ -99,19 +98,15 @@ const InsertDonation = () => {
             formData.append('image', formState.image);
         }
         try {
-            const token = localStorage.getItem("jwtToken");
-            if (!token) {
-                alert("로그인이 필요합니다.");
-                navigate("/login");
-                return;
-            }
-
-            const response = await axios.post('http://localhost:8081/api/public/insertDonation', formData, {
-                headers: {
+            const response = await api.post(
+                '/api/public/insertDonation',
+                formData,
+                {
+                    headers: {
                     'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${token}`
+                    }
                 }
-            });
+                );
 
             if (response.status === 200) {
                 alert('기부 캠페인이 성공적으로 등록되었습니다.');

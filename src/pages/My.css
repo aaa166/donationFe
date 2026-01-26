@@ -155,9 +155,10 @@
   background: var(--white);
   padding: 1.5rem;
   border-radius: 16px;
+  width: 100%-3rem;
 }
 
-.action-btn {
+.action-btn1 {
   width: 100%;
   padding: 1rem;
   text-align: left;
@@ -205,6 +206,7 @@
 .modern-table td {
   padding: 1.2rem;
   border-bottom: 1px solid #eee;
+  text-align: center;
 }
 
 .amount-cell {

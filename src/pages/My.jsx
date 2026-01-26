@@ -83,7 +83,7 @@ const My = () => {
                                 <InfoCard icon={<User />} label="아이디" value={userInfo.userId} />
                                 <InfoCard icon={<Mail />} label="이메일" value={userInfo.userEmail} />
                                 <InfoCard icon={<Phone />} label="연락처" value={userInfo.userPhone} />
-                                <InfoCard icon={<Calendar />} label="생년월일" value={userInfo.userBirth} />
+                                {/* <InfoCard icon={<Calendar />} label="생년월일" value={userInfo.userBirth} /> */}
                                 <InfoCard 
                                     icon={<Shield />} 
                                     label="계정 유형" 
@@ -94,8 +94,8 @@ const My = () => {
                         <aside className="sidebar-section">
                             <div className="action-card settings">
                                 <h4>계정 설정</h4>
-                                <button className="action-btn">프로필 수정 <ChevronRight size={16} /></button>
-                                <button className="action-btn">비밀번호 변경 <ChevronRight size={16} /></button>
+                                <button className="action-btn1">프로필 수정 <ChevronRight size={16} /></button>
+                                <button className="action-btn1">비밀번호 변경 <ChevronRight size={16} /></button>
                                 <button className="logout-btn">로그아웃</button>
                             </div>
                         </aside>
@@ -116,7 +116,6 @@ const My = () => {
                                         <th>기부 캠페인</th>
                                         <th>기부금액</th>
                                         <th>기부일자</th>
-                                        <th>증명서</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -126,7 +125,6 @@ const My = () => {
                                             <td className="campaign-cell">{item.donationTitle}</td>
                                             <td className="amount-cell">{item.payAmount.toLocaleString()}원</td>
                                             <td>{new Date(item.payDate).toLocaleDateString()}</td>
-                                            <td><button className="cert-btn">발급</button></td>
                                         </tr>
                                     ))}
                                 </tbody>
