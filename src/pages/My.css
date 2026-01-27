@@ -243,6 +243,7 @@
   margin: 0.5rem 0 1.5rem;
 }
 
+/* 프로필 수정 폼 */
 .edit-form .form-group {
   margin-bottom: 1.2rem;
 }
@@ -254,28 +255,49 @@
   color: var(--text-dark);
 }
 
-.edit-form input {
-  width: calc(100% - 90px);
-  padding: 0.6rem 0.8rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  margin-right: 8px;
+/* 입력창 + 버튼 + 체크표시 가로 배치 */
+.input-with-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.edit-form button {
+/* 입력창 너비 조정 */
+.input-with-btn input {
+  flex: none;
+  width: 305px;
+  padding: 0.55rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  min-width: 0;
+}
+
+/* 중복확인 버튼 */
+.duplicate-btn {
   padding: 0.55rem 0.8rem;
   background: var(--primary-color);
-  color: white;
+  color: #fff;
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.edit-form button:disabled {
+.duplicate-btn:disabled {
   background: #ccc;
   cursor: not-allowed;
 }
 
+/* 체크 표시 */
+.check-mark {
+  color: #52c41a;
+  font-weight: bold;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+
+/* Modal Footer */
 .modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -284,11 +306,18 @@
 }
 
 .action-btn.cancel {
+  width: 100px;
   background: #eee;
   color: var(--text-dark);
 }
 
 .action-btn.save {
+  width: 100px;
   background: var(--primary-color);
   color: white;
+}
+
+.edit-form button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
 }

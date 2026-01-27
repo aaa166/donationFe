@@ -29,13 +29,22 @@ api.interceptors.response.use(
           const res = await axios.post('http://localhost:8081/api/auth/refresh', { refreshToken });
           localStorage.setItem('accessToken', res.data.accessToken);
           originalRequest.headers['Authorization'] = `Bearer ${res.data.accessToken}`;
-          return axios(originalRequest); // 토큰 재발급 후 원래 요청 재시도
+          return axios(originalRequest);
         } catch (err) {
           console.error('Refresh Token 재발급 실패:', err);
-          // 여기서 바로 localStorage 삭제하지 않고 alert만
-          alert('로그인이 만료되었습니다. 다시 로그인해주세요.');
+
+          // 토큰 없으면 alert 생략
+          if (localStorage.getItem('accessToken')) {
+            alert('로그인이 만료되었습니다. 다시 로그인해주세요.');
+          }
+
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
           window.location.href = '/login';
         }
+      } else {
+        // refreshToken 없으면 그냥 로그인 페이지로
+        window.location.href = '/login';
       }
     }
 

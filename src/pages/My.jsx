@@ -64,47 +64,57 @@ const My = () => {
       editForm.userEmail !== userInfo.userEmail ||
       editForm.userPhone !== userInfo.userPhone;
 
-    // 값이 안 바뀌면 중복 확인 초기화
     if (!isChanged) {
       setCheckStatus({ userId: false, userEmail: false, userPhone: false });
     }
 
     setIsSaveEnabled(
-      isChanged && Object.values(checkStatus).every(Boolean)
+      isChanged && Object.values(checkStatus).some(Boolean)
     );
   }, [editForm, checkStatus, userInfo]);
 
   // 중복 확인
   const handleCheckDuplicate = async (field) => {
-    
     try {
-        let url = '';
-        let paramName = '';
-        if (field === 'userId') {
+      let url = '';
+      let paramName = '';
+      if (field === 'userId') {
         url = '/api/duplicateIdCheck';
         paramName = 'userId';
-        } else if (field === 'userEmail') {
+      } else if (field === 'userEmail') {
         url = '/api/duplicateEmailCheck';
         paramName = 'email';
-        } else if (field === 'userPhone') {
+      } else if (field === 'userPhone') {
         url = '/api/duplicatePhoneCheck';
         paramName = 'phone';
-        }
+      }
 
-        const res = await api.get(url, { params: { [paramName]: editForm[field] } });
-
-        // 200 OK이면 사용 가능
-        // alert(`${fieldLabels[field]} 사용 가능합니다!`);
-        setCheckStatus(prev => ({ ...prev, [field]: true }));
+      await api.get(url, { params: { [paramName]: editForm[field] } });
+      setCheckStatus(prev => ({ ...prev, [field]: true }));
     } catch (error) {
-        if (error.response && error.response.status === 409) {
-        alert(`${fieldLabels[field]} 이미 사용 중입니다.`);
+      if (error.response && error.response.status === 409) {
+        alert(`${field} 이미 사용 중입니다.`);
         setCheckStatus(prev => ({ ...prev, [field]: false }));
-        } else {
+      } else {
         alert('중복 확인 중 오류가 발생했습니다.');
-        }
+      }
     }
-    };
+  };
+
+  // 모달 닫기 + 초기화
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+
+    if (userInfo) {
+      setEditForm({
+        userId: userInfo.userId,
+        userEmail: userInfo.userEmail,
+        userPhone: userInfo.userPhone
+      });
+      setCheckStatus({ userId: false, userEmail: false, userPhone: false });
+      setIsSaveEnabled(false);
+    }
+  };
 
   // 수정 저장
   const handleEditSubmit = async (e) => {
@@ -114,8 +124,18 @@ const My = () => {
     try {
       await api.patch('/api/updateUserInfo', editForm);
       alert('프로필 정보가 수정되었습니다.');
-      setIsEditModalOpen(false);
-      // 데이터 갱신
+
+      // 아이디가 바뀌었으면 강제 로그아웃
+      if (userInfo.userId !== editForm.userId) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        window.location.replace('/'); // 새로고침 + 홈 이동
+        return;
+      }
+
+      // 모달 닫기 및 초기화
+      closeEditModal();
+
       const userRes = await api.get('/api/mypage');
       setUserInfo(userRes.data);
     } catch {
@@ -132,9 +152,7 @@ const My = () => {
       <header className="profile-hero">
         <div className="hero-content">
           <div className="user-meta">
-            <div className="avatar-wrapper">
-              <User size={70} />
-            </div>
+            <div className="avatar-wrapper"><User size={70} /></div>
             <div className="user-titles">
               <h1>{userInfo.userName}님, 반갑습니다!</h1>
               <p className="user-status">세상을 따뜻하게 만드는 기부자님</p>
@@ -149,18 +167,8 @@ const My = () => {
 
       {/* Tabs */}
       <nav className="my-tabs-nav">
-        <button 
-          className={`nav-item ${activeTab === 'home' ? 'active' : ''}`}
-          onClick={() => setActiveTab('home')}
-        >
-          마이홈
-        </button>
-        <button 
-          className={`nav-item ${activeTab === 'donations' ? 'active' : ''}`}
-          onClick={() => setActiveTab('donations')}
-        >
-          기부 내역
-        </button>
+        <button className={`nav-item ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}>마이홈</button>
+        <button className={`nav-item ${activeTab === 'donations' ? 'active' : ''}`} onClick={() => setActiveTab('donations')}>기부 내역</button>
       </nav>
 
       <main className="tab-content-area">
@@ -173,30 +181,26 @@ const My = () => {
                 <InfoCard icon={<User />} label="아이디" value={userInfo.userId} />
                 <InfoCard icon={<Mail />} label="이메일" value={userInfo.userEmail} />
                 <InfoCard icon={<Phone />} label="연락처" value={userInfo.userPhone} />
-                <InfoCard 
-                  icon={<Shield />} 
-                  label="계정 유형" 
-                  value={userInfo.userRole === 0 ? '관리자' : userInfo.userRole === 1 ? '일반' : '기업'} 
-                />
+                <InfoCard icon={<Shield />} label="계정 유형" value={userInfo.userRole === 0 ? '관리자' : userInfo.userRole === 1 ? '일반' : '기업'} />
               </div>
             </section>
 
             <aside className="sidebar-section">
               <div className="action-card settings">
                 <h4>계정 설정</h4>
-                <button className="action-btn1" onClick={() => setIsEditModalOpen(true)}>
-                  프로필 수정 <ChevronRight size={16} />
-                </button>
+                <button className="action-btn1" onClick={() => setIsEditModalOpen(true)}>프로필 수정 <ChevronRight size={16} /></button>
                 <button className="action-btn1">비밀번호 변경 <ChevronRight size={16} /></button>
-                <button className="logout-btn">로그아웃</button>
+                <button className="logout-btn" onClick={() => {
+                  localStorage.removeItem('accessToken');
+                  localStorage.removeItem('refreshToken');
+                  window.location.replace('/');
+                }}>로그아웃</button>
               </div>
             </aside>
           </div>
         ) : (
           <div className="donation-view">
-            <div className="view-header">
-              <h3>나의 기부 내역</h3>
-            </div>
+            <div className="view-header"><h3>나의 기부 내역</h3></div>
             <div className="table-wrapper">
               <table className="modern-table">
                 <thead>
@@ -225,12 +229,9 @@ const My = () => {
 
       {/* 프로필 수정 모달 */}
       {isEditModalOpen && (
-        <div className="modal-overlay" onClick={() => setIsEditModalOpen(false)}>
+        <div className="modal-overlay" onClick={closeEditModal}>
           <div className="modal-box profile-modal" onClick={e => e.stopPropagation()}>
-            <button className="modal-close-x" onClick={() => setIsEditModalOpen(false)}>
-              <X size={32} />
-            </button>
-
+            <button className="modal-close-x" onClick={closeEditModal}><X size={32} /></button>
             <div className="modal-header">
               <h2>프로필 수정</h2>
               <p>계정 정보를 최신으로 유지해 주세요.</p>
@@ -240,7 +241,7 @@ const My = () => {
               {['userId','userEmail','userPhone'].map(field => (
                 <div className="form-group" key={field}>
                   <label>{field === 'userId' ? '아이디' : field === 'userEmail' ? '이메일' : '연락처'}</label>
-                  <div>
+                  <div className="input-with-btn">
                     <input 
                       type={field === 'userEmail' ? 'email' : 'text'}
                       value={editForm[field]}
@@ -250,23 +251,20 @@ const My = () => {
                       }}
                     />
                     {editForm[field] !== userInfo[field] && (
-                      <button type="button" onClick={() => handleCheckDuplicate(field)}>
+                      <button type="button" className="duplicate-btn" onClick={() => handleCheckDuplicate(field)}>
                         중복확인
                       </button>
                     )}
-                    {checkStatus[field] && <span style={{color:'#52c41a'}}>✔</span>}
+                    {checkStatus[field] && <span className="check-mark">✔</span>}
                   </div>
                 </div>
               ))}
               <div className="modal-footer">
-                <button type="button" className="action-btn cancel" onClick={() => setIsEditModalOpen(false)}>
-                  취소
-                </button>
-                <button type="submit" className="action-btn save" disabled={!isSaveEnabled}>
-                  저장하기
-                </button>
+                <button type="button" className="action-btn cancel" onClick={closeEditModal}>취소</button>
+                <button type="submit" className="action-btn save" disabled={!isSaveEnabled}>저장하기</button>
               </div>
             </form>
+
           </div>
         </div>
       )}
