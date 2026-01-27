@@ -4,8 +4,10 @@
   --text-dark: #2d3436;
   --text-gray: #636e72;
   --white: #ffffff;
+  --modal-bg: rgba(0,0,0,0.4);
 }
 
+/* 전체 페이지 */
 .desktop-my-page {
   background-color: var(--bg-color);
   min-height: 100vh;
@@ -43,18 +45,6 @@
   border-radius: 50%;
   border: 4px solid var(--white);
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-.badge {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  background: var(--primary-color);
-  color: white;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: bold;
 }
 
 .user-titles h1 {
@@ -111,7 +101,7 @@
 .tab-content-area {
   max-width: 1100px;
   margin: 2rem auto;
-  padding: 0 1rem pb 4rem;
+  padding: 0 1rem 4rem 1rem;
 }
 
 /* Home Grid */
@@ -155,7 +145,6 @@
   background: var(--white);
   padding: 1.5rem;
   border-radius: 16px;
-  width: 100%-3rem;
 }
 
 .action-btn1 {
@@ -214,10 +203,92 @@
   font-weight: bold;
 }
 
-.cert-btn {
-  padding: 5px 12px;
-  border: 1px solid #ddd;
-  background: white;
-  border-radius: 4px;
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--modal-bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.modal-box {
+  background: var(--white);
+  border-radius: 16px;
+  max-width: 500px;
+  width: 100%;
+  padding: 2rem;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.modal-close-x {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
   cursor: pointer;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: var(--text-dark);
+}
+
+.modal-header p {
+  color: var(--text-gray);
+  margin: 0.5rem 0 1.5rem;
+}
+
+.edit-form .form-group {
+  margin-bottom: 1.2rem;
+}
+
+.edit-form label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.edit-form input {
+  width: calc(100% - 90px);
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-right: 8px;
+}
+
+.edit-form button {
+  padding: 0.55rem 0.8rem;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.edit-form button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+
+.action-btn.cancel {
+  background: #eee;
+  color: var(--text-dark);
+}
+
+.action-btn.save {
+  background: var(--primary-color);
+  color: white;
 }
