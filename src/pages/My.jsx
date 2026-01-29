@@ -20,6 +20,14 @@ const My = () => {
     userPhone: ''
   });
 
+  // 비밀번호 변경 모달
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+
   // 중복확인 상태
   const [checkStatus, setCheckStatus] = useState({
     userId: false,
@@ -116,7 +124,16 @@ const My = () => {
     }
   };
 
-  // 수정 저장
+  const closePasswordModal = () => {
+    setIsPasswordModalOpen(false);
+    setPasswordForm({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    });
+  };
+
+  // 프로필 수정 저장
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     if (!isSaveEnabled) return;
@@ -129,17 +146,52 @@ const My = () => {
       if (userInfo.userId !== editForm.userId) {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        window.location.replace('/'); // 새로고침 + 홈 이동
+        window.location.replace('/');
         return;
       }
 
-      // 모달 닫기 및 초기화
       closeEditModal();
 
       const userRes = await api.get('/api/mypage');
       setUserInfo(userRes.data);
     } catch {
       alert('수정 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 비밀번호 변경 제출
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      await api.patch('/api/updatePassword', {
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword,
+        confirmPassword: passwordForm.confirmPassword
+      });
+
+      alert('비밀번호가 성공적으로 변경되었습니다.');
+      closePasswordModal();
+    } catch (error) {
+      if (!error.response) {
+        alert('서버와 통신 중 오류가 발생했습니다.');
+        return;
+      }
+
+      const status = error.response.status;
+      const data = error.response.data;
+
+      if (status === 422) {
+        if (data === 'unauthorized') {
+          alert('현재 비밀번호가 올바르지 않습니다.');
+        } else if (data === 'mismatch') {
+          alert('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.');
+        } else {
+          alert('비밀번호 변경 중 오류가 발생했습니다.');
+        }
+      } else {
+        alert('비밀번호 변경 중 오류가 발생했습니다.');
+      }
     }
   };
 
@@ -189,7 +241,7 @@ const My = () => {
               <div className="action-card settings">
                 <h4>계정 설정</h4>
                 <button className="action-btn1" onClick={() => setIsEditModalOpen(true)}>프로필 수정 <ChevronRight size={16} /></button>
-                <button className="action-btn1">비밀번호 변경 <ChevronRight size={16} /></button>
+                <button className="action-btn1" onClick={() => setIsPasswordModalOpen(true)}>비밀번호 변경 <ChevronRight size={16} /></button>
                 <button className="logout-btn" onClick={() => {
                   localStorage.removeItem('accessToken');
                   localStorage.removeItem('refreshToken');
@@ -265,6 +317,50 @@ const My = () => {
               </div>
             </form>
 
+          </div>
+        </div>
+      )}
+
+      {/* 비밀번호 변경 모달 */}
+      {isPasswordModalOpen && (
+        <div className="modal-overlay" onClick={closePasswordModal}>
+          <div className="modal-box password-modal" onClick={e => e.stopPropagation()}>
+            <button className="modal-close-x" onClick={closePasswordModal}><X size={32} /></button>
+            <div className="modal-header">
+              <h2>비밀번호 변경</h2>
+              <p>새로운 비밀번호를 설정해 주세요.</p>
+            </div>
+
+            <form className="edit-form" onSubmit={handlePasswordSubmit}>
+              <div className="form-group">
+                <label>현재 비밀번호</label>
+                <input
+                  type="password"
+                  value={passwordForm.currentPassword}
+                  onChange={e => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>새 비밀번호</label>
+                <input
+                  type="password"
+                  value={passwordForm.newPassword}
+                  onChange={e => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>새 비밀번호 확인</label>
+                <input
+                  type="password"
+                  value={passwordForm.confirmPassword}
+                  onChange={e => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+                />
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="action-btn cancel" onClick={closePasswordModal}>취소</button>
+                <button type="submit" className="action-btn save">변경하기</button>
+              </div>
+            </form>
           </div>
         </div>
       )}

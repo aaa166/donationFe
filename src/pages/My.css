@@ -219,7 +219,7 @@
   border-radius: 16px;
   max-width: 500px;
   width: 100%;
-  padding: 2rem;
+  padding: 1rem;
   position: relative;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
@@ -246,6 +246,7 @@
 /* 프로필 수정 폼 */
 .edit-form .form-group {
   margin-bottom: 1.2rem;
+  border: 0px;
 }
 
 .edit-form label {
@@ -320,4 +321,18 @@
 .edit-form button:disabled {
   background: #ccc;
   cursor: not-allowed;
+}
+
+/* 비밀번호 변경 모달 */
+.password-modal .edit-form {
+  max-width: 350px;
+  margin: 0 auto;
+}
+
+.password-modal .edit-form input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-sizing: border-box; /* 패딩과 테두리를 너비에 포함 */
 }
