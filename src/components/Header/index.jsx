@@ -36,7 +36,10 @@ const Header = ({ isLoggedIn, handleLogout }) => {
                 </div>
                 <span>마이페이지</span>
               </Link>
-              <button onClick={handleLogout} className="header-logout-btn">
+              <button onClick={() => {
+                handleLogout();       // 로그아웃 상태 처리
+                window.location.href = "/";  // 전체 새로고침 후 홈으로 이동
+              }} className="header-logout-btn">
                 <LogOut size={18} />
                 <span>로그아웃</span>
               </button>

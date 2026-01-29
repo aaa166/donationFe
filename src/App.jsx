@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
-import api from './api/axiosInstance'; // Axios 인터셉터 사용
+import api from './api/axiosInstance';
 import './App.css';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation(); // 현재 경로
 
   // 토큰 확인 및 상태 세팅
   const checkToken = async () => {
@@ -23,26 +24,23 @@ function App() {
 
     try {
       if (accessToken) {
-        // accessToken이 있으면 payload 확인
         const payload = JSON.parse(atob(accessToken.split('.')[1]));
         const exp = payload.exp * 1000;
 
         if (Date.now() > exp && refreshToken) {
-          // accessToken 만료 → refreshToken으로 갱신
           await refreshAccessToken(refreshToken);
         } else if (Date.now() < exp) {
           setIsLoggedIn(true);
           setIsAdmin(payload.role === 'admin');
         } else {
-          handleLogout();
+          handleLogout(false); // 새로고침 시 홈 이동 없이 상태만 초기화
         }
       } else if (refreshToken) {
-        // accessToken 없고 refreshToken만 있으면 갱신 시도
         await refreshAccessToken(refreshToken);
       }
     } catch (error) {
       console.error('토큰 체크 중 오류:', error);
-      handleLogout();
+      handleLogout(false);
     }
   };
 
@@ -56,20 +54,24 @@ function App() {
       setIsAdmin(payload.role === 'admin');
     } catch (error) {
       console.error('토큰 갱신 실패:', error);
-      handleLogout();
+      handleLogout(false); // 상태만 초기화
     }
   };
 
   // 로그아웃 함수
-  const handleLogout = () => {
+  const handleLogout = (redirect = true) => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     setIsLoggedIn(false);
     setIsAdmin(false);
-    navigate('/');
+
+    // redirect true일 때만 홈으로 이동
+    if (redirect) {
+      navigate('/'); // 로그아웃 버튼 클릭 시 홈으로 이동
+    }
   };
 
-  // 새로고침/마운트 시 토큰 체크
+  // 마운트 시 & 새로고침 시 토큰 체크
   useEffect(() => {
     checkToken();
 
@@ -78,14 +80,14 @@ function App() {
     }, 60000); // 1분마다 토큰 확인
 
     return () => clearInterval(interval);
-  }, []);
+  }, [location.key]); // 새로고침 시 effect 실행
 
   return (
     <div className="app-container">
       <Header
         isLoggedIn={isLoggedIn}
         setIsLoggedIn={setIsLoggedIn}
-        handleLogout={handleLogout}
+        handleLogout={() => handleLogout(true)} // 버튼 클릭 시 홈으로 이동
       />
       <div className="main-wrapper">
         <main className="main-content">

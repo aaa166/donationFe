@@ -44,7 +44,7 @@ api.interceptors.response.use(
         }
       } else {
         // refreshToken 없으면 그냥 로그인 페이지로
-        window.location.href = '/login';
+        // window.location.href = '/login';
       }
     }
 
