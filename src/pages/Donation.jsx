@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../api/axiosInstance';
 import { Link } from 'react-router-dom';
 import DonationList from '../components/DonationList';
+import MainBanner from '../components/MainBanner';
 import './Donation.css';
 
 const Donation = () => {
@@ -42,9 +43,10 @@ const Donation = () => {
   
   return (
     <div className="donation-wrap">
+      <MainBanner />
       <DonationList title="전달하는 기부>" donations={donations.slice(0, 4)} />
 
-      {role === 0 && (
+      {/* {role === 0 && (
         <div id="managerDiv">
           <Link to="/userState" className="userStatus">유저 관리</Link>
           &nbsp;&nbsp;&nbsp;&nbsp;
@@ -54,7 +56,7 @@ const Donation = () => {
           &nbsp;&nbsp;&nbsp;&nbsp;
           <Link to="/" className="donationStatus">문의/버그 관리</Link>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

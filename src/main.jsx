@@ -15,6 +15,7 @@ import InsertDonation from './pages/InsertDonation';
 import DonationState from './pages/DonationState';
 import UserState from './pages/UserState';
 import Report from './pages/Report';
+import InsertBanner from './pages/InsertBanner';
 
 const router = createBrowserRouter([
   {
@@ -68,6 +69,10 @@ const router = createBrowserRouter([
       {
         path: '/report',
         element: <Report />,
+      },
+      {
+        path: '/insertBanner',
+        element: <InsertBanner />,
       },
     ],
   },

@@ -49,9 +49,9 @@ function Sidebar() {
           </a>
         </li>
         <li>
-          <a href="#">
+          <a href="/insertBanner">
             <span className="icon">⚙️</span>
-            <span>버그</span>
+            <span>배너 추가</span>
           </a>
         </li>
       </ul>
