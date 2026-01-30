@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axiosInstance';
-import { Upload, Link as LinkIcon, Calendar, X } from 'lucide-react';
+import { Upload, Link as LinkIcon, Calendar, X, Type } from 'lucide-react';
 import './InsertBanner.css';
 
 const InsertBanner = () => {
     const navigate = useNavigate();
     const [preview, setPreview] = useState(null);
     const [bannerForm, setBannerForm] = useState({
+        bannerTitle: '',
         bannerImg: null,
         bannerURL: '',
-        bannerDate: new Date().toISOString().split('T')[0],
+        bannerStartDate: '',
         bannerDeadlineDate: ''
     });
 
-    // 이미지 업로드 및 미리보기 핸들러
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -28,97 +28,111 @@ const InsertBanner = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        // FormData 객체 생성 (이미지 포함 시 필수)
         const formData = new FormData();
+        formData.append('bannerTitle', bannerForm.bannerTitle);
         formData.append('bannerImg', bannerForm.bannerImg);
         formData.append('bannerURL', bannerForm.bannerURL);
-        formData.append('bannerDate', bannerForm.bannerDate);
+        formData.append('bannerStartDate', bannerForm.bannerStartDate);
         formData.append('bannerDeadlineDate', bannerForm.bannerDeadlineDate);
 
         try {
             await api.post('/api/admin/banners', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
-            alert('배너가 성공적으로 등록되었습니다.');
-            navigate('/admin/banners'); // 배너 목록 페이지로 이동
+            alert('배너가 등록되었습니다.');
+            navigate('/admin/banners');
         } catch (err) {
-            alert('배너 등록 중 오류가 발생했습니다.');
+            alert('등록 실패: ' + (err.response?.data?.message || err.message));
         }
     };
 
     return (
-        <div className="admin-layout">
-            <header className="admin-header">
-                <div className="header-title">
+        <div className="insert-banner-page">
+            <div className="insert-banner-container">
+                <header className="page-header">
+                    <div className="breadcrumb">홈 &gt; 배너 관리 &gt; 배너 추가</div>
                     <h1>배너 추가</h1>
-                    <p>메인 화면에 노출될 새로운 홍보 배너를 등록합니다.</p>
-                </div>
-            </header>
+                    <p>메인 페이지에 노출될 새로운 홍보 배너 정보를 입력해주세요.</p>
+                </header>
 
-            <main className="banner-add-container">
-                <form onSubmit={handleSubmit} className="banner-form-card">
-                    {/* 이미지 업로드 섹션 */}
-                    <div className="form-section">
-                        <label className="section-label">배너 이미지</label>
-                        <div className={`upload-area ${preview ? 'has-preview' : ''}`}>
+                <form onSubmit={handleSubmit} className="banner-insert-form">
+                    {/* 배너 제목 */}
+                    <div className="form-group full-width">
+                        <label className="field-label"><Type size={18} /> 배너 제목</label>
+                        <input 
+                            type="text" 
+                            placeholder="배너 구분을 위한 제목을 입력하세요"
+                            value={bannerForm.bannerTitle}
+                            onChange={(e) => setBannerForm({...bannerForm, bannerTitle: e.target.value})}
+                            required
+                        />
+                    </div>
+
+                    {/* 배너 이미지 업로드 */}
+                    <div className="form-group full-width">
+                        <label className="field-label">배너 이미지</label>
+                        <div className={`image-upload-zone ${preview ? 'has-preview' : ''}`}>
                             {preview ? (
-                                <div className="image-preview-wrapper">
-                                    <img src={preview} alt="Banner Preview" className="image-preview" />
-                                    <button type="button" className="remove-img" onClick={() => setPreview(null)}>
+                                <div className="preview-container">
+                                    <img src={preview} alt="Banner Preview" />
+                                    <button type="button" className="remove-btn" onClick={() => setPreview(null)}>
                                         <X size={20} />
                                     </button>
                                 </div>
                             ) : (
-                                <label className="upload-placeholder">
+                                <label className="upload-label">
                                     <input type="file" accept="image/*" onChange={handleImageChange} hidden />
-                                    <Upload size={40} />
-                                    <span>이미지 파일을 클릭하거나 끌어다 놓으세요</span>
-                                    <p>추천 사이즈: 1920x450 (JPG, PNG)</p>
+                                    <Upload size={48} />
+                                    <span>이미지 파일을 업로드하거나 드래그하세요</span>
+                                    <p>권장 사이즈: 1920 x 400 (JPG, PNG)</p>
                                 </label>
                             )}
                         </div>
                     </div>
 
-                    {/* 배너 상세 정보 섹션 */}
-                    <div className="form-grid">
-                        <div className="form-group">
-                            <label><LinkIcon size={16} /> 연결 URL</label>
+                    <div className="form-row">
+                        {/* 연결 URL */}
+                        <div className="form-group flex-1">
+                            <label className="field-label"><LinkIcon size={18} /> 연결 URL</label>
                             <input 
                                 type="url" 
-                                placeholder="https://example.com"
+                                placeholder="https://..."
                                 value={bannerForm.bannerURL}
                                 onChange={(e) => setBannerForm({...bannerForm, bannerURL: e.target.value})}
                                 required
                             />
                         </div>
-                        <div className="date-group">
-                            <div className="form-group">
-                                <label><Calendar size={16} /> 시작 날짜</label>
-                                <input 
-                                    type="date" 
-                                    value={bannerForm.bannerDate}
-                                    onChange={(e) => setBannerForm({...bannerForm, bannerDate: e.target.value})}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label><Calendar size={16} /> 마감 날짜</label>
-                                <input 
-                                    type="date" 
-                                    value={bannerForm.bannerDeadlineDate}
-                                    onChange={(e) => setBannerForm({...bannerForm, bannerDeadlineDate: e.target.value})}
-                                    required
-                                />
-                            </div>
+                    </div>
+
+                    <div className="form-row">
+                        {/* 시작 날짜 */}
+                        <div className="form-group flex-1">
+                            <label className="field-label"><Calendar size={18} /> 게시 시작일</label>
+                            <input 
+                                type="date" 
+                                value={bannerForm.bannerStartDate}
+                                onChange={(e) => setBannerForm({...bannerForm, bannerStartDate: e.target.value})}
+                                required
+                            />
+                        </div>
+                        {/* 마감 날짜 */}
+                        <div className="form-group flex-1">
+                            <label className="field-label"><Calendar size={18} /> 게시 종료일</label>
+                            <input 
+                                type="date" 
+                                value={bannerForm.bannerDeadlineDate}
+                                onChange={(e) => setBannerForm({...bannerForm, bannerDeadlineDate: e.target.value})}
+                                required
+                            />
                         </div>
                     </div>
 
-                    <div className="form-actions">
+                    <div className="form-footer-actions">
                         <button type="button" className="btn-cancel" onClick={() => navigate(-1)}>취소</button>
-                        <button type="submit" className="btn-submit">배너 등록하기</button>
+                        <button type="submit" className="btn-save">등록하기</button>
                     </div>
                 </form>
-            </main>
+            </div>
         </div>
     );
 };

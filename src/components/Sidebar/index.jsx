@@ -49,6 +49,12 @@ function Sidebar() {
           </a>
         </li>
         <li>
+          <a href="/bannerState">
+            <span className="icon">🖼️</span>
+            <span>배너</span>
+          </a>
+        </li>
+        <li>
           <a href="/insertBanner">
             <span className="icon">⚙️</span>
             <span>배너 추가</span>
