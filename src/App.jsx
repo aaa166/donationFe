@@ -31,7 +31,8 @@ function App() {
           await refreshAccessToken(refreshToken);
         } else if (Date.now() < exp) {
           setIsLoggedIn(true);
-          setIsAdmin(payload.role === 'admin');
+          const role = payload.role || payload.userRole; // userRole 숫자일 수도 있으니 fallback
+          setIsAdmin(role === 'ROLE_ADMIN' || role === 0 || role === 'admin'); 
         } else {
           handleLogout(false); // 새로고침 시 홈 이동 없이 상태만 초기화
         }
@@ -51,7 +52,8 @@ function App() {
       localStorage.setItem('accessToken', res.data.accessToken);
       const payload = JSON.parse(atob(res.data.accessToken.split('.')[1]));
       setIsLoggedIn(true);
-      setIsAdmin(payload.role === 'admin');
+      const role = payload.role || payload.userRole; 
+      setIsAdmin(role === 'ROLE_ADMIN' || role === 0 || role === 'admin'); 
     } catch (error) {
       console.error('토큰 갱신 실패:', error);
       handleLogout(false); // 상태만 초기화
@@ -94,7 +96,7 @@ function App() {
           <Outlet context={{ isLoggedIn, setIsLoggedIn, isAdmin, setIsAdmin }} />
         </main>
       </div>
-      <Sidebar isAdmin={isAdmin} />
+      {isAdmin && <Sidebar />}
     </div>
   );
 }
