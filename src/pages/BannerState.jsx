@@ -19,6 +19,7 @@ const BannerState = () => {
   const navigate = useNavigate();
   const [banners, setBanners] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const fetchBanners = async () => {
     setIsLoading(true);
@@ -36,56 +37,71 @@ const BannerState = () => {
     fetchBanners();
   }, []);
 
+  const filteredBanners = banners.filter(banner =>
+    banner.bannerTitle.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const stats = {
+    total: banners.length,
+    active: banners.filter(b => new Date(b.bannerDeadlineDate) >= new Date()).length,
+    expired: banners.filter(b => new Date(b.bannerDeadlineDate) < new Date()).length
+  };
+
   return (
     <div className="banner-gallery-container">
-      {/* Top Nav */}
-      <nav className="top-nav">
-        <div className="nav-left">
-          <div className="logo-box">
-            <div className="logo-icon">
-              <Layout size={20} color="white" />
-            </div>
-            <span className="logo-text">배너 갤러리</span>
-          </div>
-
-          <div className="search-wrapper">
-            <Search size={18} className="search-icon" />
-            <input type="text" placeholder="배너 검색..." />
-          </div>
-        </div>
-
-        <div className="nav-right">
-          <button className="nav-item active"><Layout size={18} /> 비주얼</button>
-          <button className="nav-item"><Grid size={18} /> 대시보드</button>
-          <button className="nav-item"><Megaphone size={18} /> 캠페인</button>
-          <div className="nav-divider" />
-          <button className="icon-only-btn"><Bell size={20} /></button>
-        </div>
-      </nav>
+      
 
       {/* Main */}
       <main className="gallery-main">
         <div className="content-inner">
-          <header className="header-title-row">
-            <div>
-              <h1>비주얼 에셋</h1>
-              <p>현재 등록된 배너 {banners.length}개</p>
+          <header className="admin-header">
+            <div className="header-title">
+              <h1>배너 관리</h1>
+              <p>등록된 배너와 통계를 관리합니다.</p>
             </div>
-            <button
-              className="btn-add-primary"
-              onClick={() => navigate('/admin/banners/add')}
-            >
-              <Plus size={20} /> 새 배너 등록
-            </button>
+            <div className="search-group">
+              <div className="search-wrapper">
+                <Search size={18} className="search-icon" />
+                <input
+                  type="text"
+                  placeholder="배너 제목 검색..."
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <button
+                className="btn-add-primary"
+                onClick={() => navigate('/insertBanner')}
+              >
+                <Plus size={20} /> 새 배너 등록
+              </button>
+            </div>
           </header>
+
+          <div className="stats-container">
+            <div className="stat-card">
+              <span className="label">전체 배너</span>
+              <span className="value">{stats.total}</span>
+            </div>
+            <div className="stat-card active">
+              <span className="label">진행 중</span>
+              <span className="value">{stats.active}</span>
+            </div>
+            <div className="stat-card expired">
+              <span className="label">만료</span>
+              <span className="value">{stats.expired}</span>
+            </div>
+          </div>
 
           <div className="banner-feed">
             {isLoading ? (
               <div className="loading-state">데이터 불러오는 중...</div>
-            ) : banners.length === 0 ? (
-              <div className="loading-state">등록된 배너가 없습니다.</div>
+            ) : filteredBanners.length === 0 ? (
+              <div className="loading-state">
+                {searchTerm ? '검색 결과가 없습니다.' : '등록된 배너가 없습니다.'}
+              </div>
             ) : (
-              banners.map(banner => {
+              filteredBanners.map(banner => {
                 const expired =
                   new Date(banner.bannerDeadlineDate) < new Date();
 
