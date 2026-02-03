@@ -18,7 +18,7 @@ const BannerState = () => {
   const [banners, setBanners] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('total'); // 'total', 'active', 'expired'
+  const [filterStatus, setFilterStatus] = useState('total'); // 'total', 'active', 'expired', 'pending'
 
   const fetchBanners = async () => {
     setIsLoading(true);
@@ -38,16 +38,18 @@ const BannerState = () => {
 
   const filteredBanners = banners
     .filter(banner => {
+      const now = new Date();
+      const startDate = new Date(banner.bannerStartDate);
+      const deadlineDate = new Date(banner.bannerDeadlineDate);
+
       if (filterStatus === 'active') {
-        const now = new Date();
-        const startDate = new Date(banner.bannerStartDate);
-        const deadlineDate = new Date(banner.bannerDeadlineDate);
         return now >= startDate && now <= deadlineDate;
       }
       if (filterStatus === 'expired') {
-        const now = new Date();
-        const deadlineDate = new Date(banner.bannerDeadlineDate);
         return now > deadlineDate;
+      }
+      if (filterStatus === 'pending') {
+        return now < startDate;
       }
       return true; // 'total'
     })
@@ -67,6 +69,11 @@ const BannerState = () => {
       const now = new Date();
       const deadlineDate = new Date(b.bannerDeadlineDate);
       return now > deadlineDate;
+    }).length,
+    pending: banners.filter(b => {
+        const now = new Date();
+        const startDate = new Date(b.bannerStartDate);
+        return now < startDate;
     }).length
   };
 
@@ -114,10 +121,17 @@ const BannerState = () => {
               <span className="value">{stats.active}</span>
             </div>
             <div
+              className={`stat-card pending ${filterStatus === 'pending' ? 'selected' : ''}`}
+              onClick={() => setFilterStatus('pending')}
+            >
+              <span className="label">노출 대기</span>
+              <span className="value">{stats.pending}</span>
+            </div>
+            <div
               className={`stat-card expired ${filterStatus === 'expired' ? 'selected' : ''}`}
               onClick={() => setFilterStatus('expired')}
             >
-              <span className="label">만료</span>
+              <span className="label">노출 종료</span>
               <span className="value">{stats.expired}</span>
             </div>
           </div>

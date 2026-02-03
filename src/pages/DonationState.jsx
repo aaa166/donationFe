@@ -79,7 +79,7 @@ const DonationState = () => {
                 </div>
             </header>
 
-            <div className="stats-container">
+            <div className="stats-container4">
                 <div className={`stat-card ${filterStatus === 'all' ? 'selected' : ''}`} onClick={() => setFilterStatus('all')}>
                     <span className="label">전체 캠페인</span>
                     <span className="value">{stats.total}</span>
