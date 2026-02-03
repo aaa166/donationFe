@@ -11,6 +11,7 @@ const UserManagement = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [reportHistories, setReportHistories] = useState([]);
+    const [filterStatus, setFilterStatus] = useState('all'); // all, active, inactive
 
     const ITEMS_PER_PAGE = 10;
     const ROLE_MAP = { 0: '관리자', 1: '일반', 2: '기업' };
@@ -65,11 +66,17 @@ const UserManagement = () => {
         }
     };
 
-    const filteredUsers = userStates.filter(u =>
-        u.userId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        u.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        u.userEmail?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredUsers = userStates
+        .filter(u => {
+            if (filterStatus === 'active') return u.userState === 'A';
+            if (filterStatus === 'inactive') return u.userState === 'I';
+            return true;
+        })
+        .filter(u =>
+            u.userId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            u.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            u.userEmail?.toLowerCase().includes(searchTerm.toLowerCase())
+        );
 
     const offset = currentPage * ITEMS_PER_PAGE;
     const currentItems = filteredUsers.slice(offset, offset + ITEMS_PER_PAGE);
@@ -100,15 +107,15 @@ const UserManagement = () => {
             </header>
 
             <div className="stats-container">
-                <div className="stat-card">
+                <div className={`stat-card ${filterStatus === 'all' ? 'selected' : ''}`} onClick={() => setFilterStatus('all')}>
                     <span className="label">전체 사용자</span>
                     <span className="value">{stats.total}</span>
                 </div>
-                <div className="stat-card active">
+                <div className={`stat-card active ${filterStatus === 'active' ? 'selected' : ''}`} onClick={() => setFilterStatus('active')}>
                     <span className="label">활성</span>
                     <span className="value">{stats.active}</span>
                 </div>
-                <div className="stat-card inactive">
+                <div className={`stat-card inactive ${filterStatus === 'inactive' ? 'selected' : ''}`} onClick={() => setFilterStatus('inactive')}>
                     <span className="label">비활성/정지</span>
                     <span className="value">{stats.inactive}</span>
                 </div>

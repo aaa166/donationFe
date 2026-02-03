@@ -56,12 +56,24 @@
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.07);
+}
+
+.stat-card.selected {
+    border: 1px solid;
 }
 
 .stat-card .label { color: #888; font-size: 14px; }
 .stat-card .value { display: block; font-size: 28px; font-weight: 700; margin-top: 5px; }
-.stat-card.active .value { color: #4CAF50; }
-.stat-card.inactive .value { color: #f44336; }
+.stat-card.active .value, .stat-card.active.selected { color: #4CAF50; border-color: #4CAF50; }
+.stat-card.inactive .value, .stat-card.inactive.selected { color: #f44336; border-color: #f44336; }
 
 /* Table Container */
 .table-container {
