@@ -6,20 +6,19 @@ import {
   Search,
   MoreVertical,
   ExternalLink,
-  Layout,
-  Grid,
-  Megaphone,
-  Bell,
   Clock,
   Maximize
 } from 'lucide-react';
 import './BannerState.css';
+
+const BACKEND_URL = 'http://localhost:8081'; 
 
 const BannerState = () => {
   const navigate = useNavigate();
   const [banners, setBanners] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('total'); // 'total', 'active', 'expired'
 
   const fetchBanners = async () => {
     setIsLoading(true);
@@ -37,21 +36,42 @@ const BannerState = () => {
     fetchBanners();
   }, []);
 
-  const filteredBanners = banners.filter(banner =>
-    banner.bannerTitle.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredBanners = banners
+    .filter(banner => {
+      if (filterStatus === 'active') {
+        const now = new Date();
+        const startDate = new Date(banner.bannerStartDate);
+        const deadlineDate = new Date(banner.bannerDeadlineDate);
+        return now >= startDate && now <= deadlineDate;
+      }
+      if (filterStatus === 'expired') {
+        const now = new Date();
+        const deadlineDate = new Date(banner.bannerDeadlineDate);
+        return now > deadlineDate;
+      }
+      return true; // 'total'
+    })
+    .filter(banner =>
+      banner.bannerTitle.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
   const stats = {
     total: banners.length,
-    active: banners.filter(b => new Date(b.bannerDeadlineDate) >= new Date()).length,
-    expired: banners.filter(b => new Date(b.bannerDeadlineDate) < new Date()).length
+    active: banners.filter(b => {
+      const now = new Date();
+      const startDate = new Date(b.bannerStartDate);
+      const deadlineDate = new Date(b.bannerDeadlineDate);
+      return now >= startDate && now <= deadlineDate;
+    }).length,
+    expired: banners.filter(b => {
+      const now = new Date();
+      const deadlineDate = new Date(b.bannerDeadlineDate);
+      return now > deadlineDate;
+    }).length
   };
 
   return (
     <div className="banner-gallery-container">
-      
-
-      {/* Main */}
       <main className="gallery-main">
         <div className="content-inner">
           <header className="admin-header">
@@ -79,15 +99,24 @@ const BannerState = () => {
           </header>
 
           <div className="stats-container">
-            <div className="stat-card">
+            <div
+              className={`stat-card ${filterStatus === 'total' ? 'selected' : ''}`}
+              onClick={() => setFilterStatus('total')}
+            >
               <span className="label">전체 배너</span>
               <span className="value">{stats.total}</span>
             </div>
-            <div className="stat-card active">
+            <div
+              className={`stat-card active ${filterStatus === 'active' ? 'selected' : ''}`}
+              onClick={() => setFilterStatus('active')}
+            >
               <span className="label">진행 중</span>
               <span className="value">{stats.active}</span>
             </div>
-            <div className="stat-card expired">
+            <div
+              className={`stat-card expired ${filterStatus === 'expired' ? 'selected' : ''}`}
+              onClick={() => setFilterStatus('expired')}
+            >
               <span className="label">만료</span>
               <span className="value">{stats.expired}</span>
             </div>
@@ -102,15 +131,33 @@ const BannerState = () => {
               </div>
             ) : (
               filteredBanners.map(banner => {
-                const expired =
-                  new Date(banner.bannerDeadlineDate) < new Date();
+                const now = new Date();
+                const startDate = new Date(banner.bannerStartDate);
+                const deadlineDate = new Date(banner.bannerDeadlineDate);
+                const isActive = now >= startDate && now <= deadlineDate;
+                const isExpired = now > deadlineDate;
+
+                let statusLabel = '예정';
+                let statusClass = 'pending';
+
+                if (isActive) {
+                  statusLabel = '진행 중';
+                  statusClass = 'active';
+                } else if (isExpired) {
+                  statusLabel = '만료';
+                  statusClass = 'expired';
+                }
+                
+                const bannerImgUrl = banner.bannerImg 
+                  ? `${BACKEND_URL}${banner.bannerImg}` 
+                  : '/default-image.png'; // 이미지 없을 때 기본 이미지
 
                 return (
                   <div key={banner.bannerNo} className="banner-card">
                     <div className="banner-preview-box">
-                      <img src={banner.bannerImg} alt={banner.bannerTitle} />
-                      <span className={`status-badge ${expired ? 'expired' : 'active'}`}>
-                        {expired ? '만료' : '진행 중'}
+                      <img src={bannerImgUrl} alt={banner.bannerTitle} />
+                      <span className={`status-badge ${statusClass}`}>
+                        {statusLabel}
                       </span>
                     </div>
 
@@ -149,7 +196,6 @@ const BannerState = () => {
               })
             )}
 
-            {/* Quick Upload */}
             <div
               className="quick-upload-zone"
               onClick={() => navigate('/admin/banners/add')}

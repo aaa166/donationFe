@@ -143,6 +143,18 @@
     border-radius: 12px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     border: 1px solid var(--border-color);
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.07);
+}
+
+.stat-card.selected {
+    border-color: var(--primary-green);
+    box-shadow: 0 8px 15px rgba(46, 204, 113, 0.1);
 }
 
 .stat-card .label { 
