@@ -10,7 +10,7 @@ const Report = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [searchType, setSearchType] = useState('reporterId');
-    const [showPendingOnly, setShowPendingOnly] = useState(false);
+    const [filterStatus, setFilterStatus] = useState('all'); // 'all', 'pending', 'resolved'
     const [currentPage, setCurrentPage] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedReport, setSelectedReport] = useState(null);
@@ -37,7 +37,8 @@ const Report = () => {
     useEffect(() => { fetchReports(); }, []);
 
     const filteredReports = reports.filter(r => {
-        if (showPendingOnly && r.reportStatus !== 'P') return false;
+        if (filterStatus === 'pending' && r.reportStatus !== 'P') return false;
+        if (filterStatus === 'resolved' && !['R', 'C'].includes(r.reportStatus)) return false;
         const value = r[searchType]?.toLowerCase();
         return value?.includes(searchTerm.toLowerCase());
     });
@@ -51,7 +52,7 @@ const Report = () => {
     const stats = {
         total: reports.length,
         pending: reports.filter(r => r.reportStatus === 'P').length,
-        resolved: reports.filter(r => r.reportStatus === 'R').length
+        resolved: reports.filter(r => ['R', 'C'].includes(r.reportStatus)).length
     };
 
     const getStatusText = s => ({ P: '대기', C: '반려', R: '완료' }[s] || s);
@@ -104,14 +105,6 @@ const handleConfirmReport = async (report, status) => {
                     <p>커뮤니티 내 접수된 신고 내역을 검토하고 처리합니다.</p>
                 </div>
                 <div className="header-actions">
-                    <label className="toggle-pending">
-                        <input
-                            type="checkbox"
-                            checked={showPendingOnly}
-                            onChange={e => setShowPendingOnly(e.target.checked)}
-                        />
-                        <span>대기 중인 신고만</span>
-                    </label>
                     <div className="search-group">
                         <select value={searchType} onChange={e => setSearchType(e.target.value)}>
                             <option value="reporterId">신고자 ID</option>
@@ -128,15 +121,15 @@ const handleConfirmReport = async (report, status) => {
             </header>
 
             <div className="stats-container">
-                <div className="stat-card">
+                <div className={`stat-card ${filterStatus === 'all' ? 'selected' : ''}`} onClick={() => setFilterStatus('all')}>
                     <span className="label">누적 신고 건수</span>
                     <span className="value">{stats.total}</span>
                 </div>
-                <div className="stat-card pending">
+                <div className={`stat-card pending ${filterStatus === 'pending' ? 'selected' : ''}`} onClick={() => setFilterStatus('pending')}>
                     <span className="label">미처리 신고</span>
                     <span className="value">{stats.pending}</span>
                 </div>
-                <div className="stat-card resolved">
+                <div className={`stat-card resolved ${filterStatus === 'resolved' ? 'selected' : ''}`} onClick={() => setFilterStatus('resolved')}>
                     <span className="label">처리 완료</span>
                     <span className="value">{stats.resolved}</span>
                 </div>

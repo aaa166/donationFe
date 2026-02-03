@@ -10,6 +10,7 @@ const DonationState = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchType, setSearchType] = useState('donationTitle');
     const [currentPage, setCurrentPage] = useState(0);
+    const [filterStatus, setFilterStatus] = useState('all'); // all, active, pending, private
 
     const STATE_OPTIONS = { 'P': '대기', 'A': '공개', 'D': '비공개' };
     const ITEMS_PER_PAGE = 10;
@@ -39,6 +40,9 @@ const DonationState = () => {
     };
 
     const filteredDonations = donations.filter(d => {
+        if (filterStatus === 'active' && d.donationState !== 'A') return false;
+        if (filterStatus === 'pending' && d.donationState !== 'P') return false;
+        if (filterStatus === 'private' && d.donationState !== 'D') return false;
         const term = searchTerm.toLowerCase();
         return d[searchType]?.toLowerCase().includes(term);
     });
@@ -50,7 +54,8 @@ const DonationState = () => {
     const stats = {
         total: donations.length,
         active: donations.filter(d => d.donationState === 'A').length,
-        pending: donations.filter(d => d.donationState === 'P').length
+        pending: donations.filter(d => d.donationState === 'P').length,
+        private: donations.filter(d => d.donationState === 'D').length
     };
 
     return (
@@ -75,17 +80,21 @@ const DonationState = () => {
             </header>
 
             <div className="stats-container">
-                <div className="stat-card">
+                <div className={`stat-card ${filterStatus === 'all' ? 'selected' : ''}`} onClick={() => setFilterStatus('all')}>
                     <span className="label">전체 캠페인</span>
                     <span className="value">{stats.total}</span>
                 </div>
-                <div className="stat-card active">
+                <div className={`stat-card active ${filterStatus === 'active' ? 'selected' : ''}`} onClick={() => setFilterStatus('active')}>
                     <span className="label">공개 중</span>
                     <span className="value">{stats.active}</span>
                 </div>
-                <div className="stat-card pending">
+                <div className={`stat-card pending ${filterStatus === 'pending' ? 'selected' : ''}`} onClick={() => setFilterStatus('pending')}>
                     <span className="label">승인 대기</span>
                     <span className="value">{stats.pending}</span>
+                </div>
+                <div className={`stat-card private ${filterStatus === 'private' ? 'selected' : ''}`} onClick={() => setFilterStatus('private')}>
+                    <span className="label">비공개</span>
+                    <span className="value">{stats.private}</span>
                 </div>
             </div>
 
