@@ -1,51 +1,149 @@
-/* MainBanner.css */
+/* Container for 10% margins and alignment */
+.main-banner-container {
+  padding: 20px 0;
+  width: 100%;
+}
 
-/* 배너 전체 래퍼 */
+/* Banner Wrap with boundary visibility */
 .main-banner-wrap {
   position: relative;
   width: 100%;
-  max-width: 1200px;  /* 최대 폭 */
-  height: 400px;       /* 배너 고정 높이 */
+  max-width: 1200px;
+  height: 440px;
   margin: 0 auto;
   overflow: hidden;
-  border-radius: 8px;
-  background-color: #f5f5f5; /* 이미지 로딩 전 배경색 */
+  border-radius: 16px;
+  background-color: #fff;
+  /* Visual boundary: border and shadow */
+  border: 1px solid #eef0f2;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
-/* 배너 이미지 */
+.banner-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+}
+
+/* Banner Image */
 .main-banner-img {
   width: 100%;
-  height: 100%;       /* 부모 div 높이에 맞춤 */
-  object-fit: cover;  /* 이미지 비율 유지하면서 꽉 채움 */
+  height: 100%;
+  object-fit: cover;
   display: block;
-  cursor: pointer;
-  transition: opacity 0.5s ease-in-out;
+  transition: transform 0.8s ease;
 }
 
-/* 슬라이드 인디케이터 전체 */
-.banner-indicator {
+.main-banner-wrap:hover .main-banner-img {
+  transform: scale(1.02);
+}
+
+/* Text Overlay (Left side) */
+.banner-text-overlay {
   position: absolute;
-  bottom: 15px;          /* 하단에서 여유 공간 */
-  left: 50%;
-  transform: translateX(-50%);
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  padding: 60px;
+  z-index: 5;
+  background: linear-gradient(to right, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 100%);
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  justify-content: center;
+  color: white;
+  pointer-events: none;
+}
+
+.banner-title {
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1.3;
+  margin-bottom: 16px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.banner-subtitle {
+  font-size: 18px;
+  opacity: 0.9;
+  margin-bottom: 30px;
+}
+
+.banner-btn {
+  display: inline-block;
+  width: fit-content;
+  padding: 10px 24px;
+  border-radius: 25px;
+  background: white;
+  color: #333;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* Happybean Style Numeric Controller (Bottom Right) */
+.banner-controls {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
   z-index: 10;
 }
 
-/* 인디케이터 점 */
-.banner-indicator span {
-  width: 12px;
-  height: 12px;
-  background-color: #fff;
-  opacity: 0.5;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: opacity 0.3s, background-color 0.3s;
+.control-pill {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  padding: 6px 16px;
+  border-radius: 30px;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
 }
 
-/* 현재 활성 점 */
-.banner-indicator span.active {
+.current-page {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.total-page {
+  font-size: 13px;
+  opacity: 0.6;
+  margin-left: 4px;
+}
+
+.control-divider {
+  width: 1px;
+  height: 12px;
+  background: rgba(255,255,255,0.3);
+  margin: 0 15px;
+}
+
+.control-arrow, .control-play {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.control-arrow:hover, .control-play:hover {
   opacity: 1;
-  background-color: #007bff;
+}
+
+.control-play {
+  margin: 0 5px;
+}
+
+/* Loading/Empty State */
+.main-banner-wrap.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 15px;
 }
