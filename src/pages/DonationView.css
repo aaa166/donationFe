@@ -122,21 +122,21 @@ body {
 }
 
 /* Sidebar */
-.donation-sidebar .sidebar-box {
+.donation-sidebar .sidebar-box1 {
   position: sticky; /* 스크롤 따라다니기 */
-  top: 20px;
+  top: 20%;
   background-color: #fff;
   padding: 24px;
   border-radius: 8px;
   border: 1px solid #eee;
   text-align: center;
 }
-.sidebar-box .sidebar-amount {
+.sidebar-box1 .sidebar-amount {
     font-size: 24px;
     font-weight: bold;
     color: #00b343;
 }
-.sidebar-box .donate-button {
+.sidebar-box1 .donate-button {
   width: 100%;
   padding: 15px;
   background-color: #00b343;

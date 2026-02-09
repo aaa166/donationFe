@@ -106,7 +106,7 @@ const UserManagement = () => {
                 </div>
             </header>
 
-            <div className="stats-container">
+            <div className="stats-container3">
                 <div className={`stat-card ${filterStatus === 'all' ? 'selected' : ''}`} onClick={() => setFilterStatus('all')}>
                     <span className="label">전체 사용자</span>
                     <span className="value">{stats.total}</span>

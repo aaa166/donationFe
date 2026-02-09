@@ -64,15 +64,15 @@ const ChocobeanSignup = () => {
         }
         break;
       case 'userId':
-        if (value /*&&  !validateUserId(value) */) {
-          // newErrors.userId = '6-12자의 영문 소문자, 숫자만 사용 가능합니다.';
+        if (value && !validateUserId(value)) {
+          newErrors.userId = '6-12자의 영문 소문자, 숫자만 사용 가능합니다.';
         } else {
           delete newErrors.userId;
         }
         break;
       case 'password':
-        if (value /* && !validatePassword(value) */) {
-          // newErrors.password = '8-15자의 영문, 숫자, 특수문자를 포함해야 합니다.';
+        if (value && !validatePassword(value)) {
+          newErrors.password = '8-15자의 영문, 숫자, 특수문자를 포함해야 합니다.';
         } else {
           delete newErrors.password;
         }
@@ -90,15 +90,15 @@ const ChocobeanSignup = () => {
         }
         break;
       case 'email':
-        if (value /* && !validateEmail(value) */) {
-          // newErrors.email = '올바른 이메일 형식을 입력해주세요.';
+        if (value && !validateEmail(value)) {
+          newErrors.email = '올바른 이메일 형식을 입력해주세요.';
         } else {
           delete newErrors.email;
         }
         break;
       case 'phone':
-        if (value /* && !validatePhone(value) */) {
-          // newErrors.phone = '올바른 휴대폰 번호를 입력해주세요. (예: 010-1234-5678)';
+        if (value && !validatePhone(value)) {
+          newErrors.phone = '올바른 휴대폰 번호를 입력해주세요. (예: 010-1234-5678)';
         } else {
           delete newErrors.phone;
         }
@@ -149,10 +149,10 @@ const ChocobeanSignup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // if (!isFormValid()) {
-    //   alert('모든 필수 항목을 올바르게 입력해주세요.');
-    //   return;
-    // }
+    if (!isFormValid()) {
+      alert('모든 필수 항목을 올바르게 입력해주세요.');
+      return;
+    }
 
     try {
       const response = await fetch('http://localhost:8081/api/auth/signup', {
@@ -424,8 +424,8 @@ const ChocobeanSignup = () => {
 
           <button 
             type="submit" 
-            className={`chocobean-signup-button active /* ${isFormValid() ? 'active' : 'disabled'} */`}
-            /* disabled={!isFormValid()} */
+            className={`chocobean-signup-button ${isFormValid() ? 'active' : 'disabled'}`}
+            disabled={!isFormValid()}
           >
             회원가입
           </button>

@@ -4,7 +4,7 @@ import React from 'react';
 const DonationSidebar = ({ currentAmount, organization, onDonateClick }) => {
   return (
     <aside className="donation-sidebar">
-      <div className="sidebar-box">
+      <div className="sidebar-box1">
         <h4>{organization}</h4>
         <p className="sidebar-amount">{currentAmount.toLocaleString()}원</p>
         <p>여러분의 참여로 함께 만들었어요!</p>

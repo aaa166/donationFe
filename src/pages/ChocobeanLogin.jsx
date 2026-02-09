@@ -60,7 +60,7 @@ const ChocobeanLogin = () => {
 
         <div className="chocobean-header">
           <div className="chocobean-logo">
-            <span className="chocobean-icon">🍫</span>
+            <span className="chocobean-icon1">🍫</span>
             <h1>초코빈 ID 로그인</h1>
           </div>
         </div>

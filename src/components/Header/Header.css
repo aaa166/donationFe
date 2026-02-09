@@ -31,7 +31,7 @@
   color: #2d3436;
 }
 
-.logo-icon {
+.logo-icon1 {
   width: 28px;
   height: 28px;
 }
@@ -55,12 +55,12 @@
 }
 
 .nav-item a:hover {
-  color: #00b894;
+  color: #4E342E;
 }
 
 /* 기부 신청 버튼 */
 .donation-apply-btn {
-  background-color: #00b894;
+  background-color: #4E342E;
   color: #ffffff !important;
   padding: 10px 20px;
   border-radius: 50px;
@@ -70,7 +70,7 @@
 }
 
 .donation-apply-btn:hover {
-  background-color: #00a383 !important;
+  background-color: #30201d !important;
   transform: translateY(-2px);
 }
 
@@ -124,15 +124,15 @@
 
 .login-link {
   text-decoration: none;
-  color: #00b894;
+  color: #4E342E;
   font-weight: 600;
-  border: 1.5px solid #00b894;
+  border: 1.5px solid #4E342E;
   padding: 8px 18px;
   border-radius: 6px;
   transition: all 0.2s;
 }
 
 .login-link:hover {
-  background-color: #00b894;
+  background-color: #4E342E;
   color: #ffffff;
 }

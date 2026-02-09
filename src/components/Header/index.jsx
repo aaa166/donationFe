@@ -9,7 +9,7 @@ const Header = ({ isLoggedIn, handleLogout }) => {
         {/* 로고 영역 */}
         <div className="logo-section">
           <Link to="/" className="logo">
-            <Heart className="logo-icon" fill="#00b894" color="#00b894" />
+            <Heart className="logo-icon1" fill="#4E342E" color="#D7C4A3" background = "#F4F1EC"  />
             <span>ChocoBean</span>
             <ul className="nav-list">
             {/* <li className="nav-item"><Link to="/">홈</Link></li> */}
