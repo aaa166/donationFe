@@ -89,12 +89,13 @@ function DonationView() {
                 typeNo,
                 reportType,
             });
-
+            console.log(typeNo);
             alert('신고가 접수되었습니다.');
             fetchData();
             setActiveTab('reviews');
         } catch (e) {
             if (e.response?.status === 409) {
+                console.log(typeNo);
                 alert('이미 신고된 게시글입니다.');
             } else if (e.response?.status === 401) {
                 alert('로그인이 필요합니다.');
@@ -132,7 +133,27 @@ function DonationView() {
             case 'story':
                 return (
                     <div>
-                        <div>{donationData.donationContent}</div>
+                        <div
+                            className="content"
+                            dangerouslySetInnerHTML={{
+                                __html: donationData.donationContent
+                                .split('\n\n') // 문단 단위
+                                .map(p => {
+                                    const [first, ...rest] = p
+                                    .split('\n')
+                                    .map(line => line.trim())
+                                    .filter(line => line.length > 0); // 공백 줄 제거
+
+                                    return `
+                                    <p>
+                                        <span class="title">${first}</span>
+                                        ${rest.map(line => `<br>${line}`).join('')}
+                                    </p>
+                                    `;
+                                })
+                                .join('')
+                            }}
+                        />
                         <div>{donationData.donationAmountPlan}</div>
                     </div>
                 );
@@ -145,24 +166,28 @@ function DonationView() {
                         <button
                             className="report-button"
                             onClick={() =>
-                                handleReport(c.userNo, c.payComment, c.payNo, 'payComment')
+                                handleReport(c.userNo, c.payComment, c.donationNo, 'payComment')
                             }
                         >
                             신고
                         </button>
                     </div>
                 ));
-            case 'info':
-                return (
-                    <div>
-                        <p><strong>단체:</strong> {donationData.donationOrganization}</p>
-                        <p>{donationData.donationAmountPlan}</p>
-                    </div>
-                );
+            // case 'info':
+            //     return (
+            //         <div>
+            //             <p><strong>단체:</strong> {donationData.donationOrganization}</p>
+            //             <p>{donationData.donationAmountPlan}</p>
+            //         </div>
+            //     );
             default:
                 return null;
         }
     };
+    const BACKEND_URL = 'http://localhost:8081'; 
+    const donationImgUrl = donationData.donationImg
+        ? `${BACKEND_URL}${donationData.donationImg}` 
+        : '/default-image.png';
 
     return (
         <div className="container">
@@ -170,11 +195,8 @@ function DonationView() {
                 {/* 🔥 헤더 / 이미지 복구 */}
                 <div className="donation-header">
                     <h1>{donationData.donationTitle}</h1>
-                    <img
-                        src={donationData.donationImg}
-                        alt={donationData.donationTitle}
-                        className="main-image"
-                    />
+                    <img src={donationImgUrl} alt={donationData.donationTitle} className="main-image"/>
+                    
                 </div>
 
                 <ProgressBar
@@ -183,12 +205,12 @@ function DonationView() {
                 />
 
                 {/* 🔥 action-buttons 복구 */}
-                <div className="action-buttons">
+                {/* <div className="action-buttons">
                     <button className="donate-button main" onClick={handleDonateClick}>
                         참여하기
                     </button>
                     <button className="share-button">공유</button>
-                </div>
+                </div> */}
 
                 <ContentTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 

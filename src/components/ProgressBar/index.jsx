@@ -12,7 +12,7 @@ function ProgressBar({ current = 0, target = 0 }) {
                 <div className="progress" style={{ width: `${percentage}%` }}></div>
             </div>
             <div className="amount_info">
-                <span className="current_amount">{current.toLocaleString()}원</span>
+                <span className="current_amount">모금 : {current.toLocaleString()}원</span>
                 <span className="percentage">{Math.floor(percentage)}%</span>
             </div>
         </div>

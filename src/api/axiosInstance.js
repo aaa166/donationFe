@@ -47,7 +47,6 @@ api.interceptors.response.use(
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
 
-          // 공개 API면 리다이렉트 안 함
           if (!isPublicAPI) window.location.href = '/login';
         }
       } else {

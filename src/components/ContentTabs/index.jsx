@@ -16,12 +16,12 @@ const ContentTabs = ({ activeTab, setActiveTab }) => {
       >
         응원 한마디
       </button>
-      <button
+      {/* <button
         className={activeTab === 'info' ? 'active' : ''}
         onClick={() => setActiveTab('info')}
       >
         기본정보
-      </button>
+      </button> */}
     </nav>
   );
 };

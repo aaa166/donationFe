@@ -459,3 +459,11 @@ body {
     margin: 0;
     color: #666;
 }
+.content {
+  white-space: pre-line;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+}

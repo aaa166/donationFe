@@ -120,7 +120,7 @@ const handleConfirmReport = async (report, status) => {
                 </div>
             </header>
 
-            <div className="stats-container">
+            <div className="stats-container3">
                 <div className={`stat-card ${filterStatus === 'all' ? 'selected' : ''}`} onClick={() => setFilterStatus('all')}>
                     <span className="label">누적 신고 건수</span>
                     <span className="value">{stats.total}</span>
