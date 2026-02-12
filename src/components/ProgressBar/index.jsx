@@ -4,6 +4,8 @@ import './style.css';
 
 // props에 기본값 = 0 을 할당합니다.
 function ProgressBar({ current = 0, target = 0 }) {
+    console.log("current:", current);
+    console.log("target:", target);
     const percentage = target > 0 ? (current / target) * 100 : 0;
 
     return (

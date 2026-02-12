@@ -30,7 +30,7 @@ function DonationView() {
     const fetchData = useCallback(async () => {
         setLoading(true);
         setError(null);
-
+        // console.log(donationData.donationNo);
         try {
             const [donationRes, commentRes] = await Promise.all([
                 fetch(`${API_BASE_URL}/public/donationView/${donationNo}`),
@@ -65,7 +65,7 @@ function DonationView() {
                 payComment: comment,
                 donationNo: Number(donationNo),
             });
-
+            
             alert('후원이 완료되었습니다.');
             handleCloseModal();
             fetchData();
@@ -137,7 +137,7 @@ function DonationView() {
                             className="content"
                             dangerouslySetInnerHTML={{
                                 __html: donationData.donationContent
-                                .split('\n\n') // 문단 단위
+                                .split('\n\n') 
                                 .map(p => {
                                     const [first, ...rest] = p
                                     .split('\n')
@@ -185,14 +185,13 @@ function DonationView() {
         }
     };
     const BACKEND_URL = 'http://localhost:8081'; 
-    const donationImgUrl = donationData.donationImg
-        ? `${BACKEND_URL}${donationData.donationImg}` 
-        : '/default-image.png';
+    const donationImgUrl = donationData.donationImg.startsWith("http")
+            ? donationData.donationImg
+            : `${BACKEND_URL}${donationData.donationImg}`;
 
     return (
         <div className="container">
             <main className="main-content">
-                {/* 🔥 헤더 / 이미지 복구 */}
                 <div className="donation-header">
                     <h1>{donationData.donationTitle}</h1>
                     <img src={donationImgUrl} alt={donationData.donationTitle} className="main-image"/>
