@@ -142,7 +142,7 @@ function DonationView() {
                                     const [first, ...rest] = p
                                     .split('\n')
                                     .map(line => line.trim())
-                                    .filter(line => line.length > 0); // 공백 줄 제거
+                                    .filter(line => line.length > 0); 
 
                                     return `
                                     <p>
