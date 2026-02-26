@@ -10,7 +10,9 @@ const Login = () => {
     if (provider === 'chocobean') {
       navigate('/login/chocobean'); 
     } else {
+      
       window.location.href = `http://localhost:8081/oauth2/authorization/${provider}`;
+      
     }
   };
 
@@ -20,10 +22,17 @@ const Login = () => {
     const refreshToken = params.get('refreshToken');
 
     if (accessToken) {
+      console.log("로그인 성공! 토큰 저장 중...");
+      
+      // 1. 토큰 저장
       localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
+      if (refreshToken) {
+        localStorage.setItem('refreshToken', refreshToken);
+      }
 
-      navigate('/');
+      // 2. 주소창의 토큰 제거 및 메인 페이지로 이동
+      // replace: true를 사용해야 뒤로가기 시 다시 토큰 URL로 돌아오지 않습니다.
+      navigate('/', { replace: true });
     }
   }, [navigate]);
 
