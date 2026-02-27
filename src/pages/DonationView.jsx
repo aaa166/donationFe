@@ -158,21 +158,26 @@ function DonationView() {
                     </div>
                 );
             case 'reviews':
-                return payComments.map((c, i) => (
-                    <div key={i} className="review-item">
-                        <p><strong>작성자:</strong> {c.userName}</p>
-                        <p><strong>후원금:</strong> {c.payAmount.toLocaleString()}원</p>
-                        <p>{c.payComment}</p>
-                        <button
-                            className="report-button"
-                            onClick={() =>
-                                handleReport(c.userNo, c.payComment, c.donationNo, 'payComment')
-                            }
-                        >
-                            신고
-                        </button>
-                    </div>
-                ));
+                
+                return payComments.map((c, i) => {
+                    console.log("댓글 데이터 확인용:", c); 
+
+                    return (
+                        <div key={i} className="review-item">
+                            <p><strong>작성자:</strong> {c.userName}</p>
+                            <p><strong>후원금:</strong> {c.payAmount.toLocaleString()}원</p>
+                            <p>{c.payComment}</p>
+                            <button
+                                className="report-button"
+                                onClick={() =>
+                                    handleReport(c.userNo, c.payComment, c.donationNo, 'payComment')
+                                }
+                            >
+                                신고
+                            </button>
+                        </div>
+                    );
+                });
             // case 'info':
             //     return (
             //         <div>
