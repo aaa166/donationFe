@@ -170,7 +170,7 @@ function DonationView() {
                             <button
                                 className="report-button"
                                 onClick={() =>
-                                    handleReport(c.userNo, c.payComment, c.donationNo, 'payComment')
+                                    handleReport(c.userNo, c.payComment, donationNo, 'payComment')
                                 }
                             >
                                 신고
@@ -178,13 +178,6 @@ function DonationView() {
                         </div>
                     );
                 });
-            // case 'info':
-            //     return (
-            //         <div>
-            //             <p><strong>단체:</strong> {donationData.donationOrganization}</p>
-            //             <p>{donationData.donationAmountPlan}</p>
-            //         </div>
-            //     );
             default:
                 return null;
         }
