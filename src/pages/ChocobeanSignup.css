@@ -324,6 +324,38 @@
   background-color: #5a6fd8;
 }
 
+.input-with-button {
+  display: flex;
+  gap: 10px; /* 간격 조절 */
+  width: 100%;
+}
+
+.input-with-button .chocobean-input {
+  flex-grow: 1; /* 입력 필드가 가능한 공간을 모두 차지하도록 */
+}
+
+.chocobean-verify-button {
+  padding: 10px 15px;
+  background-color: #667eea; /* 기존 버튼 색상과 유사하게 */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  white-space: nowrap; /* 버튼 텍스트가 줄바꿈되지 않도록 */
+}
+
+.chocobean-verify-button:hover {
+  background-color: #5a6fd8;
+}
+
+.chocobean-verify-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
 @media (max-width: 480px) {
   .chocobean-signup-container {
     padding: 10px;
@@ -371,5 +403,14 @@
   
   .modal-footer {
     padding: 15px;
+  }
+  
+  .input-with-button {
+    flex-direction: column; /* 모바일에서는 세로로 정렬 */
+    gap: 5px;
+  }
+
+  .chocobean-verify-button {
+    width: 100%; /* 모바일에서 버튼 너비 100% */
   }
 }

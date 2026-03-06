@@ -24,6 +24,9 @@ const ChocobeanSignup = () => {
     title: '',
     content: ''
   });
+  const [isEmailSent, setIsEmailSent] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
   const navigate = useNavigate();
 
   const validateUserId = (userId) => {
@@ -95,6 +98,9 @@ const ChocobeanSignup = () => {
         } else {
           delete newErrors.email;
         }
+        setIsEmailVerified(false);
+        setIsEmailSent(false);
+        setVerificationCode('');
         break;
       case 'phone':
         if (value && !validatePhone(value)) {
@@ -108,6 +114,27 @@ const ChocobeanSignup = () => {
     }
     
     setErrors(newErrors);
+  };
+
+  const handleSendVerificationCode = () => {
+    if (!validateEmail(formData.email)) {
+      alert('올바른 이메일 형식을 입력해주세요.');
+      return;
+    }
+    alert('인증번호가 발송되었습니다. 이메일을 확인해주세요.');
+    setIsEmailSent(true);
+  };
+
+  const handleConfirmVerificationCode = () => {
+    if (verificationCode === '123456') {
+      alert('이메일 인증이 완료되었습니다.');
+      setIsEmailVerified(true);
+      let newErrors = { ...errors };
+      delete newErrors.verification;
+      setErrors(newErrors);
+    } else {
+      setErrors(prev => ({ ...prev, verification: '인증번호가 일치하지 않습니다.' }));
+    }
   };
 
   const handleAgreementChange = (type) => {
@@ -138,6 +165,7 @@ const ChocobeanSignup = () => {
       formData.password &&
       formData.confirmPassword &&
       formData.email &&
+      isEmailVerified &&
       formData.phone &&
       Object.keys(errors).length === 0 &&
       agreements.required1 &&
@@ -150,7 +178,11 @@ const ChocobeanSignup = () => {
     e.preventDefault();
     
     if (!isFormValid()) {
-      alert('모든 필수 항목을 올바르게 입력해주세요.');
+      let errorMsg = '모든 필수 항목을 올바르게 입력해주세요.';
+      if (!isEmailVerified) {
+        errorMsg = '이메일 인증을 완료해주세요.';
+      }
+      alert(errorMsg);
       return;
     }
 
@@ -312,17 +344,52 @@ const ChocobeanSignup = () => {
           </div>
 
           <div className="input-group">
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              placeholder="이메일"
-              required
-              className={`chocobean-input ${errors.email ? 'error' : ''}`}
-            />
+            <div className="input-with-button">
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="이메일"
+                required
+                className={`chocobean-input ${errors.email ? 'error' : ''}`}
+                disabled={isEmailVerified}
+              />
+              <button
+                type="button"
+                onClick={handleSendVerificationCode}
+                className="chocobean-verify-button"
+                disabled={!validateEmail(formData.email)} // isEmailSent 조건 제거
+              >
+                {isEmailSent ? '재전송' : '인증번호 받기'}
+              </button>
+            </div>
             {errors.email && <span className="error-message">{errors.email}</span>}
           </div>
+
+          {isEmailSent && !isEmailVerified && (
+            <div className="input-group">
+              <div className="input-with-button">
+                <input
+                  type="text"
+                  name="verificationCode"
+                  value={verificationCode}
+                  onChange={(e) => setVerificationCode(e.target.value)}
+                  placeholder="인증번호 6자리"
+                  required
+                  className={`chocobean-input ${errors.verification ? 'error' : ''}`}
+                />
+                <button
+                  type="button"
+                  onClick={handleConfirmVerificationCode}
+                  className="chocobean-verify-button"
+                >
+                  확인
+                </button>
+              </div>
+              {errors.verification && <span className="error-message">{errors.verification}</span>}
+            </div>
+          )}
 
           <div className="input-group">
             <input
