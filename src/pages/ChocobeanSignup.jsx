@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './ChocobeanSignup.css';
+import api from '../api/axiosInstance';
 
 const ChocobeanSignup = () => {
   const [formData, setFormData] = useState({
@@ -116,26 +117,52 @@ const ChocobeanSignup = () => {
     setErrors(newErrors);
   };
 
-  const handleSendVerificationCode = () => {
+  const handleSendVerificationCode = async () => {
     if (!validateEmail(formData.email)) {
       alert('올바른 이메일 형식을 입력해주세요.');
       return;
     }
-    alert('인증번호가 발송되었습니다. 이메일을 확인해주세요.');
-    setIsEmailSent(true);
+    try {
+      await api.get(`/api/auth/sendEmailVerification?email=${formData.email}`);
+      alert('인증번호가 발송되었습니다. 이메일을 확인해주세요.');
+      setIsEmailSent(true);
+    } catch (error) {
+      console.error('Email sending failed:', error);
+      alert('인증번호 발송에 실패했습니다. 잠시 후 다시 시도해주세요.');
+    }
   };
 
-  const handleConfirmVerificationCode = () => {
-    if (verificationCode === '123456') {
+  const handleConfirmVerificationCode = async () => {
+  if (verificationCode.length !== 6) {
+    alert('인증번호 6자리를 입력해주세요.');
+    return;
+  }
+
+  try {
+    // 서버에 이메일과 입력한 코드를 보내서 검증
+    const response = await api.get('/api/auth/verifyCode', {
+      params: { 
+        email: formData.email, 
+        code: verificationCode 
+      }
+    });
+
+    if (response.data === "ok") {
       alert('이메일 인증이 완료되었습니다.');
       setIsEmailVerified(true);
+      
+      // 에러 메시지 초기화
       let newErrors = { ...errors };
       delete newErrors.verification;
       setErrors(newErrors);
-    } else {
-      setErrors(prev => ({ ...prev, verification: '인증번호가 일치하지 않습니다.' }));
     }
-  };
+  } catch (error) {
+    console.error('Verification failed:', error);
+    const errorMsg = error.response?.data || '인증번호가 일치하지 않거나 만료되었습니다.';
+    setErrors(prev => ({ ...prev, verification: errorMsg }));
+    alert(errorMsg);
+  }
+};
 
   const handleAgreementChange = (type) => {
     if (type === 'all') {
@@ -178,40 +205,28 @@ const ChocobeanSignup = () => {
     e.preventDefault();
     
     if (!isFormValid()) {
-      let errorMsg = '모든 필수 항목을 올바르게 입력해주세요.';
-      if (!isEmailVerified) {
-        errorMsg = '이메일 인증을 완료해주세요.';
-      }
-      alert(errorMsg);
+      alert(!isEmailVerified ? '이메일 인증을 완료해주세요.' : '입력 정보를 다시 확인해주세요.');
       return;
     }
 
     try {
-      const response = await fetch('http://localhost:8081/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userName: formData.name,
-          userId: formData.userId,
-          userPassword: formData.password,
-          userEmail: formData.email,
-          userPhone: formData.phone,
-          marketingConsent: agreements.marketing
-        }),
+      // fetch 대신 api 인스턴스 사용 (헤더 자동 처리)
+      const response = await api.post('/api/auth/signup', {
+        userName: formData.name,
+        userId: formData.userId,
+        userPassword: formData.password,
+        userEmail: formData.email,
+        userPhone: formData.phone,
+        marketingConsent: agreements.marketing
       });
 
-      if (response.ok) {
+      if (response.status === 200) {
         alert('회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.');
         navigate('/login/chocobean');
-      } else {
-        const errorMessage = await response.text();
-        alert(errorMessage || '회원가입에 실패했습니다.');
       }
     } catch (error) {
-      console.error('Network error:', error);
-      alert('네트워크 오류가 발생했습니다. 다시 시도해주세요.');
+      const errorMsg = error.response?.data || '회원가입 중 오류가 발생했습니다.';
+      alert(errorMsg);
     }
   };
 

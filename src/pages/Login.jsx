@@ -86,7 +86,7 @@ const Login = () => {
 
         <div className="signup-prompt">
           <span>아직 계정이 없으신가요?</span>
-          <Link to="/signup">회원가입</Link>
+          <Link to="/signup/chocobean">회원가입</Link>
         </div>
       </div>
     </div>
