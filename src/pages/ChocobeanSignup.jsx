@@ -133,36 +133,36 @@ const ChocobeanSignup = () => {
   };
 
   const handleConfirmVerificationCode = async () => {
-  if (verificationCode.length !== 6) {
-    alert('인증번호 6자리를 입력해주세요.');
-    return;
-  }
-
-  try {
-    // 서버에 이메일과 입력한 코드를 보내서 검증
-    const response = await api.get('/api/auth/verifyCode', {
-      params: { 
-        email: formData.email, 
-        code: verificationCode 
-      }
-    });
-
-    if (response.data === "ok") {
-      alert('이메일 인증이 완료되었습니다.');
-      setIsEmailVerified(true);
-      
-      // 에러 메시지 초기화
-      let newErrors = { ...errors };
-      delete newErrors.verification;
-      setErrors(newErrors);
+    if (verificationCode.length !== 6) {
+      alert('인증번호 6자리를 입력해주세요.');
+      return;
     }
-  } catch (error) {
-    console.error('Verification failed:', error);
-    const errorMsg = error.response?.data || '인증번호가 일치하지 않거나 만료되었습니다.';
-    setErrors(prev => ({ ...prev, verification: errorMsg }));
-    alert(errorMsg);
-  }
-};
+
+    try {
+      const response = await api.get('/api/auth/verifyCode', {
+        params: { 
+          email: formData.email, 
+          code: verificationCode 
+        }
+      });
+
+      if (response.status === 200) {
+        alert('이메일 인증이 완료되었습니다.');
+        setIsEmailVerified(true); 
+        
+        setErrors(prev => {
+          const newErrors = { ...prev };
+          delete newErrors.verification;
+          return newErrors;
+        });
+      }
+    } catch (error) {
+      console.error('Verification failed:', error);
+      const errorMsg = error.response?.data || '인증번호가 일치하지 않거나 만료되었습니다.';
+      setErrors(prev => ({ ...prev, verification: errorMsg }));
+      alert(errorMsg);
+    }
+  };
 
   const handleAgreementChange = (type) => {
     if (type === 'all') {
