@@ -3,6 +3,9 @@
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 100%; 
+  display: flex;
+  flex-direction: column;
 }
 
 .donation-image {
@@ -13,11 +16,20 @@
 
 .donation-info {
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .donation-title {
   font-size: 1.1rem;
   margin: 0 0 0.5rem;
+
+  /* 제목 줄 제한 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;   /* 최대 2줄 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .donation-organization {
@@ -48,9 +60,11 @@
 .donation-amount {
   font-weight: bold;
   text-align: right;
+  margin-top: auto; /* 항상 아래로 정렬 */
 }
 
 .donation-item-link {
   text-decoration: none; 
   color: inherit; 
+  height: 100%;
 }

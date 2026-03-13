@@ -69,6 +69,7 @@ const DonationList = () => {
         <DonationFilter selectedCategory={selectedCategory} onCategoryChange={handleCategoryChange} />
         <DonationListComponent title="전체" donations={filteredDonations} titleLinkable={false} />
         <DonationSearch />
+        {/* <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/> */}
         <DonationListDate />
       </div>
     </div>

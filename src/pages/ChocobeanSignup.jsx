@@ -433,7 +433,7 @@ const ChocobeanSignup = () => {
             </div>
 
             <div className="agreement-list">
-              <div className="agreement-item">
+              {/* <div className="agreement-item">
                 <label className="agreement-checkbox">
                   <input
                     type="checkbox"
@@ -450,7 +450,7 @@ const ChocobeanSignup = () => {
                 >
                   자세히보기
                 </button>
-              </div>
+              </div> */}
 
               <div className="agreement-item">
                 <label className="agreement-checkbox">
@@ -471,7 +471,7 @@ const ChocobeanSignup = () => {
                 </button>
               </div>
 
-              <div className="agreement-item">
+              {/* <div className="agreement-item">
                 <label className="agreement-checkbox">
                   <input
                     type="checkbox"
@@ -488,7 +488,7 @@ const ChocobeanSignup = () => {
                 >
                   자세히보기
                 </button>
-              </div>
+              </div> */}
 
               <div className="agreement-item">
                 <label className="agreement-checkbox">
