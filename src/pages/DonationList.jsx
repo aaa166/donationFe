@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useLocation } from 'react-router-dom';
+import api from '../api/axiosInstance';
 import Header from '../components/Header';
 import DonationListComponent from '../components/DonationList';
 import DonationListDate from '../components/DonationListDate';
@@ -36,7 +36,7 @@ const DonationList = () => {
       try {
         const categoryCode = categories.find(c => c.id === selectedCategory)?.code ?? 0;
         console.log(categoryCode);
-        const response = await axios.get('http://localhost:8081/api/public/donations', {
+        const response = await api.get('/api/public/donations', {
           params: { categoryId: categoryCode },
         });
         setDonations(response.data);

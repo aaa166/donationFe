@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import api from '../api/axiosInstance';
 import './Signup.css';
 
 const Signup = () => {
@@ -20,30 +21,19 @@ const Signup = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:8081/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userName: name,
-          userId: userId,
-          userPassword: password,
-          userEmail: email,
-          userPhone: phone,
-        }),
+      await api.post('/api/auth/signup', {
+        userName: name,
+        userId: userId,
+        userPassword: password,
+        userEmail: email,
+        userPhone: phone,
       });
-
-      if (response.ok) {
-        alert('회원가입이 완료되었습니다. 기부 페이지로 이동합니다.');
-        navigate('/');
-      } else {
-        const errorMessage = await response.text();
-        alert(errorMessage || '회원가입에 실패했습니다.');
-      }
+      alert('회원가입이 완료되었습니다. 기부 페이지로 이동합니다.');
+      navigate('/');
     } catch (error) {
-      console.error('Network error:', error);
-      alert('네트워크 오류가 발생했습니다. 다시 시도해주세요.');
+      console.error('Signup error:', error);
+      const errorMessage = error.response?.data || '회원가입에 실패했습니다.';
+      alert(errorMessage);
     }
   };
 

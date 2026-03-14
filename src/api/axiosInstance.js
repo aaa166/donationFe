@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 const api = axios.create({
-  baseURL: 'http://localhost:8081',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -43,7 +45,7 @@ api.interceptors.response.use(
 
         try {
           // 토큰 재발급 요청 (기본 axios 사용 권장)
-          const res = await axios.post('http://localhost:8081/api/auth/refresh', { 
+          const res = await axios.post(`${API_BASE_URL}/api/auth/refresh`, { 
             refreshToken 
           });
 

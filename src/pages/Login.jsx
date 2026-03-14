@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../api/axiosInstance';
 import './Login.css';
 
 const Login = () => {
@@ -11,7 +12,7 @@ const Login = () => {
       navigate('/login/chocobean'); 
     } else {
       
-      window.location.href = `http://localhost:8081/oauth2/authorization/${provider}`;
+      window.location.href = `${API_BASE_URL}/oauth2/authorization/${provider}`;
       
     }
   };

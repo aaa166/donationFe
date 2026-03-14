@@ -7,7 +7,6 @@ const MainBanner = () => {
   const [banners, setBanners] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
-  const bannerBaseURL = "http://localhost:8081";
 
   useEffect(() => {
     const fetchBanners = async () => {
@@ -53,9 +52,9 @@ const MainBanner = () => {
           <div className="banner-text-overlay">
             {/* <span className="banner-btn">보기</span> */}
           </div>
-          
+
           <img
-            src={`${bannerBaseURL}${currentBanner.bannerImg}`} 
+            src={`${currentBanner.bannerImg}`}
             alt={currentBanner.bannerTitle}
             className="main-banner-img"
           />

@@ -13,6 +13,7 @@ const Header = ({ isLoggedIn, handleLogout }) => {
             <span>ChocoBean</span>
             <ul className="nav-list">
             {/* <li className="nav-item"><Link to="/">홈</Link></li> */}
+            <li className="nav-item"><Link to="/dashboard">대시보드</Link></li>
             <li className="nav-item"><Link to="/support">문의</Link></li>
             <li className="nav-item">
               <Link to="/donationApply" className="donation-apply-btn">

@@ -4,9 +4,7 @@ import ProgressBar from '../components/ProgressBar';
 import ContentTabs from '../components/ContentTabs';
 import { useParams, useLocation } from 'react-router-dom';
 import DonationSidebar from '../components/DonationSidebar';
-import api from '../api/axiosInstance'; // ✅ JWT 인터셉터
-
-const API_BASE_URL = 'http://localhost:8081/api';
+import api, { API_BASE_URL } from '../api/axiosInstance'; // ✅ JWT 인터셉터
 
 function DonationView() {
     const location = useLocation();
@@ -33,16 +31,12 @@ function DonationView() {
         // console.log(donationData.donationNo);
         try {
             const [donationRes, commentRes] = await Promise.all([
-                fetch(`${API_BASE_URL}/public/donationView/${donationNo}`),
-                fetch(`${API_BASE_URL}/public/donationComments/${donationNo}`)
+                api.get(`/api/public/donationView/${donationNo}`),
+                api.get(`/api/public/donationComments/${donationNo}`)
             ]);
 
-            if (!donationRes.ok || !commentRes.ok) {
-                throw new Error('데이터 조회 실패');
-            }
-
-            setDonationData(await donationRes.json());
-            setPayComments(await commentRes.json());
+            setDonationData(donationRes.data);
+            setPayComments(commentRes.data);
         } catch (e) {
             setError(e.message);
         } finally {
@@ -182,10 +176,9 @@ function DonationView() {
                 return null;
         }
     };
-    const BACKEND_URL = 'http://localhost:8081'; 
     const donationImgUrl = donationData.donationImg.startsWith("http")
             ? donationData.donationImg
-            : `${BACKEND_URL}${donationData.donationImg}`;
+            : `${API_BASE_URL}${donationData.donationImg}`;
 
     return (
         <div className="container">

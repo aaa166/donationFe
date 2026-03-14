@@ -17,6 +17,7 @@ import UserState from './pages/UserState';
 import Report from './pages/Report';
 import BannerState from './pages/BannerState';
 import InsertBanner from './pages/InsertBanner';
+import Dashboard from './pages/Dashboard';
 
 const router = createBrowserRouter([
   {
@@ -78,6 +79,10 @@ const router = createBrowserRouter([
       {
         path: '/bannerState',
         element: <BannerState />,
+      },
+      {
+        path: '/dashboard',
+        element: <Dashboard />,
       },
     ],
   },

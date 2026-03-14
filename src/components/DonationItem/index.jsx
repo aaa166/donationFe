@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom'; 
+import { API_BASE_URL } from '../../api/axiosInstance';
 import './DonationItem.css';
 
 const DonationItem = ({ donation }) => {
@@ -12,7 +13,7 @@ const DonationItem = ({ donation }) => {
           src={donation.image
                 ? donation.image.startsWith('http')
                     ? donation.image
-                    : `http://localhost:8081${donation.image}`
+                    : `${API_BASE_URL}${donation.image}`
                 : '/images/default.png' // 이미지가 없을 때 기본 이미지
               } 
           alt={donation.title || 'Donation Image'} 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
+import api from '../api/axiosInstance';
 import './ChocobeanLogin.css';
 
 const ChocobeanLogin = () => {
@@ -14,18 +15,7 @@ const ChocobeanLogin = () => {
     e.preventDefault();
     
     try {
-      const response = await fetch('http://localhost:8081/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, password }),
-      });
-
-      if (!response.ok) {
-        alert('로그인 실패: 아이디와 비밀번호를 확인해주세요.');
-        return;
-      }
-
-      const data = await response.json();
+      const data = (await api.post('/api/auth/login', { id, password })).data;
 
       // ✅ accessToken, refreshToken 저장
       localStorage.setItem('accessToken', data.accessToken);
@@ -42,8 +32,8 @@ const ChocobeanLogin = () => {
 
       navigate('/');
     } catch (error) {
-      console.error('Network error:', error);
-      alert('네트워크 오류가 발생했습니다. 다시 시도해주세요.');
+      console.error('Login error:', error);
+      alert('로그인 실패: 아이디와 비밀번호를 확인해주세요.');
     }
   };
 

@@ -11,8 +11,6 @@ import {
 } from 'lucide-react';
 import './BannerState.css';
 
-const BACKEND_URL = 'http://localhost:8081'; 
-
 const BannerState = () => {
   const navigate = useNavigate();
   const [banners, setBanners] = useState([]);
@@ -71,9 +69,9 @@ const BannerState = () => {
       return now > deadlineDate;
     }).length,
     pending: banners.filter(b => {
-        const now = new Date();
-        const startDate = new Date(b.bannerStartDate);
-        return now < startDate;
+      const now = new Date();
+      const startDate = new Date(b.bannerStartDate);
+      return now < startDate;
     }).length
   };
 
@@ -161,9 +159,9 @@ const BannerState = () => {
                   statusLabel = '만료';
                   statusClass = 'expired';
                 }
-                
-                const bannerImgUrl = banner.bannerImg 
-                  ? `${BACKEND_URL}${banner.bannerImg}` 
+
+                const bannerImgUrl = banner.bannerImg
+                  ? `${banner.bannerImg}`
                   : '/default-image.png'; // 이미지 없을 때 기본 이미지
 
                 return (

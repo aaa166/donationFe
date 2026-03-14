@@ -101,11 +101,12 @@ body {
 
 .image-preview {
   margin-top: 1rem;
-  max-width: 100%;
-  max-height: 300px;
-  border-radius: 8px;
+  width: 100%;
+  aspect-ratio: 1200 / 440;
   object-fit: cover;
+  border-radius: 16px;
   border: 1px solid var(--border-color);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .submit-btn {
