@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/axiosInstance';
 import './My.css';
-import { 
-  User, Mail, Phone, Shield, ChevronRight, X 
+import {
+  User, Mail, Phone, Shield, ChevronRight, X
 } from 'lucide-react';
 
 const My = () => {
@@ -87,13 +87,13 @@ const My = () => {
       let url = '';
       let paramName = '';
       if (field === 'userId') {
-        url = '/api/duplicateIdCheck';
+        url = '/api/auth/duplicateIdCheck';
         paramName = 'userId';
       } else if (field === 'userEmail') {
-        url = '/api/duplicateEmailCheck';
+        url = '/api/auth/duplicateEmailCheck';
         paramName = 'email';
       } else if (field === 'userPhone') {
-        url = '/api/duplicatePhoneCheck';
+        url = '/api/auth/duplicatePhoneCheck';
         paramName = 'phone';
       }
 
@@ -144,8 +144,12 @@ const My = () => {
 
       // 아이디가 바뀌었으면 강제 로그아웃
       if (userInfo.userId !== editForm.userId) {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        try {
+          await api.post('/api/auth/logout');
+        } catch (e) {
+          console.error(e);
+        }
+        localStorage.removeItem('isLoggedIn');
         window.location.replace('/');
         return;
       }
@@ -242,9 +246,13 @@ const My = () => {
                 <h4>계정 설정</h4>
                 <button className="action-btn1" onClick={() => setIsEditModalOpen(true)}>프로필 수정 <ChevronRight size={16} /></button>
                 <button className="action-btn1" onClick={() => setIsPasswordModalOpen(true)}>비밀번호 변경 <ChevronRight size={16} /></button>
-                <button className="logout-btn" onClick={() => {
-                  localStorage.removeItem('accessToken');
-                  localStorage.removeItem('refreshToken');
+                <button className="logout-btn" onClick={async () => {
+                  try {
+                    await api.post('/api/auth/logout');
+                  } catch (e) {
+                    console.error('로그아웃 에러:', e);
+                  }
+                  localStorage.removeItem('isLoggedIn');
                   window.location.replace('/');
                 }}>로그아웃</button>
               </div>
@@ -290,15 +298,15 @@ const My = () => {
             </div>
 
             <form onSubmit={handleEditSubmit} className="edit-form">
-              {['userId','userEmail','userPhone'].map(field => (
+              {['userId', 'userEmail', 'userPhone'].map(field => (
                 <div className="form-group" key={field}>
                   <label>{field === 'userId' ? '아이디' : field === 'userEmail' ? '이메일' : '연락처'}</label>
                   <div className="input-with-btn">
-                    <input 
+                    <input
                       type={field === 'userEmail' ? 'email' : 'text'}
                       value={editForm[field]}
                       onChange={e => {
-                        setEditForm({...editForm, [field]: e.target.value});
+                        setEditForm({ ...editForm, [field]: e.target.value });
                         setCheckStatus(prev => ({ ...prev, [field]: false }));
                       }}
                     />

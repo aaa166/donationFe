@@ -13,57 +13,37 @@ function App() {
 
   // 토큰 확인 및 상태 세팅
   const checkToken = async () => {
-    const accessToken = localStorage.getItem('accessToken');
-    const refreshToken = localStorage.getItem('refreshToken');
+    // 보안을 위해 실제 토큰값은 쿠키에 있고, 프론트엔드는 단순 플래그만 확인
+    const loggedInFlag = localStorage.getItem('isLoggedIn');
 
-    if (!accessToken && !refreshToken) {
+    if (loggedInFlag !== 'true') {
       setIsLoggedIn(false);
       setIsAdmin(false);
       return;
     }
 
     try {
-      if (accessToken) {
-        const payload = JSON.parse(atob(accessToken.split('.')[1]));
-        const exp = payload.exp * 1000;
-
-        if (Date.now() > exp && refreshToken) {
-          await refreshAccessToken(refreshToken);
-        } else if (Date.now() < exp) {
-          setIsLoggedIn(true);
-          const role = payload.role || payload.userRole; // userRole 숫자일 수도 있으니 fallback
-          setIsAdmin(role === 'ROLE_ADMIN' || role === 0 || role === 'admin'); 
-        } else {
-          handleLogout(false); // 새로고침 시 홈 이동 없이 상태만 초기화
-        }
-      } else if (refreshToken) {
-        await refreshAccessToken(refreshToken);
-      }
+      // 쿠키가 자동 전송되므로 mypage를 호출해 유효성 검증 및 정보 획득
+      const res = await api.get('/api/mypage');
+      setIsLoggedIn(true);
+      const role = res.data.userRole; 
+      setIsAdmin(role === 'ROLE_ADMIN' || role === 0 || role === 'admin'); 
     } catch (error) {
-      console.error('토큰 체크 중 오류:', error);
+      console.error('인증 체크 중 오류(토큰 만료 등):', error);
       handleLogout(false);
     }
   };
 
-  // accessToken 재발급
-  const refreshAccessToken = async (refreshToken) => {
-    try {
-      const res = await api.post('/api/auth/refresh', { refreshToken });
-      localStorage.setItem('accessToken', res.data.accessToken);
-      const payload = JSON.parse(atob(res.data.accessToken.split('.')[1]));
-      setIsLoggedIn(true);
-      const role = payload.role || payload.userRole; 
-      setIsAdmin(role === 'ROLE_ADMIN' || role === 0 || role === 'admin'); 
-    } catch (error) {
-      console.error('토큰 갱신 실패:', error);
-      handleLogout(false); // 상태만 초기화
-    }
-  };
-
   // 로그아웃 함수
-  const handleLogout = (redirect = true) => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+  const handleLogout = async (redirect = true) => {
+    try {
+      // 백엔드에 로그아웃 요청하여 쿠키 제거
+      await api.post('/api/auth/logout');
+    } catch (error) {
+      console.error('로그아웃 요청 에러:', error);
+    }
+
+    localStorage.removeItem('isLoggedIn');
     setIsLoggedIn(false);
     setIsAdmin(false);
 

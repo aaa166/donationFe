@@ -17,16 +17,16 @@ const ChocobeanLogin = () => {
     try {
       const data = (await api.post('/api/auth/login', { id, password })).data;
 
-      // ✅ accessToken, refreshToken 저장
-      localStorage.setItem('accessToken', data.accessToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
+      // ✅ 쿠키가 자동으로 저장되므로 토큰을 localStorage에 저장하지 않습니다.
+      localStorage.setItem('isLoggedIn', 'true');
 
-      // 토큰 payload 디코딩
-      const payload = JSON.parse(atob(data.accessToken.split('.')[1]));
+      // 로그인 직후 내 정보 조회하여 role 획득
+      const mypageRes = await api.get('/api/mypage');
+      const role = mypageRes.data.userRole;
 
       // 상태 업데이트
       setIsLoggedIn(true);
-      setIsAdmin(payload.role === 'admin');
+      setIsAdmin(role === 'ROLE_ADMIN' || role === 0 || role === 'admin');
 
       console.log('Login successful:', data);
 
